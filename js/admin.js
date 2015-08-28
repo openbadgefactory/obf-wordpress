@@ -22,6 +22,7 @@ jQuery(document).ready(function($) {
 	$('[href="#show-api-key"]').click( function(event) {
 		event.preventDefault();
 		$('#credly-settings tr, #credly-settings .toggle').toggle();
+		$('#obf-settings tr, #obf-settings .toggle').toggle();
 	});
 
 	// Throw a warning on Achievement Type editor if title is > 20 characters
