@@ -248,8 +248,9 @@ function badgeos_register_achievement_type_cpt() {
 			'show_in_menu'       => $show_in_menu,
 			'query_var'          => true,
 			'rewrite'            => array( 'slug' => sanitize_title( strtolower( $achievement_name_singular ) ) ),
-			'capability_type'    => 'post',
-			'has_archive'        => true,
+                        'capability_type'    => 'achievement',
+                        'map_meta_cap'       => true,
+                        'has_archive'        => true,
 			'hierarchical'       => true,
 			'menu_position'      => null,
 			'supports'           => array( 'title', 'editor', 'excerpt', 'author', 'thumbnail', 'page-attributes' )
@@ -261,3 +262,42 @@ function badgeos_register_achievement_type_cpt() {
 	}
 }
 add_action( 'init', 'badgeos_register_achievement_type_cpt', 8 );
+
+/**
+ * Register Achivement Capabilites
+ *
+ * @since  1.4.6
+ * @return void
+ */
+function badgeos_register_achievement_capabilites($required_cap = null) {
+    $role = get_role( 'administrator' );
+    $role->add_cap( 'access_awesomeness' );
+    if (empty($required_cap)) {
+        $required_cap = badgeos_get_achievement_creator_capability();
+    }
+    $capability_type = 'achievement';
+    $caps = array(
+        "delete_{$capability_type}s",
+        "delete_private_{$capability_type}s",
+        "delete_published_{$capability_type}s",
+        "delete_others_{$capability_type}s",
+        "edit_private_{$capability_type}s",
+        "edit_others_{$capability_type}s",
+        "edit_published_{$capability_type}s",
+        "edit_{$capability_type}s",
+        "edit_{$capability_type}",
+    );
+    $role_names = array('administrator', 'editor', 'author', 'contributor', 'subscriber');
+    foreach ($role_names as $role_name) {
+        $role = get_role($role_name);
+        if ($role->has_cap($required_cap)) {
+            foreach($caps as $cap) {
+                $role->add_cap($cap);
+            }
+        } else {
+            foreach($caps as $cap) {
+                $role->remove_cap($cap);
+            }
+        }
+    }
+}

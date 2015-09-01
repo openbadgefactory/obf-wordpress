@@ -48,10 +48,12 @@ function badgeos_settings_validate( $input = '' ) {
 
 	// Sanitize the settings data submitted
 	$input['minimum_role'] = isset( $input['minimum_role'] ) ? sanitize_text_field( $input['minimum_role'] ) : $original_settings['minimum_role'];
+        $input['achievement_creator_role'] = isset( $input['achievement_creator_role'] ) ? sanitize_text_field( $input['achievement_creator_role'] ) : $original_settings['achievement_creator_role'];
 	$input['submission_manager_role'] = isset( $input['submission_manager_role'] ) ? sanitize_text_field( $input['submission_manager_role'] ) : $original_settings['submission_manager_role'];
 	$input['debug_mode'] = isset( $input['debug_mode'] ) ? sanitize_text_field( $input['debug_mode'] ) : $original_settings['debug_mode'];
 	$input['ms_show_all_achievements'] = isset( $input['ms_show_all_achievements'] ) ? sanitize_text_field( $input['ms_show_all_achievements'] ) : $original_settings['ms_show_all_achievements'];
 
+        badgeos_register_achievement_capabilites($input['achievement_creator_role']);
 	// Allow add-on settings to be sanitized
 	do_action( 'badgeos_settings_validate', $input );
 
