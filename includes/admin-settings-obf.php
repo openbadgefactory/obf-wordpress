@@ -412,6 +412,7 @@ function badgeos_obf_import_callback($options = array()) {
     
     $create_duplicates = $options['on_duplicate'] === 'create';
     $pre_existing = array();
+    $import_overrides = array('_badgeos_obf_editing_disabled' => 'true'); // Hide badge fields by default on imported badges
     $badge_selections= array();
     if (count($options) > 0) {
         $badge_selections = $options['badges'];
@@ -420,7 +421,7 @@ function badgeos_obf_import_callback($options = array()) {
                     . "LEFT JOIN {$wpdb->posts} p ON (pm.post_id = p.id) WHERE p.post_status != 'trash' AND pm.meta_key = '_badgeos_obf_badge_id' AND pm.meta_value = %s LIMIT 1", $badge_id);
             $exists = $wpdb->get_col($query);
             if (empty($exists) || $create_duplicates) {
-                $post_id = $badgeos_obf->import_obf_badge(null, $badge_id, false);
+                $post_id = $badgeos_obf->import_obf_badge(null, $badge_id, false, $import_overrides);
             } else {
                 $pre_existing[] = $badge_id;
                 $post_id = $exists[0];

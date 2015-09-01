@@ -105,10 +105,10 @@ class BadgeOS_Obf {
 	 *
 	 * @since  1.4.6
 	 * @param  string   $badge_id The badge ID on OBF
-	 * @param  array    $fields   An array of meta fields from our badge post
+	 * @param  array    $override_fields   An array of meta fields for our badge import
 	 * @return mixed              False on error. Our badge ID for our badge on success
 	 */
-	function import_obf_badge( $post_id = 0, $badge_id = '', $force = false, $fields = array() ){
+	function import_obf_badge( $post_id = 0, $badge_id = '', $force = false, $override_fields = array() ){
             $badge_array = $this->obf_client->get_badge($badge_id);
             $ret = false;
             $postObj = new stdClass();
@@ -158,6 +158,9 @@ class BadgeOS_Obf {
             if (array_key_exists('image', $badge_array)) {
                 $image_id = $this->import_obf_badge_image($post_id, $badge_array['id'], $badge_array['image']);
                 $metafield_values['_thumbnail_id'] = $image_id;
+            }
+            foreach($override_fields as $field => $value) {
+                $metafield_values[$field] = $value;
             }
             foreach($metafield_values as $field => $value) {
                 update_post_meta( $post_id, $field, $value );
