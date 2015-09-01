@@ -409,13 +409,17 @@ function badgeos_obf_options_yes_api( $obf_settings = array() ) {
 
 function badgeos_obf_import_callback($options = array()) {
     global $badgeos_obf, $wpdb;
+    
+    $create_duplicates = $options['on_duplicate'] === 'create';
     $pre_existing = array();
+    $badge_selections= array();
     if (count($options) > 0) {
-        foreach($options as $option => $badge_id) {
+        $badge_selections = $options['badges'];
+        foreach($badge_selections as $option => $badge_id) {
             $query = $wpdb->prepare("SELECT post_id FROM {$wpdb->postmeta} pm "
                     . "LEFT JOIN {$wpdb->posts} p ON (pm.post_id = p.id) WHERE p.post_status != 'trash' AND pm.meta_key = '_badgeos_obf_badge_id' AND pm.meta_value = %s LIMIT 1", $badge_id);
             $exists = $wpdb->get_col($query);
-            if (empty($exists)) {
+            if (empty($exists) || $create_duplicates) {
                 $post_id = $badgeos_obf->import_obf_badge(null, $badge_id, false);
             } else {
                 $pre_existing[] = $badge_id;
@@ -424,8 +428,7 @@ function badgeos_obf_import_callback($options = array()) {
         }
     }
     
-    if (count($options) == 1) {
-        //var_dump($post_id); die();
+    if (count($badge_selections) == 1) {
         $url = get_edit_post_link((int)$post_id,'');
         wp_redirect($url);
         exit;
@@ -479,11 +482,11 @@ function badgeos_obf_import_page() {
                                             <?php 
                                             if ($single_select) {
                                                 ?>
-                                                <input type="radio" id="obf_badge_<?php echo $badge_id; ?>"name="obf_import[import]" value="<?php echo esc_attr($badge_id); ?>">
+                                                <input type="radio" id="obf_badge_<?php echo $badge_id; ?>" name="obf_import[badges][import]" value="<?php echo esc_attr($badge_id); ?>">
                                                 <?php
                                             } else {
                                                 ?>
-                                                <input type="checkbox" id="obf_badge_<?php echo $badge_id; ?>"name="obf_import[<?php echo esc_attr($badge_id); ?>]" value="<?php echo esc_attr($badge_id); ?>">
+                                                <input type="checkbox" id="obf_badge_<?php echo $badge_id; ?>" name="obf_import[badges][<?php echo esc_attr($badge_id); ?>]" value="<?php echo esc_attr($badge_id); ?>">
                                                 <?php
                                             }
                                             ?>
@@ -503,6 +506,28 @@ function badgeos_obf_import_page() {
             ?>
             </ul>
             <br style="clear: both;"/>
+
+            <table class="form-table">
+                <tbody>
+                    <tr valign="top" class="obf-notifications-enable-message">
+                        <th scope="row">
+                                <label><?php _e( 'How to handle import of duplicates', 'badgeos' ); ?></label>
+                        </th>
+                        <td>
+                                <label for="obf_import_on_duplicate_skip">
+                                    <input type="radio" checked id="obf_import_on_duplicate_skip" name="obf_import[on_duplicate]" value="skip"></input>
+                                    <?php _e('Skip duplicates', 'badgeos'); ?>
+                                </label>
+                                <br/>
+                                <label for="obf_import_on_duplicate_create">
+                                    <input type="radio" id="obf_import_on_duplicate_create" name="obf_import[on_duplicate]" value="create"></input>
+                                    <?php _e('Create duplicates', 'badgeos'); ?>
+                                </label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
             <?php
                 if ($single_select) {
                     echo submit_button( __('Pick badge', 'badgeos'));
@@ -510,6 +535,7 @@ function badgeos_obf_import_page() {
                     echo submit_button( __('Import badges', 'badgeos'));
                 }
             ?>
+            
             </form>
         </div>
 <?php
@@ -531,5 +557,29 @@ function my_post_import_button() {
             $('<option>').val('import_obf_badges').text('Import from Open Badge Factory').appendTo('select[name="action"]');
         });
     </script>
+    <?php
+}
+
+/**
+ * Add a metabox to import badge from OBF.
+ */
+function add_obf_import_box(){
+$screen = get_current_screen();
+    if ($screen->action === 'add') { // Only show the metabox on add, not on edit
+        add_meta_box('obf-import-metabox', 'Open Badge Factory', 'obf_import_metabox', 'badges', 'side', 'high');
+    }
+}
+
+add_action('add_meta_boxes', 'add_obf_import_box'); 
+
+/**
+ * OBF Import metabox content.
+ */
+function obf_import_metabox() 
+{
+    ?>
+        <a href="admin.php?page=badgeos_sub_obf_import&single_select=true" class="button button-primary button-large" id="obf-import-button"/>
+        <?php _e('Pick a badge', 'badgeos'); ?>
+        </a>
     <?php
 }

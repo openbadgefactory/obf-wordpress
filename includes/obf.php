@@ -720,6 +720,7 @@ class BadgeOS_Obf {
 		$obf_include_testimonial = ( get_post_meta( $post->ID, '_badgeos_obf_include_testimonial', true ) ? get_post_meta( $post->ID, '_badgeos_obf_include_testimonial', true ) : 'false' );
 		$obf_expiration          = ( get_post_meta( $post->ID, '_badgeos_obf_expiration', true ) ? get_post_meta( $post->ID, '_badgeos_obf_expiration', true ) : '0' );
 		$obf_is_giveable         = ( get_post_meta( $post->ID, '_badgeos_obf_is_giveable', true ) ? get_post_meta( $post->ID, '_badgeos_obf_is_giveable', true ) : 'false' );
+                $obf_editing_disabled    = ( get_post_meta( $post->ID, '_badgeos_obf_editing_disabled', true ) ? get_post_meta( $post->ID, '_badgeos_obf_editing_disabled', true ) : 'false' );
 		$obf_categories          = maybe_unserialize( get_post_meta( $post->ID, '_badgeos_obf_categories', true ) );
 		$obf_badge_id            = get_post_meta( $post->ID, '_badgeos_obf_badge_id', true );
 
@@ -740,8 +741,16 @@ class BadgeOS_Obf {
 		</table>
 
 		<div id="obf-badge-settings">
-			<table class="form-table">
-				<tr valign="top"><th scope="row"><label for="_badgeos_obf_include_evidence"><?php _e( 'Include Evidence', 'badgeos' ); ?></label></th>
+                    <table class="form-table">
+                        <tr valign="top"><th scope="row"><label for="_badgeos_obf_editing_disabled"><?php _e( 'Editing Disabled', 'badgeos' ); ?></label></th>
+                            <td>
+                                <select id="_badgeos_obf_editing_disabled" name="_badgeos_obf_editing_disabled">
+                                    <option value="1" <?php selected( $obf_editing_disabled, 'true' ); ?>><?php _e( 'Yes', 'badgeos' ) ?></option>
+                                    <option value="0" <?php selected( $obf_editing_disabled, 'false' ); ?>><?php _e( 'No', 'badgeos' ) ?></option>
+                                </select>
+                            </td>
+			</tr>
+			<tr valign="top"><th scope="row"><label for="_badgeos_obf_include_evidence"><?php _e( 'Include Evidence', 'badgeos' ); ?></label></th>
 				<td>
 					<select id="_badgeos_obf_include_evidence" name="_badgeos_obf_include_evidence">
 						<option value="1" <?php selected( $obf_include_evidence, 'true' ); ?>><?php _e( 'Yes', 'badgeos' ) ?></option>
@@ -855,6 +864,7 @@ class BadgeOS_Obf {
 		$fields['obf_include_testimonial'] = ( $_POST['_badgeos_obf_include_testimonial'] ? 'true' : 'false' );
 		$fields['obf_expiration']          = ( $_POST['_badgeos_obf_expiration'] ? sanitize_text_field( $_POST['_badgeos_obf_expiration'] ) : '0' );
 		$fields['obf_is_giveable']         = ( $_POST['_badgeos_obf_is_giveable'] ? 'true' : 'false' );
+                $fields['obf_editing_disabled']    = ( $_POST['_badgeos_obf_editing_disabled'] ? 'true' : 'false' );
 		$fields['obf_categories']          = ( ! empty ( $_POST['_badgeos_obf_categories'] ) ? array_map( 'sanitize_text_field', $_POST['_badgeos_obf_categories'] ) : '' );
 		$fields['obf_badge_id']            = ( $_POST['_badgeos_obf_badge_id'] ? sanitize_text_field( $_POST['_badgeos_obf_badge_id'] ) : '' );
 
@@ -878,6 +888,7 @@ class BadgeOS_Obf {
 		update_post_meta( $post_id, '_badgeos_obf_include_testimonial', $fields['obf_include_testimonial'] );
 		update_post_meta( $post_id, '_badgeos_obf_expiration', $fields['obf_expiration'] );
 		update_post_meta( $post_id, '_badgeos_obf_is_giveable', $fields['obf_is_giveable'] );
+                update_post_meta( $post_id, '_badgeos_obf_editing_disabled', $fields['obf_editing_disabled'] );
 		update_post_meta( $post_id, '_badgeos_obf_categories', $fields['obf_categories'] );
 
 		return true;

@@ -1,4 +1,21 @@
 jQuery(document).ready(function($) {
+        // Hide badge fields
+        function obf_set_badge_field_visibility($visible) {
+            jQuery('#post-body-content').toggle($visible);
+            jQuery('#normal-sortables').toggle($visible);
+        }
+        // Check if badge editing is disabled and we want to hide badge fields
+        function obf_badge_field_visibility_check() {
+            if ($('#_badgeos_obf_editing_disabled').val() == 1) {
+                obf_set_badge_field_visibility(false);
+            } else {
+                obf_set_badge_field_visibility(true);
+            }
+        }
+        obf_badge_field_visibility_check();
+        $('#_badgeos_obf_editing_disabled').change( function(){
+            obf_badge_field_visibility_check();
+        }).change();
 
 	// Show badge sharing options only if "send to open badge factory" is enabled
 	$('#_badgeos_send_to_obf').change( function(){
