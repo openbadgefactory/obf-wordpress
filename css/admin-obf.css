@@ -1,0 +1,49 @@
+/*
+*/
+#obf-badges .has-thumb img {
+    width: 100px; height: 100px;
+}
+ul#obf-badges li {
+    float: left;
+    margin: 0.6em;
+    width: 280px;
+}
+ul#obf-badges li .media {
+    background: #FFF none repeat scroll 0% 0%;
+    border: 1px solid #D2D2D2;
+    font: 400 12px "Source Sans Pro",sans-serif;
+    color: #929292;
+    box-shadow: 0px 4px 0px #DCDCDC;
+    text-overflow: ellipsis;
+}
+ul#obf-badges li .media-body {
+    margin-top: 10px;
+}
+ul#obf-badges li .media-footer {
+    height: 3em;
+}
+ul#obf-badges li .pull-left {
+    float: left;
+    margin-left: 10px;
+    margin-top: 10px;
+    padding-right: 10px;
+}
+ul#obf-badges li .badge-desc {
+    height: 6em;
+    overflow-y: hidden;
+    margin-right: 10px;
+}
+#obf-badges .has-thumb .center {
+    clear: both;
+    width: 100%;
+    text-align: center;
+}
+#obf-badges .obf-badge-title {
+    width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 10px;
+    font-size: 12px;
+    line-height: 10px;
+    margin: 2px 10px;
+}

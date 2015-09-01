@@ -406,3 +406,129 @@ function badgeos_obf_options_yes_api( $obf_settings = array() ) {
 <?php
 
 }
+
+function badgeos_obf_import_callback($options = array()) {
+    global $badgeos_obf, $wpdb;
+    $pre_existing = array();
+    if (count($options) > 0) {
+        foreach($options as $option => $badge_id) {
+            $query = $wpdb->prepare("SELECT post_id FROM wp_postmeta WHERE meta_key = '_badgeos_obf_badge_id' AND meta_value = %s LIMIT 1", $badge_id);
+            $exists = $wpdb->get_col($query);
+            if (empty($exists)) {
+                $post_id = $badgeos_obf->import_obf_badge(null, $badge_id, false);
+            } else {
+                $pre_existing[] = $badge_id;
+                $post_id = $exists[0];
+            }
+        }
+    }
+    
+    if (count($options) == 1) {
+        //var_dump($post_id); die();
+        $url = get_edit_post_link((int)$post_id,'');
+        wp_redirect($url);
+        exit;
+    }
+    return array();
+}
+
+/**
+ * BadgeOS Open Badge Factory badge import page.
+ * @since  1.4.6
+ * @return void
+ */
+function badgeos_obf_import_page() {
+
+	/**
+	 * @var $badgeos_obf BadgeOS_Obf
+	 */
+	global $badgeos_obf;
+
+	$obf_settings = $badgeos_obf->obf_settings;
+        
+        $badges = $badgeos_obf->obf_client->get_badges();
+        $single_select = array_key_exists('single_select', $_REQUEST) && $_REQUEST['single_select'] === 'true' ? true : false;
+?>
+	<div class="wrap" >
+            <form method="post" action="options.php">
+            <?php
+                settings_fields( 'obf_import_group' );
+            ?>
+            <ul id="obf-badges" class="widget-achievements-listing">
+            <?php
+                foreach($badges as $badge) {
+                    $badge_id = $badge['id'];
+                    $badge_name = $badge['name'];
+                    $badge_description = $badge['description'];
+                    $badge_image = $badge['image'];
+                    ?>
+                <li class="obf-badge has-thumb" data-groups='<?php echo json_encode($badge['category']); ?>'>
+                            <label class="" for=obf_badge_<?php echo $badge_id; ?>>
+                                <div class="media">
+                                    <div class="pull-left">
+                                        <img class="badgeos-item-thumb" src="<?php echo $badge_image; ?>"/>
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="obf-badge-title media-heading"><?php echo esc_html($badge_name); ?></h4>
+                                        <div class="badge-desc"><?php echo esc_html($badge_description); ?></div>
+                                    
+                                    </div>
+                                    <div class="media-footer">
+                                        <div class="center">
+                                            <?php 
+                                            if ($single_select) {
+                                                ?>
+                                                <input type="radio" id="obf_badge_<?php echo $badge_id; ?>"name="obf_import[import]" value="<?php echo esc_attr($badge_id); ?>">
+                                                <?php
+                                            } else {
+                                                ?>
+                                                <input type="checkbox" id="obf_badge_<?php echo $badge_id; ?>"name="obf_import[<?php echo esc_attr($badge_id); ?>]" value="<?php echo esc_attr($badge_id); ?>">
+                                                <?php
+                                            }
+                                            ?>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </label>
+                            
+                            
+                            </input>
+                            
+                        </li>
+                    <?php
+                }
+            ?>
+            </ul>
+            <br style="clear: both;"/>
+            <?php
+                if ($single_select) {
+                    echo submit_button( __('Pick badge', 'badgeos'));
+                } else {
+                    echo submit_button( __('Import badges', 'badgeos'));
+                }
+            ?>
+            </form>
+        </div>
+<?php
+}
+
+
+add_action('admin_footer', 'my_post_import_button');
+function my_post_import_button() {
+    $screen = get_current_screen();
+    if ( $screen->id != "edit-badges" )   // Only add to edit-badges
+        return;
+    
+    add_thickbox();
+    ?>
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            //$('<a href="admin.php?page=badgeos_sub_obf_import&TB_iframe=true&width=600&height=550" id="import_obf_badges" class="page-title-action obf-import thickbox">Import from Open Badge Factory</a>').appendTo(".wrap h1");
+            $('<a href="admin.php?page=badgeos_sub_obf_import&single_select=true" id="import_obf_badges" class="page-title-action obf-import"><?php _e('Pick a badge', 'badgeos'); ?></a>').appendTo(".wrap h1");
+            $('<option>').val('import_obf_badges').text('Import from Open Badge Factory').appendTo('select[name="action"]');
+        });
+    </script>
+    <?php
+}

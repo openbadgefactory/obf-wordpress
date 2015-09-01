@@ -112,6 +112,7 @@ class BadgeOS {
 
 		// Register styles
 		wp_register_style( 'badgeos-admin-styles', $this->directory_url . 'css/admin.css' );
+                wp_register_style( 'badgeos-obf-admin-styles', $this->directory_url . 'css/admin-obf.css' );
 
 		$badgeos_front = file_exists( get_stylesheet_directory() .'/badgeos.css' )
 			? get_stylesheet_directory_uri() .'/badgeos.css'
@@ -215,6 +216,7 @@ class BadgeOS {
 		$badgeos_settings = ( $exists = get_option( 'badgeos_settings' ) ) ? $exists : array();
 		if ( empty( $badgeos_settings ) ) {
 			$badgeos_settings['minimum_role']     = 'manage_options';
+                        $badgeos_settings['achievement_creator_role'] = 'manage_options';
 			$badgeos_settings['submission_manager_role'] = 'manage_options';
 			$badgeos_settings['submission_email'] = 'enabled';
 			$badgeos_settings['debug_mode']       = 'disabled';
@@ -248,9 +250,11 @@ class BadgeOS {
 
 		// Set minimum role setting for menus
 		$minimum_role = badgeos_get_manager_capability();
+                
+                $creator_role = badgeos_get_achievement_creator_capability();
 
 		// Create main menu
-		add_menu_page( 'BadgeOS', 'BadgeOS', $minimum_role, 'badgeos_badgeos', 'badgeos_settings', $this->directory_url . 'images/badgeos_icon.png', 110 );
+		add_menu_page( 'BadgeOS', 'BadgeOS', $creator_role, 'badgeos_badgeos', 'badgeos_settings', $this->directory_url . 'images/badgeos_icon.png', 110 );
 
 		// Create submenu items
 		add_submenu_page( 'badgeos_badgeos', __( 'BadgeOS Settings', 'badgeos' ), __( 'Settings', 'badgeos' ), $minimum_role, 'badgeos_settings', 'badgeos_settings_page' );
@@ -258,6 +262,9 @@ class BadgeOS {
 		add_submenu_page( 'badgeos_badgeos', __( 'OBF Integration', 'badgeos' ), __( 'OBF Integration', 'badgeos' ), $minimum_role, 'badgeos_sub_obf_integration', 'badgeos_obf_options_page' );
 		add_submenu_page( 'badgeos_badgeos', __( 'Add-Ons', 'badgeos' ), __( 'Add-Ons', 'badgeos' ), $minimum_role, 'badgeos_sub_add_ons', 'badgeos_add_ons_page' );
 		add_submenu_page( 'badgeos_badgeos', __( 'Help / Support', 'badgeos' ), __( 'Help / Support', 'badgeos' ), $minimum_role, 'badgeos_sub_help_support', 'badgeos_help_support_page' );
+                
+                // Import badges
+                add_submenu_page( 'badgeos_badgeos', __( 'OBF Import', 'badgeos' ), __( 'OBF Import', 'badgeos' ), $creator_role, 'badgeos_sub_obf_import', 'badgeos_obf_import_page' );
 
 	}
 
@@ -273,6 +280,7 @@ class BadgeOS {
 
 		// Load styles
 		wp_enqueue_style( 'badgeos-admin-styles' );
+                wp_enqueue_style( 'badgeos-obf-admin-styles' );
 
 	}
 

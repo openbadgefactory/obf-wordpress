@@ -17,6 +17,7 @@ function badgeos_register_settings() {
 	register_setting( 'badgeos_settings_group', 'badgeos_settings', 'badgeos_settings_validate' );
 	register_setting( 'credly_settings_group', 'credly_settings', 'badgeos_credly_settings_validate' );
 	register_setting( 'obf_settings_group', 'obf_settings', 'badgeos_obf_settings_validate' );
+        register_setting( 'obf_import_group', 'obf_import', 'badgeos_obf_import_callback' );
 }
 add_action( 'admin_init', 'badgeos_register_settings' );
 
@@ -204,6 +205,7 @@ function badgeos_settings_page() {
 			<?php
 			//load settings
 			$minimum_role = ( isset( $badgeos_settings['minimum_role'] ) ) ? $badgeos_settings['minimum_role'] : 'manage_options';
+                        $achievement_creator_role = ( isset( $badgeos_settings['achievement_creator_role'] ) ) ? $badgeos_settings['achievement_creator_role'] : 'manage_options';
 			$submission_manager_role = ( isset( $badgeos_settings['submission_manager_role'] ) ) ? $badgeos_settings['submission_manager_role'] : 'manage_options';
 			$submission_email = ( isset( $badgeos_settings['submission_email'] ) ) ? $badgeos_settings['submission_email'] : '';
 			$submission_email_addresses = ( isset( $badgeos_settings['submission_email_addresses'] ) ) ? $badgeos_settings['submission_email_addresses'] : '';
@@ -229,6 +231,16 @@ function badgeos_settings_page() {
 								<option value="manage_options" <?php selected( $submission_manager_role, 'manage_options' ); ?>><?php _e( 'Administrator', 'badgeos' ); ?></option>
 								<option value="delete_others_posts" <?php selected( $submission_manager_role, 'delete_others_posts' ); ?>><?php _e( 'Editor', 'badgeos' ); ?></option>
 								<option value="publish_posts" <?php selected( $submission_manager_role, 'publish_posts' ); ?>><?php _e( 'Author', 'badgeos' ); ?></option>
+							</select>
+						</td>
+					</tr>
+                                        <tr valign="top"><th scope="row"><label for="achievement_creator_role"><?php _e( 'Minimum Role to create Badges/Achievements: ', 'badgeos' ); ?></label></th>
+						<td>
+							<select id="achievement_creator_role" name="badgeos_settings[achievement_creator_role]">
+								<option value="manage_options" <?php selected( $achievement_creator_role, 'manage_options' ); ?>><?php _e( 'Administrator', 'badgeos' ); ?></option>
+								<option value="delete_others_posts" <?php selected( $achievement_creator_role, 'delete_others_posts' ); ?>><?php _e( 'Editor', 'badgeos' ); ?></option>
+								<option value="publish_posts" <?php selected( $achievement_creator_role, 'publish_posts' ); ?>><?php _e( 'Author', 'badgeos' ); ?></option>
+                                                                <option value="edit_posts" <?php selected( $achievement_creator_role, 'edit_posts' ); ?>><?php _e( 'Contributor', 'badgeos' ); ?></option>
 							</select>
 						</td>
 					</tr>
@@ -760,6 +772,18 @@ function badgeos_get_manager_capability() {
 function badgeos_get_submission_manager_capability() {
 	$badgeos_settings = get_option( 'badgeos_settings' );
 	return isset( $badgeos_settings[ 'submission_manager_role' ] ) ? $badgeos_settings[ 'submission_manager_role' ] : badgeos_get_manager_capability();
+}
+
+/**
+ * Get capability required for achievement/badge creation.
+ *
+ * @since  1.4.0
+ *
+ * @return string User capability.
+ */
+function badgeos_get_achievement_creator_capability() {
+	$badgeos_settings = get_option( 'badgeos_settings' );
+	return isset( $badgeos_settings[ 'achievement_creator_role' ] ) ? $badgeos_settings[ 'achievement_creator_role' ] : badgeos_get_manager_capability();
 }
 
 /**

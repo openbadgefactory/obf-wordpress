@@ -244,7 +244,7 @@ function badgeos_register_achievement_type_cpt() {
 			),
 			'public'             => true,
 			'publicly_queryable' => true,
-			'show_ui'            => current_user_can( badgeos_get_manager_capability() ),
+			'show_ui'            => current_user_can( badgeos_get_achievement_creator_capability() ),
 			'show_in_menu'       => $show_in_menu,
 			'query_var'          => true,
 			'rewrite'            => array( 'slug' => sanitize_title( strtolower( $achievement_name_singular ) ) ),

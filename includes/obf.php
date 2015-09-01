@@ -100,6 +100,146 @@ class BadgeOS_Obf {
 
 	}
 
+        /**
+	 * Import a badge from OBF
+	 *
+	 * @since  1.4.6
+	 * @param  string   $badge_id The badge ID on OBF
+	 * @param  array    $fields   An array of meta fields from our badge post
+	 * @return mixed              False on error. Our badge ID for our badge on success
+	 */
+	function import_obf_badge( $post_id = 0, $badge_id = '', $force = false, $fields = array() ){
+            $badge_array = $this->obf_client->get_badge($badge_id);
+            $ret = false;
+            $postObj = new stdClass();
+            $options = obf_fieldmap_get_fields();
+            
+            $fields_array = array(
+                'name' => $this->field_title,
+                'short_description' => $this->field_short_description,
+                'description' => $this->field_description,
+                'criteria_html' => $this->field_criteria,
+                'evidence_html' => $this->field_evidence,
+            );
+            $fields_array = array_map(
+                function ($f) { 
+                    if ('post_body' === $f) { 
+                        return 'post_content';
+
+                    }
+                    return $f;
+                },
+                $fields_array
+            );
+
+            $metafields_array = array(
+                'id' => '_badgeos_obf_badge_id',
+            );
+            $metafield_values = array();
+            foreach($metafields_array as $array_index => $field) {
+                $metafield_values[$field] = $badge_array[$array_index];
+            }
+            
+            foreach($fields_array as $key => $field) {
+                if (array_key_exists($key, $badge_array) && !empty($field)) {
+                    $postObj->{$field} = $badge_array[$key];
+                }
+            }
+            // Set some settings for the post. Imported badges are not drafts
+            $postObj->{'post_status'} = 'publish';
+            $postObj->{'post_type'} = 'badges';
+            $postObj->{'ping_status'} = 'closed';
+            $postObj->{'comment_status'} = 'closed';
+            $image_id = null;
+            
+            $post = new WP_Post($postObj);
+            $post_id = wp_insert_post($post);
+            
+            if (array_key_exists('image', $badge_array)) {
+                $image_id = $this->import_obf_badge_image($post_id, $badge_array['id'], $badge_array['image']);
+                $metafield_values['_thumbnail_id'] = $image_id;
+            }
+            foreach($metafield_values as $field => $value) {
+                update_post_meta( $post_id, $field, $value );
+            }
+            
+            return $post_id;
+        }
+        
+        function import_obf_badge_image($post_id, $badge_id, $base64_image) {
+            // gives us access to the download_url() and wp_handle_sideload() functions
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            
+            $data = explode(',', $base64_image);
+            $mimetype = 'image/jpg';
+            if (1 === preg_match('/data:([\/\w]+);/', $data[0], $matches)) {
+                $mimetype = $matches[1];
+            }
+            $extension = 'tmp';
+            if (1 === preg_match('/image\/(\w+);/', $data[0], $matches)) {
+                $extension = $matches[1];
+            }
+            $tmp_file = wp_tempnam($badge_id . "." . $extension);
+            $ifp = fopen($tmp_file, "wb"); 
+
+            fwrite($ifp, base64_decode($data[1])); 
+            fclose($ifp); 
+            
+            // File should be created, now move to wordpress upload dir.
+            
+            // array based on $_FILE as seen in PHP file uploads
+            $file = array(
+                    'name' => $badge_id . '.' . $extension, // ex: wp-header-logo.png
+                    'type' => $mimetype,
+                    'tmp_name' => $tmp_file,
+                    'error' => 0,
+                    'size' => filesize($tmp_file),
+            );
+            
+            $overrides = array(
+                'test_form' => false,
+                'test_size' => true,
+                'test_upload' => true, 
+            );
+            // Copy the temporary file into the uploads directory and delete temp file
+            $results = wp_handle_sideload( $file, $overrides );
+            @unlink($tmp_file);
+            
+            if (!empty($results['error'])) {
+		// TODO: insert any error handling here
+                return new WP_Error('obf_image', 'error saving badge image');
+            } else {
+                    /**
+                     * See http://codex.wordpress.org/Function_Reference/wp_insert_attachment
+                     */
+                    $filename = $results['file']; // full path to the file
+                    $local_url = $results['url']; // URL to the file in the uploads dir
+                    $type = $results['type']; // MIME type of the file
+
+                    // Get the path to the upload directory.
+                    $wp_upload_dir = wp_upload_dir();
+
+                    // perform any actions here based in the above results
+                    $attachment = array(
+                        'post_mime_type' => $type,
+                        'post_title' => preg_replace('/\.[^.]+$/', '', basename($filename)),
+                        'post_content' => '',
+                        'post_status' => 'inherit',
+                        'guid' => $wp_upload_dir['url'] . '/' . basename($filename)
+                    );
+                    $attach_id = wp_insert_attachment( $attachment, $filename, 289 );
+                    
+                    // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+                    require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+                    // Generate the metadata for the attachment, and update the database record.
+                    $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+                    wp_update_attachment_metadata( $attach_id, $attach_data );
+                    
+                    return $attach_id;
+            }
+        }
+        
 	/**
 	 * Add any hooks into WordPress here
 	 *
@@ -147,113 +287,6 @@ class BadgeOS_Obf {
 	}
 
 	/**
-	 * Generate our base url for badge create/update
-	 *
-	 * @since  1.0.0
-	 * @param  integer $badge_id The ID of our existing Obf badge if it exists
-	 * @return string            Our url including base and badge slug
-	 */
-	private function api_url_badge( $badge_id = 0 ) {
-
-		if ( ! empty( $badge_id ) ) {
-
-			$url = $this->api_url . 'badges/' . $badge_id;
-
-		} else {
-
-			$url = $this->api_url . 'badges';
-
-		}
-
-		return $url;
-
-	}
-
-	/**
-	 * Generate our base url for category queries
-	 *
-	 * @since  1.0.0
-	 * @return string  Our URL including base and category slug
-	 */
-	private function api_url_category() {
-
-		$url = $this->api_url . 'badges/categories';
-
-		return $url;
-
-	}
-
-	/**
-	 * Generate our base url for email search queries
-	 *
-	 * @since  1.0.0
-	 * @return string  Our URL including base and members search slug
-	 */
-	private function api_url_check_email() {
-
-		$url = $this->api_url . 'members';
-
-		return $url;
-
-	}
-
-	/**
-	 * Generate our base url for posting user badges
-	 *
-	 * @since  1.0.0
-	 * @return string  Our URL including base and member badges slug
-	 */
-	private function api_url_user_badge() {
-
-		$url = $this->api_url . 'member_badges';
-
-		return $url;
-
-	}
-
-	/**
-	 * Wrapper for Obf API POST requests
-	 *
-	 * @since  1.0.0
-	 * @param  string $url  The URL we're posting to
-	 * @param  array  $body An array of data we're passing in the post body
-	 * @return array        Array of results
-	 */
-	private function obf_api_post( $url = array(), $body = array() ) {
-
-		$response = wp_remote_post( $url, array(
-			'method'      => 'POST',
-			'timeout'     => 45,
-			'redirection' => 5,
-			'httpversion' => '1.0',
-			'ssl_verify' => false,
-			'blocking'    => true,
-			'headers'     => array(),
-			'body'        => $body,
-			'cookies'     => array()
-			)
-		);
-
-		return $response;
-
-	}
-
-	/**
-	 * Wrapper for Obf API GET requests
-	 *
-	 * @since  1.0.0
-	 * @param  string $url The URL we're getting from
-	 * @return array       Array of results
-	 */
-	private function obf_api_get( $url = '' ) {
-
-		$response = wp_remote_get( $url, array( 'ssl_verify' => false ) );
-
-		return $response;
-
-	}
-
-	/**
 	 * Create or update a badge on Obf
 	 *
 	 * @since  1.0.0
@@ -265,19 +298,12 @@ class BadgeOS_Obf {
 
 		// Set array of parameters for API call
 		$body = $this->post_obf_badge_args( $badge_id, $fields );
-
-		// Generate our API URL endpoint
-		//$url = $this->api_url_badge( $fields['obf_badge_id'] );
-
-		// POST our data to the ObfAPI
-		//$response = $this->obf_api_post( $url, $body );
-
+                
                 $obf_badge_id = false;
                 if (!empty($fields['obf_badge_id'])) {
                     $obf_badge_id = $fields['obf_badge_id'];
                 }
-		// Process our response
-		//$results = $this->process_api_response_badge( $response );
+
                 $results = $this->obf_client->export_badge($body, $obf_badge_id);
                 
                 if (empty($results)) {
@@ -354,7 +380,7 @@ class BadgeOS_Obf {
 		// Sanitize our input
 		$search_string = sanitize_text_field( $_REQUEST['search_terms'] );
 
-		// Get the results TODO: Filter by search_string
+		// Get the results, and filter categories
                 $results = $this->obf_client->get_categories();
                 $results = array_filter(
                         $results,
@@ -374,7 +400,7 @@ class BadgeOS_Obf {
                     $markup .= '<label for="' . esc_attr( $category ) . '"><input type="checkbox" name="_badgeos_obf_categories[' . $category . ']" id="'. esc_attr( $category ) . '" value="' . esc_attr( $category ) . '" /> ' . ucwords( $category ) . '</label><br />';
 
                 }
-
+                
 		echo json_encode( $markup );
 		die();
 
@@ -497,7 +523,7 @@ class BadgeOS_Obf {
 		// If we're saving our profile use that value, otherwise the current user email
 		$user_email = ( ! empty( $_POST['email'] ) ? $_POST['email'] : $user->user_email );
 
-		// Users don't really have an id
+		// Note: Users don't really have an id, unless we want to add OBP-support
 		$obf_id = $this->obf_user_email_search( $user_email );
 
 		// If we didn't return a numeric id, set it to the user email
@@ -562,10 +588,7 @@ class BadgeOS_Obf {
 		// Generate our args
 		$body = $this->post_user_badge_args( $user_id, $badge_id );
 
-		// POST our data to the Obf API
-		//$response = $this->obf_api_post( $url, $body );
-
-		// Process our response
+		// POST our data to the Obf API and get our response (which should be event id on success)
 		$results = $this->obf_client->issue_badge( $body, array($body['recipient']) );
 
 		// If post was successful, trigger other actions
