@@ -412,7 +412,8 @@ function badgeos_obf_import_callback($options = array()) {
     $pre_existing = array();
     if (count($options) > 0) {
         foreach($options as $option => $badge_id) {
-            $query = $wpdb->prepare("SELECT post_id FROM wp_postmeta WHERE meta_key = '_badgeos_obf_badge_id' AND meta_value = %s LIMIT 1", $badge_id);
+            $query = $wpdb->prepare("SELECT post_id FROM {$wpdb->postmeta} pm "
+                    . "LEFT JOIN {$wpdb->posts} p ON (pm.post_id = p.id) WHERE p.post_status != 'trash' AND pm.meta_key = '_badgeos_obf_badge_id' AND pm.meta_value = %s LIMIT 1", $badge_id);
             $exists = $wpdb->get_col($query);
             if (empty($exists)) {
                 $post_id = $badgeos_obf->import_obf_badge(null, $badge_id, false);
