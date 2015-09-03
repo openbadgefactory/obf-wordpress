@@ -434,7 +434,7 @@ function badgeos_obf_import_callback($options = array()) {
         wp_redirect($url);
         exit;
     }
-    return array();
+    return null;
 }
 
 /**
@@ -451,6 +451,8 @@ function badgeos_obf_import_page() {
 
 	$obf_settings = $badgeos_obf->obf_settings;
         
+        $categories = array_merge(array('all'), $badgeos_obf->obf_client->get_categories());
+        
         $badges = $badgeos_obf->obf_client->get_badges();
         $single_select = array_key_exists('single_select', $_REQUEST) && $_REQUEST['single_select'] === 'true' ? true : false;
 ?>
@@ -459,6 +461,20 @@ function badgeos_obf_import_page() {
             <?php
                 settings_fields( 'obf_import_group' );
             ?>
+            <div class="shuffle-options filter-options row-fluid">
+                <?php foreach($categories as $category) { ?>
+                    <a href="#" class="button button-default" data-group="<?php echo esc_attr($category); ?>">
+                        <?php 
+                        if ($category == 'all') {
+                            _e('All', 'badgeos');
+                        } else {
+                          echo esc_html($category);  
+                        }
+                        ?>
+                    </a>
+                <?php } ?>
+            </div>
+            <div class="span3 m-span3 shuffle__sizer"></div>
             <ul id="obf-badges" class="widget-achievements-listing">
             <?php
                 foreach($badges as $badge) {
@@ -543,8 +559,8 @@ function badgeos_obf_import_page() {
 }
 
 
-add_action('admin_footer', 'my_post_import_button');
-function my_post_import_button() {
+add_action('admin_footer', 'badgeos_obf_post_import_button');
+function badgeos_obf_post_import_button() {
     $screen = get_current_screen();
     if ( $screen->id != "edit-badges" )   // Only add to edit-badges
         return;
@@ -553,7 +569,6 @@ function my_post_import_button() {
     ?>
     <script type="text/javascript">
         jQuery(document).ready(function($) {
-            //$('<a href="admin.php?page=badgeos_sub_obf_import&TB_iframe=true&width=600&height=550" id="import_obf_badges" class="page-title-action obf-import thickbox">Import from Open Badge Factory</a>').appendTo(".wrap h1");
             $('<a href="admin.php?page=badgeos_sub_obf_import&single_select=true" id="import_obf_badges" class="page-title-action obf-import"><?php _e('Pick a badge', 'badgeos'); ?></a>').appendTo(".wrap h1");
             $('<option>').val('import_obf_badges').text('Import from Open Badge Factory').appendTo('select[name="action"]');
         });
@@ -564,14 +579,14 @@ function my_post_import_button() {
 /**
  * Add a metabox to import badge from OBF.
  */
-function add_obf_import_box(){
+function badgeos_obf_add_obf_import_box(){
 $screen = get_current_screen();
     if ($screen->action === 'add') { // Only show the metabox on add, not on edit
         add_meta_box('obf-import-metabox', 'Open Badge Factory', 'obf_import_metabox', 'badges', 'side', 'high');
     }
 }
 
-add_action('add_meta_boxes', 'add_obf_import_box'); 
+add_action('add_meta_boxes', 'badgeos_obf_add_obf_import_box'); 
 
 /**
  * OBF Import metabox content.
@@ -583,4 +598,231 @@ function obf_import_metabox()
         <?php _e('Pick a badge', 'badgeos'); ?>
         </a>
     <?php
+}
+
+/**
+ * Fix create capabilitys for our custom post types.
+ */
+function badgeos_obf_fix_achievement_capability_create() {
+    $post_types = get_post_types( array(),'objects' );
+    $our_post_types = array('badges');
+    foreach ( $post_types as $post_type ) {
+        $cap = "create_".$post_type->name;
+        if (in_array($post_type->name, $our_post_types)) {
+            $post_type->cap->create_posts = $cap;
+        }
+        
+        map_meta_cap( $cap, 1); 
+    }
+}
+add_action( 'init', 'badgeos_obf_fix_achievement_capability_create',100);
+
+
+
+function badgeos_obf_import_all_badges_on_admin_init($screen) {
+    global $badgeos_obf;
+    if ( $screen->id != "edit-badges" )   // Only add to edit-badges
+        return;
+    //var_dump($screen);
+    $badgeos_obf->import_all_obf_badges();
+}
+add_action( 'current_screen', 'badgeos_obf_import_all_badges_on_admin_init');
+
+/**
+ * Remove quick edit links on the badge list.
+ * @param type $actions
+ * @param type $post
+ * @return type
+ */
+function badgeos_obf_remove_row_actions( $actions, $post )
+{
+    $screen = get_current_screen();
+    if( $screen->id != 'edit-badges' ) {
+        return $actions;  
+    }
+    //var_dump($actions);
+    //unset( $actions['edit'] );
+    //unset( $actions['view'] );
+    unset( $actions['trash'] );
+    unset( $actions['inline hide-if-no-js'] );
+    if (obf_is_achievement_giveable($post->ID)) {
+        $issue_str = '<a href="admin.php?page=issue-obf-badge&post_id=' . $post->ID . '">' . __('Issue', 'badgeos') . '</a>';
+    $actions['issue-obf-badge'] = $issue_str;
+    }
+
+    return $actions;
+}
+add_filter( 'page_row_actions', 'badgeos_obf_remove_row_actions', 10, 2 );
+
+
+ 
+/**
+ * Add column head
+ * @param array $defaults
+ * @return string
+ */
+function badgeos_obf_columns_head($defaults) {
+    $defaults['issue_badge'] = 'Issue badge';
+    return $defaults;
+}
+/**
+ * Add column content
+ * @param type $column_name
+ * @param type $post_ID
+ */
+function badgeos_obf_columns_content($column_name, $post_ID) {
+    if ($column_name == 'issue_badge') {
+        // show content of 'directors_name' column
+        ?>
+    <a href="admin.php?page=issue-obf-badge&post_id=<?php echo $post_ID; ?>">Issue</a>
+        <?php
+    }
+}
+// TODO: Do we want issuing on column as well as actions list?
+//add_filter('manage_badges_posts_columns', 'badgeos_obf_columns_head', 10);
+//add_action('manage_badges_posts_custom_column', 'badgeos_obf_columns_content', 10, 2);
+
+function badgeos_obf_issue_badge_page() {
+    if (empty($_REQUEST['post_id']))
+        return;
+    $post_ID = (int)$_REQUEST['post_id'];
+    $post_thumbnail_id = get_post_thumbnail_id($post_ID);
+    
+    $badge_post = get_post($post_ID);
+    $is_givable = obf_is_achievement_giveable($post_ID);
+    
+    $wp_roles = new WP_Roles();
+    $roles = $wp_roles->get_names();
+    
+    if (!$is_givable) {
+        ?>
+        <p id="message" class="warning notice notice-error">
+           <?php
+           _e('Enable sending this badge to OBF, to enable issuing.');
+           ?>
+       </p>
+       <?php
+    }
+    ?>
+    <div class="wrap" >
+       
+        <form method="post" action="options.php">
+
+        <?php
+            settings_fields( 'obf_issue_badge_group' );
+        ?>
+    <table class="form-table">
+        <tbody>
+            <tr valign="top" class="obf-notifications-enable-message">
+                <th scope="row">
+    <?php
+    _e('Badge', 'badgeos');
+    ?>
+                </th>
+                <td>
+                    <h2>
+                        <?php echo esc_html($badge_post->post_title); ?>
+                    </h2>
+    <?php
+    if ($post_thumbnail_id) {
+        $post_thumbnail_img = wp_get_attachment_image_src($post_thumbnail_id, 'featured_preview');
+        echo '<img src="' . $post_thumbnail_img[0] . '" width="120px" height="120px"/><br/>';
+    }
+    ?>
+                    <input type="hidden" name="obf_issue_badge[post_id]" value="<?php echo $post_ID; ?>"></input>
+                </td>
+    <tr valign="top" class="obf-notifications-enable-message">
+        <th scope="row">
+        <?php
+            _e('Users', 'badgeos');
+        ?>
+        </th>
+        <td>
+            <label for="user-filter-options">
+                <?php _e('Filter by user role', 'badgeos'); ?>
+                <div id="user-filter-options" class="filter-options">
+                    <a href="#" class="filter-option button button-default active" value="all"><?php _e('All', 'badgeos'); ?></a>
+                    <?php
+                    foreach($roles as $role_value => $role) {
+                        ?>
+                        <a href="#" class="filter-option button button-default" value="<?php echo esc_attr($role_value); ?>"><?php echo esc_attr($role); ?></a>
+                        <?php
+                    }
+                    ?>
+                </div>
+            </label>
+            <br/>
+            <label for="user-filter-input">
+                <?php _e('Filter by name', 'badgeos'); ?>
+                <input id="user-filter-input" type="text" class="filter-input"></input>
+            </label>
+            <ul id="obf_issue_badge_user_list" class="filterable-items-list">
+            <?php
+            $users = get_users();
+            foreach($users as $user) {
+                $user_id = $user->data->ID;
+                $email = $user->data->user_email;
+                $name = $user->data->display_name;
+                $roles = $user->roles;
+                //echo "$user_id $email $name <br/>";
+                ?>
+                <li class="user-select filterable-item" data-groups='<?php echo json_encode($roles); ?>' data-name='<?php echo esc_attr($name); ?>'>
+                        <label for="obf_issue_badge_users_<?php echo $user_id; ?>">
+                            <input type="checkbox" id="obf_issue_badge_users_<?php echo $user_id; ?>" name="obf_issue_badge[users][<?php echo $user_id; ?>]" value="<?php echo $user_id; ?>"></input>
+                            <?php echo esc_html($name); ?>
+                        </label>
+                </li>
+                <?php
+            }
+            ?>
+            </ul>
+        </td>
+    </tr>
+    <tr valign="top" class="obf-notifications-enable-message">
+        <th scope="row">
+        <?php
+            _e('Emails', 'badgeos');
+        ?>
+        </th>
+        <td>
+                <textarea class="widefat" rows="10" cols="80" id="obf_issue_badge_emails" name="obf_issue_badge[emails]"></textarea>
+        </td>
+    </tr>
+    <tr>
+        <td>
+    <?php
+    if ($is_givable) {
+        echo submit_button(__('Issue badge to users', 'badgeos'));
+    }
+    ?>
+        </td>
+    </tr>
+            </form>
+    </div>
+    <?php
+}
+
+function badgeos_obf_add_issue_page() {
+    $capability = badgeos_get_submission_manager_capability();
+    add_submenu_page( 'options.php', __('Issue badge', 'badgeos'), __('Issue badge', 'badgeos'), $capability, 'issue-obf-badge', 'badgeos_obf_issue_badge_page' );
+}
+add_action('admin_menu', 'badgeos_obf_add_issue_page');
+
+function badgeos_obf_issue_badge_callback($options) {
+    global $badgeos_obf;
+    $users = $options['users'];
+    $emails = $options['emails'];
+    $emails = explode("\n", str_replace("\r", "", $emails));
+    $emails = array_filter($emails);
+    $users = array_filter($users);
+    $badge_id = $options['post_id'];
+    if (!is_array($users)) {
+        $users = array();
+    }
+
+    if (count($users) > 0 || count($emails) > 0) {
+        $badgeos_obf->post_obf_user_badges($users, $emails, $badge_id, true);
+    }
+    
+    return null;
 }

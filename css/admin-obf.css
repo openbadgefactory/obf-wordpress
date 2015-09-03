@@ -47,3 +47,6 @@ ul#obf-badges li .badge-desc {
     line-height: 10px;
     margin: 2px 10px;
 }
+.column-issue_badge {
+    width: 10%;
+}

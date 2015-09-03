@@ -299,5 +299,8 @@ function badgeos_register_achievement_capabilites($required_cap = null) {
                 $role->remove_cap($cap);
             }
         }
+        // Disallow creating new achievements, only edit imported.
+        $role->add_cap('create_achievements', false);
+        $role->add_cap('create_achievement', false);
     }
 }

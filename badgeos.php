@@ -107,8 +107,13 @@ class BadgeOS {
 		wp_register_script( 'badgeos-admin-js', $this->directory_url . 'js/admin.js', array( 'jquery' ) );
 		wp_register_script( 'badgeos-credly', $this->directory_url . 'js/credly.js' );
                 wp_register_script( 'badgeos-obf', $this->directory_url . 'js/obf.js' );
+                wp_register_script( 'badgeos-obf-modernizr', $this->directory_url . 'js/modernizr.js', array( 'jquery' ) );
+                wp_register_script( 'badgeos-obf-shuffle', $this->directory_url . 'js/jquery.shuffle.js', array( 'jquery' ) );
+                wp_register_script( 'badgeos-obf-shuffle-impl', $this->directory_url . 'js/gridfilters.js' );
 		wp_register_script( 'badgeos-achievements', $this->directory_url . 'js/badgeos-achievements.js', array( 'jquery' ), '1.1.0', true );
 		wp_register_script( 'credly-badge-builder', $this->directory_url . 'js/credly-badge-builder.js', array( 'jquery' ), '1.3.0', true );
+                wp_register_script( 'badgeos-obf-fastfilterlive', $this->directory_url . 'js/customfastfilterlive.js' );
+                
 
 		// Register styles
 		wp_register_style( 'badgeos-admin-styles', $this->directory_url . 'css/admin.css' );
@@ -277,6 +282,11 @@ class BadgeOS {
 		wp_enqueue_script( 'badgeos-admin-js' );
 		wp_enqueue_script( 'badgeos-credly' );
                 wp_enqueue_script( 'badgeos-obf' );
+                wp_enqueue_script( 'badgeos-obf-modernizr' );
+                wp_enqueue_script( 'badgeos-obf-shuffle' );
+                wp_enqueue_script( 'badgeos-obf-shuffle-impl' );
+                wp_enqueue_script( 'badgeos-obf-fastfilterlive' );
+                
 
 		// Load styles
 		wp_enqueue_style( 'badgeos-admin-styles' );

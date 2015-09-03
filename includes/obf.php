@@ -99,6 +99,44 @@ class BadgeOS_Obf {
                 $this->obf_client = ObfClient::get_instance(null, $this->obf_settings);
 
 	}
+        function import_all_obf_badges() {
+            global $wpdb;
+            $existing = $wpdb->get_results("SELECT post_id, pm.meta_value AS badge_id, post_modified_gmt AS modified_date FROM {$wpdb->postmeta} pm "
+                    . "LEFT JOIN {$wpdb->posts} p ON (pm.post_id = p.id) WHERE p.post_status != 'trash' AND pm.meta_key = '_badgeos_obf_badge_id'", OBJECT);
+            $existing_badges = array();
+            $nowdate = new DateTime();
+            $import_interval = 600; // Import badges once per minute, if admin is on the badge list page.
+            $new_badge_overrides = array(
+                '_badgeos_send_to_obf' => 'true',
+                '_badgeos_obf_editing_disabled' => 'true'
+            );
+            foreach($existing as $post) {
+                $post_id = $post->post_id;
+                $badge_id = $post->badge_id;
+                
+                $existing_badges[$badge_id]['post_id'] = $post_id;
+                $existing_badges[$badge_id]['modified_date'] = new DateTime($post->modified_date);
+            }
+            $obf_badges = $this->obf_client->get_badges();
+            foreach($obf_badges as $badge_array) {
+                $badge_id = $badge_array['id'];
+                $badge_modified = DateTime::createFromFormat('U', $badge_array['mtime']);
+                if (array_key_exists($badge_id, $existing_badges)) {
+                    $local_modified_ago = ($nowdate->format('U') - $existing_badges[$badge_id]['modified_date']->format('U'));
+                    $local_older = ($badge_modified->format('U') - $existing_badges[$badge_id]['modified_date']->format('U')) > 0;
+                } else {
+                    $local_older = true;
+                    $local_modified_ago = 0;
+                }
+                if (!array_key_exists($badge_id, $existing_badges)) {
+                    $this->import_obf_badge(null, $badge_id, true, $new_badge_overrides, $badge_array);
+                } elseif($local_older || $local_modified_ago > $import_interval) {
+                    $post_id = $existing_badges[$badge_id]['post_id'];
+                    $this->import_obf_badge($post_id, $badge_id);
+                }
+                
+            }
+        }
 
         /**
 	 * Import a badge from OBF
@@ -108,8 +146,10 @@ class BadgeOS_Obf {
 	 * @param  array    $override_fields   An array of meta fields for our badge import
 	 * @return mixed              False on error. Our badge ID for our badge on success
 	 */
-	function import_obf_badge( $post_id = 0, $badge_id = '', $force = false, $override_fields = array() ){
-            $badge_array = $this->obf_client->get_badge($badge_id);
+	function import_obf_badge( $post_id = 0, $badge_id = '', $force = false, $override_fields = array(), $badge_array = null ){
+            if (empty($badge_array)) {
+                $badge_array = $this->obf_client->get_badge($badge_id);
+            }
             $ret = false;
             $postObj = new stdClass();
             $options = obf_fieldmap_get_fields();
@@ -152,8 +192,15 @@ class BadgeOS_Obf {
             $postObj->{'comment_status'} = 'closed';
             $image_id = null;
             
-            $post = new WP_Post($postObj);
-            $post_id = wp_insert_post($post);
+            if (empty($post_id) || $post_id == 0) {
+                $post = new WP_Post($postObj);
+                $post_id = wp_insert_post($post);
+            } else {
+                $post = get_post($post_id);
+                $updated_post = (object) array_merge((array) $post, (array) $postObj);
+                $post_id = wp_update_post($updated_post);
+            }
+            
             
             if (array_key_exists('image', $badge_array)) {
                 $image_id = $this->import_obf_badge_image($post_id, $badge_array['id'], $badge_array['image']);
@@ -206,7 +253,9 @@ class BadgeOS_Obf {
             );
             // Copy the temporary file into the uploads directory and delete temp file
             $results = wp_handle_sideload( $file, $overrides );
-            @unlink($tmp_file);
+            if (file_exists($tmp_file)) {
+                @unlink($tmp_file);
+            }
             
             if (!empty($results['error'])) {
 		// TODO: insert any error handling here
@@ -298,7 +347,7 @@ class BadgeOS_Obf {
 	 * @return mixed              False on error. The Obf ID for our badge on success
 	 */
 	function post_obf_badge( $badge_id = 0, $fields = array() ){
-
+                return; // Disabled for now. TODO: Do users need this feature?
 		// Set array of parameters for API call
 		$body = $this->post_obf_badge_args( $badge_id, $fields );
                 
@@ -569,7 +618,7 @@ class BadgeOS_Obf {
 
 
 	/**
-	 * Post a users earned badge to Obf
+	 * Post a users earned badge to Obf, when user has automatically earned the badge.
 	 *
 	 * @since  1.0.0
 	 * @param  int  $user_id  The given users ID
@@ -577,7 +626,7 @@ class BadgeOS_Obf {
 	 * @return string         Results of the API call
 	 */
 	public function post_obf_user_badge( $user_id = 0, $badge_id = 0 ) {
-
+            
 		// Bail if the badge isn't in Obf
 		if ( ! obf_is_achievement_giveable( $badge_id, $user_id ) )
 			return false;
@@ -592,7 +641,7 @@ class BadgeOS_Obf {
 		$body = $this->post_user_badge_args( $user_id, $badge_id );
 
 		// POST our data to the Obf API and get our response (which should be event id on success)
-		$results = $this->obf_client->issue_badge( $body, array($body['recipient']) );
+		$results = $this->obf_client->issue_badge( $body, $body['recipient'] );
 
 		// If post was successful, trigger other actions
 		if ( $results ) {
@@ -600,7 +649,7 @@ class BadgeOS_Obf {
 		}
 
 		return $results;
-
+                
 	}
 
 
@@ -660,6 +709,71 @@ class BadgeOS_Obf {
 		return $args;
 
 	}
+        
+        
+        /**
+	 * Issue badges to multiple users.
+	 *
+	 * @since  1.4.6
+	 * @param  int  $user_ids  The given users IDs
+         * @param  string[]  $emails    Array of emails to issue to
+	 * @param  int  $badge_id The badge ID the user is earning
+	 * @return string         Results of the API call
+	 */
+	public function post_obf_user_badges( $user_ids = array(), $emails = array(), $badge_id = 0, $force = false ) {
+            
+                $is_sendable = obf_is_achievement_giveable($badge_id);
+                if (!$is_sendable) {
+                    return false;
+                }
+                $ok_user_ids = array();
+                foreach($user_ids as $user_id) {
+                    // Bail if the badge isn't in Obf
+                    if ( ! $force && ! obf_is_achievement_giveable( $badge_id, $user_id ) ) {
+                        continue;
+                    }
+                    $emails[] = $this->obf_get_user_id( $user_id );
+                    $ok_user_ids[] = $user_id;
+
+                }
+                $emails = array_unique($emails);
+
+                if (count($emails) == 0) {
+                    return false;
+                }
+		// Generate our args
+		$body = $this->post_user_badges_args( $emails, $badge_id );
+
+		// POST our data to the Obf API and get our response (which should be event id on success)
+		$results = $this->obf_client->issue_badge( $body, $body['recipient'] );
+
+		// If post was successful, trigger other actions
+		if ( $results ) {
+                    foreach($ok_user_ids as $user_id) {
+                        do_action( 'post_obf_user_badge', $user_id, $badge_id, $results );
+                    }
+		}
+
+		return $results;
+                
+	}
+        
+        /**
+	 * Generate the array for multi-user badge API call
+	 *
+	 * @since  1.4.6
+         * @param  string[] $emails  The IDs of the users earning a badge
+	 * @param  int  $badge_id The local badge ID the user is earning
+	 * @return array          An array of args
+	 */
+	private function post_user_badges_args( $emails = array(), $badge_id = 0 ) {
+            $obf_badge_id = get_post_meta( $badge_id, '_badgeos_obf_badge_id', true );
+            $args = array(
+                'recipient'     => $emails,
+		'badge_id'      => $obf_badge_id,
+            );
+            return $args;
+        }
 
 	/**
 	 * Encode our image file so we can pass it to the Obf API
@@ -1065,7 +1179,7 @@ function obf_is_achievement_giveable( $achievement_id = 0, $user_id = 0 ) {
 	}
 
 	// If achievement is giveable, check if user is allowed to send to obf
-	if ( $is_giveable ) {
+	if ( $is_giveable && !empty($user_id) ) {
 		$is_giveable = badgeos_can_user_send_achievement_to_obf( $user_id, $achievement_id );
 	}
 
