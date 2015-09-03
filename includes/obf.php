@@ -105,7 +105,7 @@ class BadgeOS_Obf {
                     . "LEFT JOIN {$wpdb->posts} p ON (pm.post_id = p.id) WHERE p.post_status != 'trash' AND pm.meta_key = '_badgeos_obf_badge_id'", OBJECT);
             $existing_badges = array();
             $nowdate = new DateTime();
-            $import_interval = 600; // Import badges once per minute, if admin is on the badge list page.
+            $import_interval = 24 * 60 * 60; // Import badges at least once per day.
             $new_badge_overrides = array(
                 '_badgeos_send_to_obf' => 'true',
                 '_badgeos_obf_editing_disabled' => 'true'
