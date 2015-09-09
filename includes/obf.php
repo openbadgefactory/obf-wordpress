@@ -647,7 +647,12 @@ class BadgeOS_Obf {
 		$body = $this->post_user_badge_args( $user_id, $badge_id );
 
 		// POST our data to the Obf API and get our response (which should be event id on success)
-		$results = $this->obf_client->issue_badge( $body, $body['recipient'] );
+                try {
+                    $results = $this->obf_client->issue_badge( $body, $body['recipient'] );
+                } catch (Exception $ex) {
+                    return new WP_Error($ex->getCode(), $ex->getMessage());
+                }
+		
 
 		// If post was successful, trigger other actions
 		if ( $results ) {
