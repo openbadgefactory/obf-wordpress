@@ -662,7 +662,16 @@ add_filter( 'page_row_actions', 'badgeos_obf_remove_row_actions', 10, 2 );
  * @return string
  */
 function badgeos_obf_columns_head($defaults) {
-    $defaults['issue_badge'] = 'Issue badge';
+    $index = 1;
+    $temp = array_slice($defaults, 0, $index);
+    $temp['obf_image'] = __('Image', 'badgeos');
+    $defaults = array_merge($temp, array_slice($defaults, $index, count($defaults)));
+    
+    $index = 3;
+    $temp = array_slice($defaults, 0, $index);
+    $temp['obf_earning'] = __('Earning rules', 'badgeos');
+    $defaults = array_merge($temp, array_slice($defaults, $index, count($defaults)));
+    
     return $defaults;
 }
 /**
@@ -676,11 +685,52 @@ function badgeos_obf_columns_content($column_name, $post_ID) {
         ?>
     <a href="admin.php?page=issue-obf-badge&post_id=<?php echo $post_ID; ?>">Issue</a>
         <?php
+    } else if ($column_name == 'obf_image') {
+        echo the_post_thumbnail( 'thumbnail' );
+    } else if ($column_name == 'obf_earning') {
+        $triggers = badgeos_get_required_achievements_for_achievement($post_ID);
+        if (false !== $triggers) {
+            $display_count = 1;
+            $trigger_names = array();
+            foreach($triggers as $trigger) {
+                $trigger_names[] = $trigger->post_title;
+            }
+            if (count($trigger_names) <= $display_count) {
+                echo implode(', ', $trigger_names);
+            } else {
+                echo implode(', ', array_slice($trigger_names, 0, $display_count));
+                echo sprintf(__(' + %d more.', 'badgeos'), count($trigger_names) - $display_count);
+            }
+        } else {
+            $earned_by = get_post_meta( $post_ID, '_badgeos_earned_by');
+            $earned_by = (is_array($earned_by) && count($earned_by) > 0) ? $earned_by[0] : null;
+            
+            $humanized_earned_by = badgeos_obf_humanize_earned_by($post_ID, $earned_by);
+            if (!empty($humanized_earned_by)) {
+                echo $humanized_earned_by;
+            }
+            
+            
+        }
     }
 }
+function badgeos_obf_humanize_earned_by($post_ID, $earned_by) {
+    $types = array(
+        'triggers' => __( 'Completing Steps', 'badgeos' ),
+        'points' => __( 'Minimum Number of Points', 'badgeos' ),
+        'submission' => __( 'Submission (Reviewed)', 'badgeos' ),
+        'submission_auto' =>__( 'Submission (Auto-accepted)', 'badgeos' ),
+        'nomination' => __( 'Nomination', 'badgeos' ),
+        'admin' => __( 'Admin-awarded Only', 'badgeos' )
+    );
+    if (!empty($earned_by) && is_string($earned_by) && array_key_exists($earned_by, $types)) {
+        return $types[$earned_by];
+    }
+    return null;
+}
 // TODO: Do we want issuing on column as well as actions list?
-//add_filter('manage_badges_posts_columns', 'badgeos_obf_columns_head', 10);
-//add_action('manage_badges_posts_custom_column', 'badgeos_obf_columns_content', 10, 2);
+add_filter('manage_badges_posts_columns', 'badgeos_obf_columns_head', 10);
+add_action('manage_badges_posts_custom_column', 'badgeos_obf_columns_content', 10, 2);
 
 function badgeos_obf_issue_badge_page() {
     if (empty($_REQUEST['post_id']))
@@ -756,6 +806,16 @@ function badgeos_obf_issue_badge_page() {
                 <?php _e('Filter by name', 'badgeos'); ?>
                 <input id="user-filter-input" type="text" class="filter-input"></input>
             </label>
+            <label for="user-filter-count">
+                <?php _e('Amount of results', 'badgeos'); ?>
+                <select id="user-filter-count" type="text" class="filter-item-count">
+                    <option value="0">All</option>
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </label>
             <ul id="obf_issue_badge_user_list" class="filterable-items-list">
             <?php
             $users = get_users();
@@ -776,6 +836,9 @@ function badgeos_obf_issue_badge_page() {
             }
             ?>
             </ul>
+            <p class="filter-extra-info">
+                <?php echo sprintf( __('Showing <span class="shown-count">%d</span> users. <span class="hidden-count">%d</span> hidden.', 'badgeos'), count($users), 0 ); ?>
+            </p>
         </td>
     </tr>
     <tr valign="top" class="obf-notifications-enable-message">

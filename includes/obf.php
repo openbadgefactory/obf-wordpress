@@ -117,7 +117,13 @@ class BadgeOS_Obf {
                 $existing_badges[$badge_id]['post_id'] = $post_id;
                 $existing_badges[$badge_id]['modified_date'] = new DateTime($post->modified_date);
             }
-            $obf_badges = $this->obf_client->get_badges();
+            try {
+                $obf_badges = $this->obf_client->get_badges();
+            } catch (Exception $ex) {
+                // TODO: Display error message
+                return new WP_Error($ex->getCode(), $ex->getMessage());
+            }
+            
             foreach($obf_badges as $badge_array) {
                 $badge_id = $badge_array['id'];
                 $badge_modified = DateTime::createFromFormat('U', $badge_array['mtime']);

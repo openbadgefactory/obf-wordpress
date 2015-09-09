@@ -669,9 +669,9 @@ class ObfClient
             $this->error = '';
         } else {
             if ($method == 'get') {
-                $request = $client->get($url, $params);
+                $request = $client->get($url, array('query' => $params));
             } elseif ($method == 'delete') {
-                $request = $client->delete($url, $params);
+                $request = $client->delete($url, array('query' => $params));
             } elseif ($method == 'put') {
                 $request = $client->put(
                     $url,

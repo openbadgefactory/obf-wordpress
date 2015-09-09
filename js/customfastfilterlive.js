@@ -19,14 +19,30 @@
             var callback = options.callback || function() {};
             var groupFilterElements = jQuery(options.groupFilterSelect) || {};
             var forceShowSelect = options.forceShowSelect || '';
+            var numToDisplay = options.resultDisplayCount || 10;
+            var resultDisplaySelect = jQuery(options.resultDisplaySelect) || null;
 
             var keyTimeout;
+            
+            if ($.isEmptyObject(input) || input.length < 1) {
+                return;
+            }
+            
+                        
+            var showCountReached = function(numShown) {
+                if (numToDisplay == 0) {
+                    return false;  
+                } else if (numToDisplay - 1 >= numShown) {
+                    return false;
+                }
+                return true;
+            };
             
             var filterFunction = function() {
                     // var startTime = new Date().getTime();
                     var filter = input.val().toLowerCase();
                     var li, innerText;
-                    var numShown = 0;
+                    var numShown = 0, numTotal = 0;
                     var groupMatch = true;
                     var activeGroupFilter = [];
                     groupFilterElements.filter('.active').each(function() { activeGroupFilter.push(jQuery(this).attr('value')); });
@@ -44,7 +60,7 @@
                             if (forceShowSelect.length > 0 && $(li).find(forceShowSelect).length > 0) {
                                 forceShow = true;
                             }
-                            if (forceShow || inSelectedGroups && innerText.toLowerCase().indexOf(filter) >= 0) {
+                            if (!showCountReached(numShown) && forceShow || (!showCountReached(numShown) && inSelectedGroups && innerText.toLowerCase().indexOf(filter) >= 0)) {
                                     if (li.style.display == "none") {
                                             li.style.display = oldDisplay;
                                     }
@@ -54,8 +70,9 @@
                                             li.style.display = "none";
                                     }
                             }
+                            numTotal++;
                     }
-                    callback(numShown);
+                    callback(numShown, numTotal);
                     // var endTime = new Date().getTime();
                     // console.log('Search for ' + filter + ' took: ' + (endTime - startTime) + ' (' + numShown + ' results)');
                     return false;
@@ -67,7 +84,7 @@
             var lis = list.children();
             var len = lis.length;
             var oldDisplay = len > 0 ? lis[0].style.display : "block";
-            callback(len); // do a one-time callback on initialization to make sure everything's in sync
+            callback(len, len); // do a one-time callback on initialization to make sure everything's in sync
             groupFilterElements.click(function(e,ele) {
                 var el = $(e.target);
                 var val = el.attr('value');
@@ -99,9 +116,33 @@
                             input.change();
                     }, timeout);
             });
+            
+            if (!$.isEmptyObject(resultDisplaySelect) && resultDisplaySelect.length == 1) {
+                numToDisplay = resultDisplaySelect.val(); 
+                resultDisplaySelect.change(function() {
+                   numToDisplay = resultDisplaySelect.val(); 
+                   filterFunction();
+                });
+            };
+            filterFunction();
             return this; // maintain jQuery chainability
         }});
+    
+        
+        var filterExtraInfoHidden = $('.filter-extra-info span.hidden-count');
+        var filterExtraInfoShown = $('.filter-extra-info span.shown-count');
+        var countCallback = function(shown, total) {
+            filterExtraInfoHidden.text(total - shown);
+            filterExtraInfoShown.text(shown);
+        };
 
-        $('.filter-input').customFastLiveFilter('.filterable-items-list', {groupFilterSelect: '.filter-options .filter-option', forceShowSelect: ':checked'});
+        $('.filter-input').customFastLiveFilter('.filterable-items-list', 
+            {
+                groupFilterSelect: '.filter-options .filter-option',
+                forceShowSelect: ':checked',
+                callback: countCallback,
+                resultDisplaySelect: '.filter-item-count'
+            }
+        );
     })
 })( jQuery);

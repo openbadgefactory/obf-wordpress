@@ -50,3 +50,11 @@ ul#obf-badges li .badge-desc {
 .column-issue_badge {
     width: 10%;
 }
+.column-obf_image {
+    width: 50px;
+    max-width: 10%;
+}
+.column-obf_image img {
+    max-width: 48px;
+    max-height: 48px;
+}
