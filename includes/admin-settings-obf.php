@@ -291,7 +291,9 @@ function badgeos_obf_options_no_api( $obf_settings = array() ) {
  * @return void
  */
 function badgeos_obf_options_yes_api( $obf_settings = array() ) {
+        global $badgeos_obf;
         wp_nonce_field( 'badgeos_obf_api_key_nonce', 'badgeos_obf_api_key_nonce' );
+        $cert_expiry_date = $badgeos_obf->obf_client->get_certificate_expiration_date();
 ?>
 	<div id="obf-settings">
 		<h3><?php _e( 'Open Badge Factory API Key', 'badgeos' ); ?></h3>
@@ -303,6 +305,14 @@ function badgeos_obf_options_yes_api( $obf_settings = array() ) {
 				</td>
 			</tr>
 		</table>
+                <?php
+                if (false !== $cert_expiry_date) {
+                    ?>
+                    <p class="notice"><?php echo sprintf(__('Open Badge Factory API certificate expires on %s', 'badgeos'), date_i18n( get_option( 'date_format' ), $cert_expiry_date) ) ?></p>
+                    <?php
+                }
+                ?>
+                
 
 		<h3><?php _e( 'Open Badge Factory Field Mapping', 'badgeos' ); ?></h3>
 
