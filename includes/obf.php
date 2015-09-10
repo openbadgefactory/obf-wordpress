@@ -1059,7 +1059,7 @@ function obf_fieldmap_get_fields() {
 					LEFT JOIN `{$wpdb->posts}` AS `p` ON `p`.`ID` = `pm`.`post_id`
 					WHERE
 						`p`.`post_type` IN ( {$achievement_types_format} )
-						AND `pm`.`meta_key` NOT LIKE '_%'
+						AND `pm`.`meta_key` NOT LIKE '_%%'
 						AND `pm`.`meta_key` != ''
 				",
 				$achievement_types
