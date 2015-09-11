@@ -365,9 +365,16 @@ function badgeos_add_ons_get_feed() {
 
 	// If we don't have a cached feed, pull back fresh data
 	if ( empty( $feed ) ) {
-
-		// Retrieve and parse our feed
-		$feed = wp_remote_get( 'http://badgeos.org/?feed=addons', array( 'sslverify' => false ) );
+                $coming_soon = true;
+                if (true == $coming_soon) {
+                    $feed = array();
+                    $feed['body'] = '<div class"coming-soon"><p>Coming soon!</p></div>';
+                    set_transient( 'badgeos_add_ons_feed', $feed, HOUR_IN_SECONDS );
+                } else {
+                    // Retrieve and parse our feed
+                    $feed = wp_remote_get( 'http://badgeos.org/?feed=addons', array( 'sslverify' => false ) );
+                }
+                
 		if ( ! is_wp_error( $feed ) ) {
 			if ( isset( $feed['body'] ) && strlen( $feed['body'] ) > 0 ) {
 				$feed = wp_remote_retrieve_body( $feed );

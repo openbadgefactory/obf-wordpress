@@ -827,10 +827,11 @@ class BadgeOS_Credly {
      */
     public function badge_metabox_add() {
 
-        foreach ( badgeos_get_achievement_types_slugs() as $achievement_type ) {
+        if ('false' !== $this->credly_settings['credly_enable']) {
+            foreach ( badgeos_get_achievement_types_slugs() as $achievement_type ) {
+                add_meta_box( 'badgeos_credly_details_meta_box', __( 'Badge Sharing Options', 'badgeos' ), array( $this, 'badge_metabox_show' ), $achievement_type, 'advanced', 'default' );
 
-            add_meta_box( 'badgeos_credly_details_meta_box', __( 'Badge Sharing Options', 'badgeos' ), array( $this, 'badge_metabox_show' ), $achievement_type, 'advanced', 'default' );
-
+            }
         }
     }
 

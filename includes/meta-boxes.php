@@ -69,16 +69,16 @@ function badgeos_custom_metaboxes( array $meta_boxes ) {
 		'priority'   => 'high',
 		'show_names' => true, // Show field names on the left
 		'fields'     => apply_filters( 'badgeos_achievement_data_meta_box_fields', array(
-			array(
-				'name' => __( 'Upload Badge Image', 'badgeos' ),
-				'desc' => sprintf(
-					__( '<p>To set an image use the <strong>Achievement Image</strong> metabox to the right. For best results, use a square .png file with a transparent background, at least 200x200 pixels. Or, design a badge using the %1$s.</p><p>If no image is specified, this achievement will default to the %2$s featured image.</p>', 'badgeos' ),
-					badgeos_get_badge_builder_link( array( 'link_text' => __( 'Credly Badge Builder', 'badgeos' ) ) ),
-					'<a href="' . admin_url('edit.php?post_type=achievement-type') . '">' . __( 'Achievement Type\'s', 'badgeos' ) . '</a>'
-					),
-				'id'   => $prefix . 'upload_badge_image_achievement',
-				'type' => 'text_only',
-			),
+			//array(
+			//	'name' => __( 'Upload Badge Image', 'badgeos' ),
+			//	'desc' => sprintf(
+			//		__( '<p>To set an image use the <strong>Achievement Image</strong> metabox to the right. For best results, use a square .png file with a transparent background, at least 200x200 pixels. Or, design a badge using the %1$s.</p><p>If no image is specified, this achievement will default to the %2$s featured image.</p>', 'badgeos' ),
+			//		badgeos_get_badge_builder_link( array( 'link_text' => __( 'Credly Badge Builder', 'badgeos' ) ) ),
+			//		'<a href="' . admin_url('edit.php?post_type=achievement-type') . '">' . __( 'Achievement Type\'s', 'badgeos' ) . '</a>'
+			//		),
+			//	'id'   => $prefix . 'upload_badge_image_achievement',
+			//	'type' => 'text_only',
+			//),
 			array(
 				'name' => __( 'Points Awarded', 'badgeos' ),
 				'desc' => ' '.__( 'Points awarded for earning this achievement (optional). Leave empty if no points are awarded.', 'badgeos' ),
