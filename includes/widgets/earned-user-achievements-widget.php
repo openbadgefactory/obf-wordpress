@@ -8,7 +8,7 @@ class earned_user_achievements_widget extends WP_Widget {
 			'classname' => 'earned_user_achievements_class',
 			'description' => __( 'Displays all achievements earned by the logged in user', 'badgeos' )
 		);
-		parent::__construct( 'earned_user_achievements_widget', __( 'BadgeOS Earned User Achievements', 'badgeos' ), $widget_ops );
+		parent::__construct( 'earned_user_achievements_widget', __( 'Open Badge Factory Earned User Achievements', 'badgeos' ), $widget_ops );
 	}
 
 	//build the widget settings form

@@ -118,12 +118,12 @@ function badgeos_user_profile_data( $user = null ) {
 
 	$achievement_ids = array();
 
-		echo '<h2>' . __( 'BadgeOS Email Notifications', 'badgeos' ) . '</h2>';
+		echo '<h2>' . __( 'Open Badge Factory -plugin Email Notifications', 'badgeos' ) . '</h2>';
 		echo '<table class="form-table">';
 		echo '<tr>';
 			echo '<th scope="row">' . __( 'Email Preference', 'badgeos' ) . '</th>';
 			echo '<td>';
-				echo '<label for="_badgeos_can_notify_user"><input type="checkbox" name="_badgeos_can_notify_user" id="_badgeos_can_notify_user" value="1" ' . checked( badgeos_can_notify_user( $user->ID ), true, false ) . '/>' . __( 'Enable BadgeOS Email Notifications', 'badgeos' ) . '</label>';
+				echo '<label for="_badgeos_can_notify_user"><input type="checkbox" name="_badgeos_can_notify_user" id="_badgeos_can_notify_user" value="1" ' . checked( badgeos_can_notify_user( $user->ID ), true, false ) . '/>' . __( 'Enable Open Badge Factory -plugin Email Notifications', 'badgeos' ) . '</label>';
 			echo '</td>';
 		echo '</tr>';
 		echo '</table>';

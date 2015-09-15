@@ -60,7 +60,7 @@ class BadgeOS_Editor_Shortcodes {
 	 * @since 1.4.0
 	 */
 	public function render_button() {
-		echo '<a id="insert_badgeos_shortcodes" href="#TB_inline?width=660&height=800&inlineId=select_badgeos_shortcode" class="thickbox button badgeos_media_link" data-width="800">' . __( 'Add BadgeOS Shortcode', 'badgeos' ) . '</a>';
+		echo '<a id="insert_badgeos_shortcodes" href="#TB_inline?width=660&height=800&inlineId=select_badgeos_shortcode" class="thickbox button badgeos_media_link" data-width="800">' . __( 'Add Open Badge Factory Shortcode', 'badgeos' ) . '</a>';
 	}
 
 	/**
@@ -71,7 +71,7 @@ class BadgeOS_Editor_Shortcodes {
 	public function render_modal() { ?>
 		<div id="select_badgeos_shortcode" style="display:none;">
 			<div class="wrap">
-				<h3><?php _e( 'Insert a BadgeOS shortcode', 'badgeos' ); ?></h3>
+				<h3><?php _e( 'Insert a Open Badge Factory shortcode', 'badgeos' ); ?></h3>
 				<p><?php printf( __( 'See the %s page for more information', 'badgeos' ), '<a target="_blank" href="' . admin_url( 'admin.php?page=badgeos_sub_help_support' ) . '">' . __( 'Help/Support', 'badgeos' ) . '</a>' ); ?></p>
 				<div class="alignleft">
 					<select id="select_shortcode"><?php echo $this->get_shortcode_selector(); ?></select>

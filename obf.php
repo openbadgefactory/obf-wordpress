@@ -1,16 +1,17 @@
 <?php
 /**
-* Plugin Name: BadgeOS
-* Plugin URI: http://www.badgeos.org/
-* Description: BadgeOS lets your site’s users complete tasks and earn badges that recognize their achievement.  Define achievements and choose from a range of options that determine when they're complete.  Badges are Mozilla Open Badges (OBI) compatible through integration with the “Open Credit” API by Credly, the free web service for issuing, earning and sharing badges for lifelong achievement.
-* Author: LearningTimes
+* Plugin Name: Open Badge Factory
+* Plugin URI: http://www.openbadgefactory.com/
+* Description: Open Badge Factory -plugin lets your site’s users complete tasks and earn badges that recognize their achievement.  Define achievements and choose from a range of options that determine when they're complete.  Badges are Mozilla Open Badges (OBI) compatible.
+* Author: Discendum Oy
 * Version: 1.4.6
-* Author URI: https://credly.com/
+* Author URI: https://discendum.com/
 * License: GNU AGPL
 * Text Domain: badgeos
 */
 
 /*
+Copyright © 2015 Discendum Oy
 Copyright © 2012-2014 LearningTimes, LLC
 
 This program is free software: you can redistribute it and/or modify it
@@ -259,10 +260,10 @@ class BadgeOS {
                 $creator_role = badgeos_get_achievement_creator_capability();
 
 		// Create main menu
-		add_menu_page( 'BadgeOS', 'BadgeOS', $creator_role, 'badgeos_badgeos', 'badgeos_settings', $this->directory_url . 'images/badgeos_icon.png', 110 );
+		add_menu_page( 'Open Badge Factory', 'Open Badge Factory', $creator_role, 'badgeos_badgeos', 'badgeos_settings', $this->directory_url . 'images/obf_icon.png', 110 );
 
 		// Create submenu items
-		add_submenu_page( 'badgeos_badgeos', __( 'BadgeOS Settings', 'badgeos' ), __( 'Settings', 'badgeos' ), $minimum_role, 'badgeos_settings', 'badgeos_settings_page' );
+		add_submenu_page( 'badgeos_badgeos', __( 'Open Badge Factory -Plugin Settings', 'badgeos' ), __( 'Settings', 'badgeos' ), $minimum_role, 'badgeos_settings', 'badgeos_settings_page' );
 		//add_submenu_page( 'badgeos_badgeos', __( 'Credly Integration', 'badgeos' ), __( 'Credly Integration', 'badgeos' ), $minimum_role, 'badgeos_sub_credly_integration', 'badgeos_credly_options_page' );
 		add_submenu_page( 'badgeos_badgeos', __( 'OBF Integration', 'badgeos' ), __( 'OBF Integration', 'badgeos' ), $minimum_role, 'badgeos_sub_obf_integration', 'badgeos_obf_options_page' );
 		add_submenu_page( 'badgeos_badgeos', __( 'Add-Ons', 'badgeos' ), __( 'Add-Ons', 'badgeos' ), $minimum_role, 'badgeos_sub_add_ons', 'badgeos_add_ons_page' );

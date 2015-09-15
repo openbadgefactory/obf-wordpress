@@ -1,7 +1,7 @@
 {
-  "name": "BadgeOS",
+  "name": "Open Badge Factory WP-Plugin",
   "version": "1.4.0",
-  "description": "BadgeOS lets your site’s users complete tasks and earn badges that recognize their achievement.  Define achievements and choose from a range of options that determine when they're complete.  Badges are Mozilla Open Badges (OBI) compatible through integration with the “Open Credit” API by Credly, the free web service for issuing, earning and sharing badges for lifelong achievement.",
+  "description": "Open Badge Factory -plugin lets your site’s users complete tasks and earn badges that recognize their achievement.  Define achievements and choose from a range of options that determine when they're complete.  Badges are Mozilla Open Badges (OBI) compatible.",
   "main": "index.js",
   "directories": {
     "test": "tests"
@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/opencredit/badgeos.git"
+    "url": "git://github.com/discendum/obf-wp.git"
   },
   "keywords": [
     "wordpress"
   ],
-  "author": "LearningTimes",
+  "author": "Discendum Oy",
   "license": "GNU AGPL",
   "bugs": {
-    "url": "https://github.com/opencredit/badgeos/issues"
+    "url": "https://github.com/discendum/obf-wp/issues"
   },
   "devDependencies": {
     "grunt-phpunit": "~0.3.3",

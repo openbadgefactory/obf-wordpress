@@ -8,7 +8,7 @@ class credly_credit_issuer_widget extends WP_Widget {
 			'classname' => 'credly_credit_issuer_class',
 			'description' => __( 'Display the Credly Credit Issuer badge', 'badgeos' )
 		);
-		parent::__construct( 'credly_credit_issuer_widget', __( 'BadgeOS Credly Credit Issuer', 'badgeos' ), $widget_ops );
+		parent::__construct( 'credly_credit_issuer_widget', __( 'Open Badge Factory Credly Credit Issuer', 'badgeos' ), $widget_ops );
 	}
 
 	//build the widget settings form

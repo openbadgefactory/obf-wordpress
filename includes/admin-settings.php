@@ -200,7 +200,7 @@ function badgeos_settings_page() {
 	?>
 	<div class="wrap" >
 		<div id="icon-options-general" class="icon32"></div>
-		<h2><?php _e( 'BadgeOS Settings', 'badgeos' ); ?></h2>
+		<h2><?php _e( 'Open Badge Factory Settings', 'badgeos' ); ?></h2>
 
 		<form method="post" action="options.php">
 			<?php settings_fields( 'badgeos_settings_group' ); ?>
@@ -219,7 +219,7 @@ function badgeos_settings_page() {
 			?>
 			<table class="form-table">
 				<?php if ( current_user_can( 'manage_options' ) ) { ?>
-					<tr valign="top"><th scope="row"><label for="minimum_role"><?php _e( 'Minimum Role to Administer BadgeOS plugin: ', 'badgeos' ); ?></label></th>
+					<tr valign="top"><th scope="row"><label for="minimum_role"><?php _e( 'Minimum Role to Administer Open Badge Factory plugin: ', 'badgeos' ); ?></label></th>
 						<td>
 							<select id="minimum_role" name="badgeos_settings[minimum_role]">
 								<option value="manage_options" <?php selected( $minimum_role, 'manage_options' ); ?>><?php _e( 'Administrator', 'badgeos' ); ?></option>
@@ -313,7 +313,7 @@ function badgeos_license_settings() {
 	if ( ! empty( $licensed_addons ) ) {
 
 		// Output the header for licenses
-		echo '<tr><td colspan="2"><hr/><h2>' . __( 'BadgeOS Add-on Licenses', 'badgeos' ) . '</h2></td></tr>';
+		echo '<tr><td colspan="2"><hr/><h2>' . __( 'Open Badge Factory Add-on Licenses', 'badgeos' ) . '</h2></td></tr>';
 
 		// Sort our licenses alphabetially
 		ksort( $licensed_addons );
@@ -345,8 +345,8 @@ function badgeos_add_ons_page() {
 	?>
 	<div class="wrap badgeos-addons">
 		<div id="icon-options-general" class="icon32"></div>
-		<h2><?php printf( __( 'BadgeOS Add-Ons &nbsp;&mdash;&nbsp; %s', 'badgeos' ), '<a href="http://badgeos.org/add-ons/?ref=badgeos" class="button-primary" target="_blank">' . __( 'Browse All Add-Ons', 'badgeos' ) . '</a>' ); ?></h2>
-		<p><?php _e( 'These add-ons extend the functionality of BadgeOS.', 'badgeos' ); ?></p>
+		<h2><?php printf( __( 'Open Badge Factory Add-Ons &nbsp;&mdash;&nbsp; %s', 'badgeos' ), '<a href="http://badgeos.org/add-ons/?ref=badgeos" class="button-primary" target="_blank">' . __( 'Browse All Add-Ons', 'badgeos' ) . '</a>' ); ?></h2>
+		<p><?php _e( 'These add-ons extend the functionality of the Open Badge Factory -plugin.', 'badgeos' ); ?></p>
 		<?php echo badgeos_add_ons_get_feed(); ?>
 	</div>
 	<?php
@@ -400,41 +400,40 @@ function badgeos_add_ons_get_feed() {
 function badgeos_help_support_page() { ?>
 	<div class="wrap" >
 		<div id="icon-options-general" class="icon32"></div>
-		<h2><?php _e( 'BadgeOS Help and Support', 'badgeos' ); ?></h2>
-		<h2><?php _e( 'About BadgeOS', 'badgeos' ); ?>:</h2>
+		<h2><?php _e( 'Open Badge Factory Help and Support', 'badgeos' ); ?></h2>
+		<h2><?php _e( 'About Open Badge Factory', 'badgeos' ); ?>:</h2>
 		<p><?php printf(
-			__( 'BadgeOS&trade; is plugin to WordPress that allows your site\'s users to complete tasks, demonstrate achievements, and earn badges. You define the achievement types, organize your requirements any way you like, and choose from a range of options to determine whether each task or requirement has been achieved. Badges earned in BadgeOS are Mozilla OBI compatible through out-of-the-box integration of the "Open Credit" API by %s, the free web service for issuing, earning and sharing badges.', 'badgeos' ),
-			'<a href="https://credly.com/" target="_blank">Credly</a>'
+			__( 'Open Badge Factory&trade; -plugin, is a plugin to WordPress that allows your site\'s users to complete tasks, demonstrate achievements, and earn badges. You define the achievement types, organize your requirements any way you like, and choose from a range of options to determine whether each task or requirement has been achieved. Badges earned in Open Badge Factory -plugin are Mozilla OBI compatible.', 'badgeos' ),
+			'<a href="https://openbadgefactory.com/" target="_blank">Open Badge Factory</a>'
 		); ?></p>
 		<p><?php printf(
-			__( "BadgeOS is extremely extensible. Check out examples of what we've built with it, and stay connected to the project site for updates, add-ins and news. Share your ideas and code improvements on %s so we can keep making BadgeOS better for everyone.", 'badgeos' ),
-			'<a href="https://github.com/opencredit/BadgeOS" target="_blank">GitHub</a>'
+			__( "Open Badge Factory -plugin is extremely extensible. Check out examples of what we've built with it, and stay connected to the project site for updates, add-ins and news. Share your ideas and code improvements on %s so we can keep making Open Badge Factory better for everyone.", 'badgeos' ),
+			'<a href="https://github.com/discendum" target="_blank">GitHub</a>'
 		); ?></p>
 		<?php do_action( 'badgeos_help_support_page_about' ); ?>
 
 		<h2><?php _e( 'Help / Support', 'badgeos' ); ?>:</h2>
 		<p><?php printf(
-			__( 'For support on using BadgeOS or to suggest feature enhancements, visit the %1$s. The BadgeOS team does perform custom development that extends the BadgeOS platform in some incredibly powerful ways. %2$s with inquiries. See examples of %3$s.', 'badgeos' ),
+			__( 'For support on using Open Badge Factory -plugin or to suggest feature enhancements, visit the %1$s. The Open Badge Factory team does perform custom development that extends the Open Badge Factory platform in some incredibly powerful ways. %2$s with inquiries. Also take a look at %3$s.', 'badgeos' ),
 			sprintf(
-				'<a href="http://badgeos.org" target="_blank">%s</a>',
-				__( 'BadgeOS site', 'badgeos' )
+				'<a href="http://openbadgefactory.com" target="_blank">%s</a>',
+				__( 'Open Badge Factory site', 'badgeos' )
 			),
 			sprintf(
-				'<a href="http://badgeos.org/contact/" target="_blank">%s</a>',
+				'<a href="mailto:contact@openbadgefactory.com" target="_blank">%s</a>',
 				__( 'Contact us', 'badgeos' )
 			),
 			sprintf(
-				'<a href="http://badgeos.org/about/sample-sites/">%s</a>',
-				__( 'enhanced BadgeOS projects', 'badgeos' )
+				'<a href="http://openbadgepassport.com/">%s</a>',
+				__( 'Open Badge Passport', 'badgeos' )
 			)
 		); ?></p>
-		<p><?php printf( __( 'Please submit bugs or issues to %s for the BadgeOS Project.', 'badgeos' ), '<a href="https://github.com/opencredit/BadgeOS" target="_blank">Github</a>' ); ?></p>
+		<p><?php printf( __( 'Please submit bugs or issues to %s for the Open Badge Factory Project.', 'badgeos' ), '<a href="https://github.com/discendum" target="_blank">Github</a>' ); ?></p>
 		<?php do_action( 'badgeos_help_support_page_help' ); ?>
 
 		<h2><?php _e( 'Shortcodes', 'badgeos' ); ?>:</h2>
-		<p><?php printf(
-			__( 'With BadgeOS activated, the following shortcodes can be placed on any page or post within WordPress to expose a variety of BadgeOS functions. Visit %s for additional information on shortcodes.', 'badgeos' ),
-			'<a href="http://badgeos.org/support/shortcodes/" target="_blank">BadgeOS.org</a>'
+		<p><?php _e(
+			 'With Open Badge Factory activated, the following shortcodes can be placed on any page or post within WordPress to expose a variety of Open Badge Factory functions.', 'badgeos'
 		); ?></p>
 		<?php do_action( 'badgeos_help_support_page_shortcodes' ); ?>
 	</div>
@@ -464,7 +463,7 @@ function badgeos_credly_options_page() {
 			<?php
 				settings_fields( 'credly_settings_group' );
 			?>
-			<p><?php printf( __( '<a href="%1$s" target="_blank">Credly</a> is a universal way for people to earn and showcase their achievements and badges. With Credly Integration enabled here, badges or achievements you create on this BadgeOS site can automatically be created on your Credly account. As select badges are earned using BadgeOS, the badge will automatically be issued via Credly to the earner so they can easily share it on Facebook, LinkedIn, Twitter, Mozilla Backpack, their web site, blog, Credly profile or other location. Credly makes badge issuing and sharing fun and easy! <a href="%1$s" target="_blank">Learn more</a>.  <br /><br />If you do not yet have a Credly account, <a href="%1$s" target="_blank">create one now</a>. It\'s free.', 'badgeos' ), 'https://credly.com/#!/create-account' ); ?></p>
+			<p><?php printf( __( '<a href="%1$s" target="_blank">Credly</a> is a universal way for people to earn and showcase their achievements and badges. With Credly Integration enabled here, badges or achievements you create on this site can automatically be created on your Credly account. As select badges are earned using the site, the badge will automatically be issued via Credly to the earner so they can easily share it on Facebook, LinkedIn, Twitter, Mozilla Backpack, their web site, blog, Credly profile or other location. Credly makes badge issuing and sharing fun and easy! <a href="%1$s" target="_blank">Learn more</a>.  <br /><br />If you do not yet have a Credly account, <a href="%1$s" target="_blank">create one now</a>. It\'s free.', 'badgeos' ), 'https://credly.com/#!/create-account' ); ?></p>
 
 			<table class="form-table">
 				<tr valign="top">
@@ -581,8 +580,8 @@ function badgeos_credly_options_yes_api( $credly_settings = array() ) {
 
 		<h3><?php _e( 'Credly Field Mapping', 'badgeos' ); ?></h3>
 
-		<p><?php _e( 'Customize which Credly fields for badge creation and issuing (listed on the left) match which WordPress and BadgeOS fields (listed to the right).', 'badgeos' ); ?>
-			<br /><?php _e( 'When badges are created and issued, the info sent to Credly will rely on the global mapping found here. (Note: Visit the edit screen for each achievement you create in BadgeOS to further configure the sharing and Credly settings for that achievement.)', 'badgeos' ); ?>
+		<p><?php _e( 'Customize which Credly fields for badge creation and issuing (listed on the left) match which WordPress and Open Badge Factory -plugin fields (listed to the right).', 'badgeos' ); ?>
+			<br /><?php _e( 'When badges are created and issued, the info sent to Credly will rely on the global mapping found here. (Note: Visit the edit screen for each achievement you create in Open Badge Factory to further configure the sharing and awarding settings for that achievement.)', 'badgeos' ); ?>
 		</p>
 		<table class="form-table">
 			<tr valign="top">

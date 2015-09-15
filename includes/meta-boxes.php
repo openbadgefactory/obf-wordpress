@@ -44,7 +44,7 @@ function badgeos_custom_metaboxes( array $meta_boxes ) {
 			),
 			array(
 				'name'    => __( 'Show in Menu?', 'badgeos' ),
-				'desc' 	 => ' '.__( 'Yes, show this achievement in the BadgeOS menu.', 'badgeos' ),
+				'desc' 	 => ' '.__( 'Yes, show this achievement in the Open Badge Factory menu.', 'badgeos' ),
 				'id'      => $prefix . 'show_in_menu',
 				'type'	 => 'checkbox',
 			),

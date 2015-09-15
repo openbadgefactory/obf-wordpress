@@ -1,6 +1,6 @@
 /* For the settings icon */
 #icon-badgeos_badgeos {
-	background-image: url('../images/badgeos_screen_icon.png');
+	background-image: url('../images/obf_screen_icon.png');
 }
 
 /* For the Triggers UI */
@@ -99,7 +99,7 @@ li.step-row .delete-step {
 Shortcode Embed styles
  */
 .wp-core-ui a.badgeos_media_link, .wp-core-ui a.badgeos_media_link:hover {
-	background: url('../images/badgeos_icon.png') 4% 50% no-repeat;
+	background: url('../images/obf_icon.png') 4% 50% no-repeat;
 	padding-left: 1.8em;
 }
 .badgeos_input {

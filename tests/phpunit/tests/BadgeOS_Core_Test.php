@@ -54,8 +54,8 @@ class BadgeOS_Core_Test extends WP_UnitTestCase {
 		// Images
 		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/arrows.png' );
 		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/badge-builder-teaser.png' );
-		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/badgeos_icon.png' );
-		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/badgeos_screen_icon.png' );
+		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/obf_icon.png' );
+		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/obf_screen_icon.png' );
 		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/credly-credit-issuer.png' );
 		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/spinner.gif' );
 		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/ui_handle.png' );
