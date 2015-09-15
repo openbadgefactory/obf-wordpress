@@ -227,6 +227,7 @@ class BadgeOS {
 			$badgeos_settings['submission_email'] = 'enabled';
 			$badgeos_settings['debug_mode']       = 'disabled';
 			update_option( 'badgeos_settings', $badgeos_settings );
+                        badgeos_register_achievement_capabilites($badgeos_settings['achievement_creator_role']);
 		}
 
 		// Setup default obf options
