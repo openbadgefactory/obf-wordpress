@@ -41,7 +41,7 @@ function badgeos_obf_settings_validate( $options = array() ) {
                 if (!empty($apikey)) {
                     $clientId = badgeos_obf_get_api_cert($apikey, $certDir);
                     if (false !== $clientId) {
-                        $clean_options['obf_client_id'] = sanitize_text_field($clientId);
+                        $options['obf_client_id'] = sanitize_text_field($clientId);
                     }
                 }
 
@@ -55,7 +55,6 @@ function badgeos_obf_settings_validate( $options = array() ) {
 	foreach ( $options as $key => $opt ) {
 		$clean_options[$key] = sanitize_text_field( $opt );
 	}
-        badgeos_obf_get_api_key_error(json_encode($clean_options));
 	return $clean_options;
 
 }
@@ -77,7 +76,11 @@ function badgeos_obf_get_api_cert( $apikey, $certDir ) {
         
         $client = ObfClient::get_instance(null, $obf_settings);
         $errorDetails = '';
-	$success = $client->authenticate($apikey);
+        try {
+            $success = $client->authenticate($apikey);
+        } catch (\Exception $ex) {
+            $success = false;
+        }
         if (true !== $success) {
             $error = '<p>'. sprintf( __( 'There was an error creating an Open Badge Factory API certificate: %s', 'badgeos' ), $errorDetails ) . '</p>';
             return badgeos_obf_get_api_key_error( $error );
@@ -137,7 +140,7 @@ function badgeos_obf_get_api_key_error( $error = '' ) {
         $old_error = get_option('obf_api_key_error');
 	// Temporarily store our error message.
 	update_option( 'obf_api_key_error', empty($old_error) ? $error : $old_error . '<br/>' . $error );
-	return false;
+        return false;
 }
 
 add_action( 'all_admin_notices', 'badgeos_obf_api_key_errors' );
@@ -147,9 +150,10 @@ add_action( 'all_admin_notices', 'badgeos_obf_api_key_errors' );
  * @return void
  */
 function badgeos_obf_api_key_errors() {
-
-	if ( get_current_screen()->id != 'badgeos_page_badgeos_sub_obf_integration' || !( $has_notice = get_option( 'obf_api_key_error' ) ) )
-		return;
+        $plugin_name = 'open-badge-factory';
+	if ( get_current_screen()->id != $plugin_name . '_page_badgeos_sub_obf_integration' || !( $has_notice = get_option( 'obf_api_key_error' ) ) )
+            return;
+		
 
 	// If we have an error message, we'll display it
 	echo '<div id="message" class="error">'. $has_notice .'</div>';
@@ -207,7 +211,7 @@ function badgeos_obf_options_page() {
 
 			<?php
 				// We need to get our api key
-				if ( empty( $obf_settings['obf_client_id'] ) && '__EMPTY__' !== $obf_settings['obf_client_id']) {
+				if ( empty( $obf_settings['obf_client_id'] ) || ('__EMPTY__' === $obf_settings['obf_client_id'])) {
 					badgeos_obf_options_no_api( $obf_settings );
 				}
 				// We already have our api key

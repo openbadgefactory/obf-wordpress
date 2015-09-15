@@ -181,8 +181,8 @@ add_action( 'all_admin_notices', 'badgeos_credly_api_key_errors' );
  * @return void
  */
 function badgeos_credly_api_key_errors() {
-
-	if ( get_current_screen()->id != 'badgeos_page_badgeos_sub_credly_integration' || !( $has_notice = get_option( 'credly_api_key_error' ) ) )
+        $plugin_name = 'open-badge-factory';
+	if ( get_current_screen()->id != $plugin_name . '_page_badgeos_sub_credly_integration' || !( $has_notice = get_option( 'credly_api_key_error' ) ) )
 		return;
 
 	// If we have an error message, we'll display it

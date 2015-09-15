@@ -229,20 +229,21 @@ class BadgeOS {
 			update_option( 'badgeos_settings', $badgeos_settings );
 		}
 
-		// Setup default Credly options
-		$credly_settings = (array) get_option( 'credly_settings', array() );
+		// Setup default obf options
+		$obf_settings = (array) get_option( 'obf_settings', array() );
 
-		if ( empty( $credly_settings ) || !isset( $credly_settings[ 'credly_enable' ] ) ) {
-			$credly_settings['credly_enable']                      = 'true';
-			$credly_settings['credly_badge_title']                 = 'post_title';
-			$credly_settings['credly_badge_description']           = 'post_body';
-			$credly_settings['credly_badge_short_description']     = 'post_excerpt';
-			$credly_settings['credly_badge_criteria']              = '';
-			$credly_settings['credly_badge_image']                 = 'featured_image';
-			$credly_settings['credly_badge_testimonial']           = 'congratulations_text';
-			$credly_settings['credly_badge_evidence']              = 'permalink';
-			$credly_settings['credly_badge_sendemail_add_message'] = 'false';
-			update_option( 'credly_settings', $credly_settings );
+		if ( empty( $obf_settings ) || !isset( $obf_settings[ 'obf_enable' ] ) ) {
+			$obf_settings['obf_enable']                      = 'true';
+                        $obf_settings['obf_client_id']                   = '__EMPTY__';
+			$obf_settings['obf_badge_title']                 = 'post_title';
+			$obf_settings['obf_badge_description']           = 'post_body';
+			$obf_settings['obf_badge_short_description']     = 'post_excerpt';
+			$obf_settings['obf_badge_criteria']              = '';
+			$obf_settings['obf_badge_image']                 = 'featured_image';
+			$obf_settings['obf_badge_testimonial']           = 'congratulations_text';
+			$obf_settings['obf_badge_evidence']              = 'permalink';
+			$obf_settings['obf_badge_sendemail_add_message'] = 'false';
+			update_option( 'obf_settings', $obf_settings );
 		}
 
 		// Register our post types and flush rewrite rules
