@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="OpenBadgeFactory-Wordpress" default="build" basedir="." description="OBF plugin for Wordpress">
+
+    <property name="builddir" value="build"/>
+    <property name="srcdir" value="."/>
+    <property name="wordpressdir" value="/var/www/test/wordpress"/>
+
+    <fileset dir="${srcdir}" id="srcfiles">
+        <include name="**"/>
+        <exclude name="pki/*.pem"/>
+        <exclude name="pki/*.key"/>
+        <exclude name="nbproject"/>
+        <exclude name="tests/**"/>
+        <exclude name="tests"/>
+        <exclude name=".settings/*"/>
+        <exclude name=".*"/>
+        <exclude name="build.xml"/>
+        <exclude name="phpunit.xml"/>
+        <exclude name="phpcs.xml"/>
+        <exclude name="Gruntfile.js"/>
+        <exclude name="package.json"/>
+        <exclude name="composer.*"/>
+    </fileset>
+
+    <target name="build">
+        <echo msg="Compressing the source files into a zip-archive..."/>
+        <zip destfile="${builddir}/obf.zip" prefix="obf/" includeemptydirs="true">
+            <fileset refid="srcfiles"/>
+        </zip>
+    </target>
+
+    <target name="deploy-local">
+        <copy todir="${wordpressdir}/wp-content/plugins/obf/" overwrite="true">
+            <fileset refid="srcfiles" />
+        </copy>
+    </target>
+
+</project>
