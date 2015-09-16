@@ -1,5 +1,6 @@
 .DS_Store
 .idea
+build/
 tmp/
 node_modules
 /nbproject/private/

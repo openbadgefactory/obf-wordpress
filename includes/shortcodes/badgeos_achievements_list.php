@@ -14,7 +14,7 @@ function badgeos_register_achievements_list_shortcode() {
 	badgeos_register_shortcode( array(
 		'name'            => __( 'Achievement List', 'badgeos' ),
 		'description'     => __( 'Output a list of achievements.', 'badgeos' ),
-		'slug'            => 'badgeos_achievements_list',
+		'slug'            => 'obf_achievements_list',
 		'output_callback' => 'badgeos_achievements_list_shortcode',
 		'attributes'      => array(
 			'type' => array(

@@ -9,7 +9,7 @@ function badgeos_register_submissions_list_shortcode() {
 	badgeos_register_shortcode( array(
 		'name'            => __( 'Submissions List', 'badgeos' ),
 		'description'     => __( 'Display a filterable list of submissions', 'badgeos' ),
-		'slug'            => 'badgeos_submissions',
+		'slug'            => 'obf_submissions',
 		'output_callback' => 'badgeos_display_submissions',
 		'attributes'      => array(
 			'limit' => array(

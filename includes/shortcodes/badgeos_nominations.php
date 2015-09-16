@@ -9,7 +9,7 @@ function badgeos_register_nominations_list_shortcode() {
 	badgeos_register_shortcode( array(
 		'name'            => __( 'Nominations List', 'badgeos' ),
 		'description'     => __( 'Display a filterable list of nominations.', 'badgeos' ),
-		'slug'            => 'badgeos_nominations',
+		'slug'            => 'obf_nominations',
 		'output_callback' => 'badgeos_display_nominations',
 		'attributes'      => array(
 			'limit' => array(

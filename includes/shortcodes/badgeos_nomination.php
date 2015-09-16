@@ -9,7 +9,7 @@ function badgeos_register_nomination_shortcode() {
 	badgeos_register_shortcode( array(
 		'name'            => __( 'Nomination Form', 'badgeos' ),
 		'description'     => __( 'Render a nomination form for a specific achievement.', 'badgeos' ),
-		'slug'            => 'badgeos_nomination',
+		'slug'            => 'obf_nomination',
 		'output_callback' => 'badgeos_nomination_form',
 		'attributes'      => array(
 			'achievement_id' => array(

@@ -9,7 +9,7 @@ function badgeos_register_submission_shortcode() {
 	badgeos_register_shortcode( array(
 		'name'            => __( 'Submission Form', 'badgeos' ),
 		'description'     => __( 'Render a submission form.', 'badgeos' ),
-		'slug'            => 'badgeos_submission',
+		'slug'            => 'obf_submission',
 		'output_callback' => 'badgeos_submission_form',
 		'attributes'      => array(
 			'achievement_id' => array(

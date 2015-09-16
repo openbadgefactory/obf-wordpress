@@ -8,7 +8,7 @@
 function badgeos_register_achievement_shortcode() {
 	badgeos_register_shortcode( array(
 		'name'            => __( 'Single Achievement', 'badgeos' ),
-		'slug'            => 'badgeos_achievement',
+		'slug'            => 'obf_achievement',
 		'output_callback' => 'badgeos_achievement_shortcode',
 		'description'     => __( 'Render a single achievement.', 'badgeos' ),
 		'attributes'      => array(
