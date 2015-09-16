@@ -668,7 +668,7 @@ class ObfClient
             $this->httpCode = $info['http_code'];
             $this->error = '';
         } else {
-            $guzzle_options = $this->getGuzzleOptions();
+            $guzzle_options = $this->get_guzzle_options();
             if ($method == 'get') {
                 $request = $client->get($url, array_merge($guzzle_options, array('query' => $params)));
             } elseif ($method == 'delete') {
