@@ -10,10 +10,15 @@
         <exclude name="pki/*.pem"/>
         <exclude name="pki/*.key"/>
         <exclude name="nbproject"/>
+        <exclude name="nbproject/**"/>
         <exclude name="tests/**"/>
         <exclude name="tests"/>
+        <exclude name="doc/**"/>
+        <exclude name="doc"/>
         <exclude name=".settings/*"/>
         <exclude name=".*"/>
+        <exclude name="build/**"/>
+        <exclude name="build"/>
         <exclude name="build.xml"/>
         <exclude name="phpunit.xml"/>
         <exclude name="phpcs.xml"/>
