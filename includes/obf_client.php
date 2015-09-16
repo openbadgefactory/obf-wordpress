@@ -186,7 +186,7 @@ class ObfClient
         if (!$this->is_guzzle_transport()) {
             $pubkey = $client->get($url, array(), $curlopts);
         } else {
-            $request = $client->request('get', $url);
+            $request = $client->get($url);
             $pubkey = $request->getBody()->getContents();
         }
 
@@ -262,7 +262,7 @@ class ObfClient
         } else {
             $request = $client->post(
                 $apiurl . '/client/' . $json->id . '/sign_request',
-                array('content-type' => 'application/json', 'body' => $postdata)
+                array('body' => $postdata)
             );
             $cert = $request->getBody()->getContents();
         }
@@ -668,25 +668,24 @@ class ObfClient
             $this->httpCode = $info['http_code'];
             $this->error = '';
         } else {
+            $guzzle_options = $this->getGuzzleOptions();
             if ($method == 'get') {
-                $request = $client->get($url, array('query' => $params));
+                $request = $client->get($url, array_merge($guzzle_options, array('query' => $params)));
             } elseif ($method == 'delete') {
-                $request = $client->delete($url, array('query' => $params));
+                $request = $client->delete($url, array_merge($guzzle_options, array('query' => $params)));
             } elseif ($method == 'put') {
                 $request = $client->put(
                     $url,
-                    array(
-                        'content-type' => 'application/json',
+                    array_merge($guzzle_options, array(
                         'body' => json_encode($params)
-                    )
+                    ))
                 );
             } else {
                 $request = $client->post(
                     $url,
-                    array(
-                        'content-type' => 'application/json',
+                    array_merge($guzzle_options, array(
                         'body' => json_encode($params)
-                    )
+                    ))
                 );
             }
             $output = $request->getBody()->getContents();
