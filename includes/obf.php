@@ -12,7 +12,7 @@
 
 //Check if we've defined our url elsewhere, if not, set it here.
 if ( !defined( 'BADGEOS_OBF_API_URL' ) )
-	define( 'BADGEOS_OBF_API_URL', 'https://urbanus.discendum.com/v1' );
+	define( 'BADGEOS_OBF_API_URL', 'https://openbadgefactory.com/v1' );
 
 /**
  * Open Badge Factory API -class.
