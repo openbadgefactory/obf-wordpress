@@ -84,7 +84,7 @@ function badgeos_obf_get_api_cert( $apikey, $certDir ) {
         if (true !== $success) {
             $error = '<p>'. sprintf( __( 'There was an error creating an Open Badge Factory API certificate: %s', 'badgeos' ), $errorDetails ) . '</p>';
             return badgeos_obf_get_api_key_error( $error );
-        } else if (!empty($client->get_client_id())) {
+        } else if (($client_id = $client->get_client_id()) && !empty($client_id)) {
             return $client->get_client_id();
         }
 
