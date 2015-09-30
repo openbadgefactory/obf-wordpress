@@ -80,9 +80,10 @@ function badgeos_obf_get_api_cert( $apikey, $certDir ) {
             $success = $client->authenticate($apikey);
         } catch (\Exception $ex) {
             $success = false;
+            $errorDetails = $ex->getMessage();
         }
         if (true !== $success) {
-            $error = '<p>'. sprintf( __( 'There was an error creating an Open Badge Factory API certificate: %s', 'badgeos' ), $errorDetails ) . '</p>';
+            $error = '<p>'. sprintf( __( 'There was an error creating an Open Badge Factory API (%s) certificate: %s', 'badgeos' ), $client->get_api_url(), $errorDetails ) . '</p>';
             return badgeos_obf_get_api_key_error( $error );
         } else if (($client_id = $client->get_client_id()) && !empty($client_id)) {
             return $client->get_client_id();
@@ -253,7 +254,7 @@ function badgeos_obf_options_no_api( $obf_settings = array() ) {
 
 		<p class="toggle hidden"><?php _e( 'Enter your Open Badge Factory account username and password to access your API key.', 'badgeos' ); ?></p>
 
-		<p class="toggle"><?php printf( __( 'Enter your %s to access your API key.', 'badgeos' ), '<a href="#show-api-key">'. __( 'Open Badge Factory account username and password', 'badgeos' ) .'</a>' ); ?></p>
+		<p class="toggle"><?php printf( __( 'Enter your %s to access your API key.', 'badgeos' ), '<a href="#show-api-key" class="hidden">'. __( 'Open Badge Factory account username and password', 'badgeos' ) .'</a>' ); ?></p>
 
 		<table class="form-table">
 			<tr valign="top"  class="hidden">

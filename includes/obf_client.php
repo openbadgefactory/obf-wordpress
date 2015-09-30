@@ -170,7 +170,7 @@ class ObfClient
         $signature = trim($signature);
         $token = base64_decode($signature);
         $client = $this->get_transport();
-
+        
         $guzzleOptions = $this->get_guzzle_options();
         unset($guzzleOptions['cert']);
         unset($guzzleOptions['ssl_key']);
@@ -192,7 +192,7 @@ class ObfClient
 
         $error = '';
         if (!$this->is_guzzle_transport()) {
-            $error = $curl-error;
+            $error = $curl->error;
         }
         // CURL-request failed.
         if ($pubkey === false) {
@@ -219,7 +219,7 @@ class ObfClient
         if ($key === false) {
             throw new \Exception($this->get_string('pubkeyextractionfailed') . ': ' . openssl_error_string());
         }
-
+        
         // Couldn't decrypt data with provided key.
         if (openssl_public_decrypt($token, $decrypted, $key, OPENSSL_PKCS1_PADDING) === false) {
             throw new \Exception($this->get_string('tokendecryptionfailed') . ': ' . openssl_error_string());
