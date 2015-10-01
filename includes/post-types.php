@@ -221,6 +221,8 @@ function badgeos_register_achievement_type_cpt() {
 		// Setup our singular and plural versions to use the corresponding meta
 		$achievement_name_singular = get_post_meta( $achievement_type->ID, '_badgeos_singular_name', true );
 		$achievement_name_plural   = get_post_meta( $achievement_type->ID, '_badgeos_plural_name', true );
+                
+                $use_obf   = get_post_meta( $achievement_type->ID, '_badgeos_use_obf_badges', true );
 
 		// Determine whether this achievement type should be visible in the menu
 		$show_in_menu = get_post_meta( $achievement_type->ID, '_badgeos_show_in_menu', true ) ? 'badgeos_badgeos' : false;
@@ -248,7 +250,7 @@ function badgeos_register_achievement_type_cpt() {
 			'show_in_menu'       => $show_in_menu,
 			'query_var'          => true,
 			'rewrite'            => array( 'slug' => sanitize_title( strtolower( $achievement_name_singular ) ) ),
-                        'capability_type'    => 'achievement',
+                        'capability_type'    => $use_obf ? 'achievement' : 'post',
                         'map_meta_cap'       => true,
                         'has_archive'        => true,
 			'hierarchical'       => true,
@@ -270,12 +272,14 @@ add_action( 'init', 'badgeos_register_achievement_type_cpt', 8 );
  * @return void
  */
 function badgeos_register_achievement_capabilites($required_cap = null) {
+    global $badgeos_obf;
     $role = get_role( 'administrator' );
     $role->add_cap( 'access_awesomeness' );
     if (empty($required_cap)) {
         $required_cap = badgeos_get_achievement_creator_capability();
     }
     $capability_type = 'achievement';
+    $capability_type_plural = $capability_type.'s';
     $caps = array(
         "delete_{$capability_type}s",
         "delete_private_{$capability_type}s",
@@ -300,7 +304,8 @@ function badgeos_register_achievement_capabilites($required_cap = null) {
             }
         }
         // Disallow creating new achievements, only edit imported.
-        $role->add_cap('create_achievements', false);
-        $role->add_cap('create_achievement', false);
+        $role->add_cap("create_{$capability_type_plural}", false);
+        $role->add_cap("create_{$capability_type}", false);
     }
+    
 }

@@ -216,6 +216,7 @@ class BadgeOS {
 			) );
 			update_post_meta( $badge_post_id, '_badgeos_singular_name', __( 'Badge', 'badgeos' ) );
 			update_post_meta( $badge_post_id, '_badgeos_show_in_menu', true );
+                        update_post_meta( $badge_post_id, '_badgeos_use_obf_badges', true );
 		}
 
 		// Setup default BadgeOS options

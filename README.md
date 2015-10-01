@@ -13,7 +13,7 @@ Create badges and set up the achievements to earn them. Badges are Mozilla OBI c
 The Open Badge Factory -plugin is extremely powerful and infinitely extensible. Check out some of the out-of-the-box features:
 
 
-**Many ways to define achievements and give badges**
+**Many ways to define how to earn and give badges**
 
 *   Reviewed submissions
 *   Auto-approving submissions

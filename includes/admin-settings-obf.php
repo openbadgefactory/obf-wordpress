@@ -619,15 +619,16 @@ function obf_import_metabox()
  * Fix create capabilitys for our custom post types.
  */
 function badgeos_obf_fix_achievement_capability_create() {
+    global $badgeos_obf;
     $post_types = get_post_types( array(),'objects' );
-    $our_post_types = array('badges');
+    $our_post_types = $badgeos_obf->obf_badge_achievement_types();
     foreach ( $post_types as $post_type ) {
         $cap = "create_".$post_type->name;
         if (in_array($post_type->name, $our_post_types)) {
             $post_type->cap->create_posts = $cap;
         }
         
-        map_meta_cap( $cap, 1); 
+        map_meta_cap( $cap, 1);
     }
 }
 add_action( 'init', 'badgeos_obf_fix_achievement_capability_create',100);

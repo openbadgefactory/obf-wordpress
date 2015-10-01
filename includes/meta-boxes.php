@@ -48,6 +48,12 @@ function badgeos_custom_metaboxes( array $meta_boxes ) {
 				'id'      => $prefix . 'show_in_menu',
 				'type'	 => 'checkbox',
 			),
+                        array(
+				'name'    => __( 'Use Open Badge Factory badges?', 'badgeos' ),
+				'desc' 	 => ' '.__( 'Yes, use badges made in Open Badge Factory.', 'badgeos' ),
+				'id'      => $prefix . 'use_obf_badges',
+				'type'	 => 'checkbox',
+			),
 			array(
 				'name' => __( 'Default Badge Image', 'badgeos' ),
 				'desc' => sprintf(

@@ -38,6 +38,9 @@ class BadgeOS_Obf {
 
 	public $user_id = 0;
 	public $user_enabled = 'true';
+        
+        private $achievement_types_plural = array();
+        private $achievement_types_singular = array();
 
 	function __construct() {
 
@@ -157,7 +160,6 @@ class BadgeOS_Obf {
                 $badge_array = $this->obf_client->get_badge($badge_id);
             }
             $ret = false;
-            $postObj = new stdClass();
             $options = obf_fieldmap_get_fields();
             
             $fields_array = array(
@@ -186,39 +188,48 @@ class BadgeOS_Obf {
                 $metafield_values[$field] = $badge_array[$array_index];
             }
             
-            foreach($fields_array as $key => $field) {
-                if (array_key_exists($key, $badge_array) && !empty($field)) {
-                    $postObj->{$field} = $badge_array[$key];
+            $updated = false;
+            $obf_achievement_types = $this->obf_badge_achievement_types(false);
+            foreach($obf_achievement_types as $obf_achievement_type) {
+                if ($updated) {
+                    break;
+                }
+                $postObj = new stdClass();
+                foreach($fields_array as $key => $field) {
+                    if (array_key_exists($key, $badge_array) && !empty($field)) {
+                        $postObj->{$field} = $badge_array[$key];
+                    }
+                }
+                // Set some settings for the post. Imported badges are not drafts
+                $postObj->{'post_status'} = 'publish';
+                $postObj->{'ping_status'} = 'closed';
+                $postObj->{'comment_status'} = 'closed';
+                $image_id = null;
+
+                if (empty($post_id) || $post_id == 0) {
+                    $postObj->{'post_type'} = $obf_achievement_type;
+                    $post = new WP_Post($postObj);
+                    $post_id = wp_insert_post($post);
+                } else {
+                    $post = get_post($post_id);
+                    $updated_post = (object) array_merge((array) $post, (array) $postObj);
+                    $post_id = wp_update_post($updated_post);
+                    $updated = true;
+                }
+
+
+                if (array_key_exists('image', $badge_array)) {
+                    $image_id = $this->import_obf_badge_image($post_id, $badge_array['id'], $badge_array['image']);
+                    $metafield_values['_thumbnail_id'] = $image_id;
+                }
+                foreach($override_fields as $field => $value) {
+                    $metafield_values[$field] = $value;
+                }
+                foreach($metafield_values as $field => $value) {
+                    update_post_meta( $post_id, $field, $value );
                 }
             }
-            // Set some settings for the post. Imported badges are not drafts
-            $postObj->{'post_status'} = 'publish';
-            $postObj->{'post_type'} = 'badges';
-            $postObj->{'ping_status'} = 'closed';
-            $postObj->{'comment_status'} = 'closed';
-            $image_id = null;
-            
-            if (empty($post_id) || $post_id == 0) {
-                $post = new WP_Post($postObj);
-                $post_id = wp_insert_post($post);
-            } else {
-                $post = get_post($post_id);
-                $updated_post = (object) array_merge((array) $post, (array) $postObj);
-                $post_id = wp_update_post($updated_post);
-            }
-            
-            
-            if (array_key_exists('image', $badge_array)) {
-                $image_id = $this->import_obf_badge_image($post_id, $badge_array['id'], $badge_array['image']);
-                $metafield_values['_thumbnail_id'] = $image_id;
-            }
-            foreach($override_fields as $field => $value) {
-                $metafield_values[$field] = $value;
-            }
-            foreach($metafield_values as $field => $value) {
-                update_post_meta( $post_id, $field, $value );
-            }
-            
+                
             return $post_id;
         }
         
@@ -974,6 +985,31 @@ class BadgeOS_Obf {
 		return $post_id;
 
 	}
+        
+        public function obf_badge_achievement_types($plural = true)
+        {
+            $types = array();
+            $achievement_types = get_posts( array(
+		'post_type'      =>	'achievement-type',
+		'posts_per_page' =>	-1,
+            ) );
+
+            if (empty($this->achievement_types_plural)) {
+                foreach($achievement_types as $achievement_type)
+                {
+                    $use_obf = get_post_meta( $achievement_type->ID, '_badgeos_use_obf_badges', true );
+                    if ($use_obf) {
+                            $achievement_name_plural = get_post_meta( $achievement_type->ID, '_badgeos_plural_name', true );
+                            $achievement_name_singular = get_post_meta( $achievement_type->ID, '_badgeos_plural_name', true );
+                            $this->achievement_types_plural[] = strtolower($achievement_name_plural);
+                            $this->achievement_types_singular[] = strtolower($achievement_name_singular);
+                            $types[] = $plural ? $achievement_name_plural : $achievement_name_singular;
+                    }
+                }   
+            }
+            
+            return $plural ? $this->achievement_types_plural : $this->achievement_types_singular;
+        }
 
 
 	/**
