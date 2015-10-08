@@ -634,7 +634,7 @@ function obf_import_metabox()
 function badgeos_obf_fix_achievement_capability_create() {
     global $badgeos_obf;
     $post_types = get_post_types( array(),'objects' );
-    $our_post_types = $badgeos_obf->obf_badge_achievement_types();
+    $our_post_types = $badgeos_obf->obf_badge_achievement_types(false);
     foreach ( $post_types as $post_type ) {
         $cap = "create_".$post_type->name;
         if (in_array($post_type->name, $our_post_types)) {
