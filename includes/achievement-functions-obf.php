@@ -44,7 +44,7 @@ function badgeos_obf_remove_multiple_obf_badge_types( $post_id, $force = false )
 	// If the post is one of our achievement types,
 	// and the achievement is awarded by minimum points
 	if (
-		$post->post_type == 'achievement-type'
+		!empty($post) && $post->post_type == 'achievement-type'
 		&& (
                         $force ||
 			get_post_meta( $post_id, '_badgeos_use_obf_badges', true )
