@@ -50,7 +50,7 @@ function badgeos_custom_metaboxes( array $meta_boxes ) {
 			),
                         array(
 				'name'    => __( 'Use Open Badge Factory badges?', 'badgeos' ),
-				'desc' 	 => ' '.__( 'Yes, use badges made in Open Badge Factory.', 'badgeos' ),
+				'desc' 	 => ' '.__( 'Yes, use badges made in Open Badge Factory (Can only be enabled for one achievement type).', 'badgeos' ),
 				'id'      => $prefix . 'use_obf_badges',
 				'type'	 => 'checkbox',
 			),

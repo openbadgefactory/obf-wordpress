@@ -104,13 +104,18 @@ class BadgeOS_Obf {
 	}
         function import_all_obf_badges() {
             global $wpdb;
+            $obf_achievement_types = $this->obf_badge_achievement_types(false);
             // Get all badge posts with obf badge id, excluding those which have an achievement type that has been deleted.
-            $existing = $wpdb->get_results("SELECT post_id, pm.meta_value AS badge_id, post_modified_gmt AS modified_date FROM {$wpdb->postmeta} pm "
-                    . "LEFT JOIN {$wpdb->posts} p ON (pm.post_id = p.id) WHERE p.post_status != 'trash' AND pm.meta_key = '_badgeos_obf_badge_id'"
+            $sql = "SELECT post_id, pm.meta_value AS badge_id, post_modified_gmt AS modified_date FROM {$wpdb->postmeta} pm "
+                    . "LEFT JOIN {$wpdb->posts} p ON (pm.post_id = p.id) WHERE p.post_type IN ("
+                    . implode(', ', array_fill(0, count($obf_achievement_types), '%s'))
+                    . ") AND p.post_status != 'trash' AND pm.meta_key = '_badgeos_obf_badge_id'"
                     // Badges, where the subselect below does not return anything, belong to an achievement type that has been deleted.
                     . "AND EXISTS (SELECT id FROM wp_postmeta subpm  LEFT JOIN wp_posts subp ON (subpm.post_id = subp.id) "
                     . "WHERE subp.post_type='achievement-type' AND subp.post_status NOT IN ('trashed', 'closed', 'trash') "
-                    . "AND subp.post_name=p.post_type AND subpm.meta_key='_badgeos_singular_name')", OBJECT);
+                    . "AND subp.post_name=p.post_type AND subpm.meta_key='_badgeos_singular_name')";
+            $query = call_user_func_array(array($wpdb, 'prepare'), array_merge(array($sql), $obf_achievement_types));
+            $existing = $wpdb->get_results($query, OBJECT);
             $existing_badges = array();
             $nowdate = new DateTime();
             $import_interval = 24 * 60 * 60; // Import badges at least once per day.

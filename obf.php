@@ -51,7 +51,6 @@ if (class_exists('BadgeOS') && function_exists('badgeos_obf_get_directory_path')
     ) {
     update_option('obf_install_error', _('Open Badge Factory -plugin cannot co-exist with BadgeOS-plugin. Please disable the BadgeOS -plugin, if you wish to continue using the Open Badge Factory -plugin.') );
     add_action( 'all_admin_notices', 'badgeos_obf_install_errors' );
-    //var_dump("Open Badge Factory plugin cannot co-exist with BadgeOS-plugin.");
     return;
 }
 class BadgeOS {
@@ -235,16 +234,17 @@ class BadgeOS {
 		// Include our important bits
 		$this->includes();
 
-		// Create Badges achievement type
-		if ( !get_page_by_title( 'Badges', 'OBJECT', 'achievement-type' ) ) {
+		// Create Badge awarding rule achievement type
+		if ( !get_page_by_title( 'Awarding Rule', 'OBJECT', 'achievement-type' ) ) {
 			$badge_post_id = wp_insert_post( array(
-				'post_title'   => __( 'Badges', 'badgeos'),
-				'post_content' => __( 'Badges badge type', 'badgeos' ),
+				'post_title'   => __( 'Awarding Rule', 'badgeos'),
+				'post_content' => __( 'Badge awarding rule type', 'badgeos' ),
 				'post_status'  => 'publish',
 				'post_author'  => 1,
 				'post_type'    => 'achievement-type',
 			) );
-			update_post_meta( $badge_post_id, '_badgeos_singular_name', __( 'Badge', 'badgeos' ) );
+			update_post_meta( $badge_post_id, '_badgeos_singular_name', __( 'Awarding Rule', 'badgeos' ) );
+                        update_post_meta( $badge_post_id, '_badgeos_plural_name', __( 'Awarding Rules', 'badgeos' ) );
 			update_post_meta( $badge_post_id, '_badgeos_show_in_menu', true );
                         update_post_meta( $badge_post_id, '_badgeos_use_obf_badges', true );
 		}
