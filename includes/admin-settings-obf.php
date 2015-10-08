@@ -429,7 +429,7 @@ function badgeos_obf_import_callback($options = array()) {
     $pre_existing = array();
     $import_overrides = array('_badgeos_obf_editing_disabled' => 'true'); // Hide badge fields by default on imported badges
     $badge_selections= array();
-    if (count($options) > 0) {
+    if (count($options) > 0 && array_key_exists('badges', $options)) {
         $badge_selections = $options['badges'];
         foreach($badge_selections as $option => $badge_id) {
             $query = $wpdb->prepare("SELECT post_id FROM {$wpdb->postmeta} pm "
@@ -577,7 +577,7 @@ function badgeos_obf_import_page() {
 add_action('admin_footer', 'badgeos_obf_post_import_button');
 function badgeos_obf_post_import_button() {
     $screen = get_current_screen();
-    if ( $screen->id != "edit-badges" )   // Only add to edit-badges
+    if ( !badgeos_obf_screen_is_edit_obf_badges($screen) )   // Only add to edit-badges
         return;
     
     add_thickbox();
@@ -600,6 +600,19 @@ $screen = get_current_screen();
         add_meta_box('obf-import-metabox', 'Open Badge Factory', 'obf_import_metabox', 'badges', 'side', 'high');
     }
 }
+
+function badgeos_obf_add_obf_columns_for_obf_badges() {
+    global $badgeos_obf;
+    $screen = get_current_screen();
+    if ( !badgeos_obf_screen_is_edit_obf_badges($screen) )   // Only add to edit-badges
+        return;
+    // TODO: Do we want issuing on column as well as actions list?
+    $achievement_type = substr($screen->id, 5);
+    add_filter('manage_'.$achievement_type.'_posts_columns', 'badgeos_obf_columns_head', 10);
+    add_action('manage_'.$achievement_type.'_posts_custom_column', 'badgeos_obf_columns_content', 10, 2);
+}
+add_action( 'current_screen', 'badgeos_obf_add_obf_columns_for_obf_badges');
+
 
 add_action('add_meta_boxes', 'badgeos_obf_add_obf_import_box'); 
 
@@ -634,12 +647,24 @@ function badgeos_obf_fix_achievement_capability_create() {
 add_action( 'init', 'badgeos_obf_fix_achievement_capability_create',100);
 
 
+function badgeos_obf_screen_is_edit_obf_badges($screen) {
+    global $badgeos_obf;
+    if ( substr($screen->id, 0, 5) != "edit-" )   // Only add to edit-
+        return false;
 
+    $achievement_types = $badgeos_obf->obf_badge_achievement_types(false);
+    foreach ($achievement_types as $achievement_type) {
+        if ($screen->id == "edit-".$achievement_type ) {
+            return true;
+        }
+    }
+
+    return false;
+}
 function badgeos_obf_import_all_badges_on_admin_init($screen) {
     global $badgeos_obf;
-    if ( $screen->id != "edit-badges" )   // Only add to edit-badges
+    if ( !badgeos_obf_screen_is_edit_obf_badges($screen) )   // Only add to edit-badges
         return;
-    //var_dump($screen);
     $badgeos_obf->import_all_obf_badges();
 }
 add_action( 'current_screen', 'badgeos_obf_import_all_badges_on_admin_init');
@@ -653,17 +678,15 @@ add_action( 'current_screen', 'badgeos_obf_import_all_badges_on_admin_init');
 function badgeos_obf_remove_row_actions( $actions, $post )
 {
     $screen = get_current_screen();
-    if( $screen->id != 'edit-badges' ) {
+    if( !badgeos_obf_screen_is_edit_obf_badges($screen) ) {
         return $actions;  
     }
-    //var_dump($actions);
-    //unset( $actions['edit'] );
-    //unset( $actions['view'] );
+    
     unset( $actions['trash'] );
     unset( $actions['inline hide-if-no-js'] );
     if (obf_is_achievement_giveable($post->ID)) {
         $issue_str = '<a href="admin.php?page=issue-obf-badge&post_id=' . $post->ID . '">' . __('Issue', 'badgeos') . '</a>';
-    $actions['issue-obf-badge'] = $issue_str;
+        $actions['issue-obf-badge'] = $issue_str;
     }
 
     return $actions;
@@ -744,9 +767,6 @@ function badgeos_obf_humanize_earned_by($post_ID, $earned_by) {
     }
     return null;
 }
-// TODO: Do we want issuing on column as well as actions list?
-add_filter('manage_badges_posts_columns', 'badgeos_obf_columns_head', 10);
-add_action('manage_badges_posts_custom_column', 'badgeos_obf_columns_content', 10, 2);
 
 function badgeos_obf_issue_badge_page() {
     if (empty($_REQUEST['post_id']))

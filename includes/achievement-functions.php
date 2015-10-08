@@ -891,6 +891,8 @@ function badgeos_update_achievement_types( $original_type = '', $new_type = '' )
 	badgeos_update_earned_meta_achievement_types( $original_type, $new_type );
 	badgeos_update_active_meta_achievement_types( $original_type, $new_type );
 	badgeos_flush_rewrite_rules();
+        badgeos_obf_fix_achievement_capability_create();
+        badgeos_register_achievement_capabilites();
 	return $new_type;
 }
 

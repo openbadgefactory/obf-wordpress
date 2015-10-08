@@ -1000,9 +1000,9 @@ class BadgeOS_Obf {
                     $use_obf = get_post_meta( $achievement_type->ID, '_badgeos_use_obf_badges', true );
                     if ($use_obf) {
                             $achievement_name_plural = get_post_meta( $achievement_type->ID, '_badgeos_plural_name', true );
-                            $achievement_name_singular = get_post_meta( $achievement_type->ID, '_badgeos_plural_name', true );
-                            $this->achievement_types_plural[] = strtolower($achievement_name_plural);
-                            $this->achievement_types_singular[] = strtolower($achievement_name_singular);
+                            $achievement_name_singular = get_post_meta( $achievement_type->ID, '_badgeos_singular_name', true );
+                            $this->achievement_types_plural[] = sanitize_title(strtolower($achievement_name_plural));
+                            $this->achievement_types_singular[] = sanitize_title(strtolower($achievement_name_singular));
                             $types[] = $plural ? $achievement_name_plural : $achievement_name_singular;
                     }
                 }   
