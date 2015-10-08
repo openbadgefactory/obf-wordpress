@@ -58,3 +58,14 @@ ul#obf-badges li .badge-desc {
     max-width: 48px;
     max-height: 48px;
 }
+@media (max-width: 782px) {
+    .wp-list-table tr:not(.inline-edit-row):not(.no-items) td.column-obf_image:not(.check-column) {
+        display: none;
+    }
+    .wp-list-table .is-expanded td:not(.hidden).column-obf_image {
+        display: none !important;
+    }
+    .column-obf_image {
+        display: none;
+    }
+}
