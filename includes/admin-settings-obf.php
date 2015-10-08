@@ -307,6 +307,7 @@ function badgeos_obf_options_yes_api( $obf_settings = array() ) {
 				<th scope="row"><label for="api_key"><?php _e( 'API Key: ', 'badgeos' ); ?></label></th>
 				<td>
 					<input id="api_key" type="text" name="obf_settings[api_key]" class="widefat" value="<?php echo esc_attr( $obf_settings[ 'api_key' ] ); ?>" />
+                                        <input id="obf_client_id" type="hidden" name="obf_settings[obf_client_id]" class="widefat" value="<?php echo esc_attr( $obf_settings[ 'obf_client_id' ] ); ?>" />
 				</td>
 			</tr>
 		</table>
