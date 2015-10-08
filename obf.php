@@ -291,7 +291,9 @@ class BadgeOS {
 		$minimum_role = badgeos_get_manager_capability();
                 
                 $creator_role = badgeos_get_achievement_creator_capability();
-
+                
+                $advanced_feature_parent = badgeos_obf_show_advanced_features() ? 'badgeos_badgeos' : 'options.php';
+                
 		// Create main menu
 		add_menu_page( 'Open Badge Factory', 'Open Badge Factory', $creator_role, 'badgeos_badgeos', 'badgeos_settings', $this->directory_url . 'images/obf_icon.png', 110 );
 
@@ -299,7 +301,7 @@ class BadgeOS {
 		add_submenu_page( 'badgeos_badgeos', __( 'Open Badge Factory -Plugin Settings', 'badgeos' ), __( 'Settings', 'badgeos' ), $minimum_role, 'badgeos_settings', 'badgeos_settings_page' );
 		//add_submenu_page( 'badgeos_badgeos', __( 'Credly Integration', 'badgeos' ), __( 'Credly Integration', 'badgeos' ), $minimum_role, 'badgeos_sub_credly_integration', 'badgeos_credly_options_page' );
 		add_submenu_page( 'badgeos_badgeos', __( 'OBF Integration', 'badgeos' ), __( 'OBF Integration', 'badgeos' ), $minimum_role, 'badgeos_sub_obf_integration', 'badgeos_obf_options_page' );
-		add_submenu_page( 'badgeos_badgeos', __( 'Add-Ons', 'badgeos' ), __( 'Add-Ons', 'badgeos' ), $minimum_role, 'badgeos_sub_add_ons', 'badgeos_add_ons_page' );
+		add_submenu_page( $advanced_feature_parent, __( 'Add-Ons', 'badgeos' ), __( 'Add-Ons', 'badgeos' ), $minimum_role, 'badgeos_sub_add_ons', 'badgeos_add_ons_page' );
 		add_submenu_page( 'badgeos_badgeos', __( 'Help / Support', 'badgeos' ), __( 'Help / Support', 'badgeos' ), $minimum_role, 'badgeos_sub_help_support', 'badgeos_help_support_page' );
                 
                 // Import badges

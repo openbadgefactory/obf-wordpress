@@ -53,7 +53,8 @@ function badgeos_settings_validate( $input = '' ) {
 	$input['submission_manager_role'] = isset( $input['submission_manager_role'] ) ? sanitize_text_field( $input['submission_manager_role'] ) : $original_settings['submission_manager_role'];
 	$input['debug_mode'] = isset( $input['debug_mode'] ) ? sanitize_text_field( $input['debug_mode'] ) : $original_settings['debug_mode'];
 	$input['ms_show_all_achievements'] = isset( $input['ms_show_all_achievements'] ) ? sanitize_text_field( $input['ms_show_all_achievements'] ) : $original_settings['ms_show_all_achievements'];
-
+        $input['show_advanced_features'] = isset( $input['show_advanced_features'] ) ? sanitize_text_field( $input['show_advanced_features'] ) : $original_settings['show_advanced_features'];
+        
         badgeos_register_achievement_capabilites($input['achievement_creator_role']);
 	// Allow add-on settings to be sanitized
 	do_action( 'badgeos_settings_validate', $input );
@@ -211,6 +212,7 @@ function badgeos_settings_page() {
                         $achievement_creator_role = ( isset( $badgeos_settings['achievement_creator_role'] ) ) ? $badgeos_settings['achievement_creator_role'] : 'manage_options';
 			$submission_manager_role = ( isset( $badgeos_settings['submission_manager_role'] ) ) ? $badgeos_settings['submission_manager_role'] : 'manage_options';
 			$submission_email = ( isset( $badgeos_settings['submission_email'] ) ) ? $badgeos_settings['submission_email'] : '';
+                        $show_advanced_features = ( isset( $badgeos_settings['show_advanced_features'] ) ) ? $badgeos_settings['show_advanced_features'] : '';
 			$submission_email_addresses = ( isset( $badgeos_settings['submission_email_addresses'] ) ) ? $badgeos_settings['submission_email_addresses'] : '';
 			$debug_mode = ( isset( $badgeos_settings['debug_mode'] ) ) ? $badgeos_settings['debug_mode'] : 'disabled';
 			$ms_show_all_achievements = ( isset( $badgeos_settings['ms_show_all_achievements'] ) ) ? $badgeos_settings['ms_show_all_achievements'] : 'disabled';
@@ -256,6 +258,16 @@ function badgeos_settings_page() {
 						</select>
 					</td>
 				</tr>
+                                
+                                <tr valign="top"><th scope="row"><label for="show_advanced_features"><?php _e( 'Show advanced features:', 'badgeos' ); ?></label></th>
+					<td>
+						<select id="show_advanced_features" name="badgeos_settings[show_advanced_features]">
+							<option value="enabled" <?php selected( $show_advanced_features, 'enabled' ); ?>><?php _e( 'Enabled', 'badgeos' ) ?></option>
+							<option value="disabled" <?php selected( $show_advanced_features, 'disabled' ); ?>><?php _e( 'Disabled', 'badgeos' ) ?></option>
+						</select>
+					</td>
+				</tr>
+                                
 				<tr valign="top"><th scope="row"><label for="submission_email_addresses"><?php _e( 'Notification email addresses:', 'badgeos' ); ?></label></th>
 					<td>
 						<input id="submission_email_addresses" name="badgeos_settings[submission_email_addresses]" type="text" value="<?php echo esc_attr( $submission_email_addresses ); ?>" class="regular-text" />

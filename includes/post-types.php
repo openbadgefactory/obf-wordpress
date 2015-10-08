@@ -17,6 +17,8 @@
  */
 function badgeos_register_post_types() {
 	global $badgeos;
+        
+        $advanced_feature_parent = badgeos_obf_show_advanced_features() ? 'badgeos_badgeos' : 'options.php';
 
 	// Register our Achivement Types CPT
 	register_post_type( 'achievement-type', array(
@@ -38,7 +40,7 @@ function badgeos_register_post_types() {
 		'public'             => false,
 		'publicly_queryable' => false,
 		'show_ui'            => current_user_can( badgeos_get_manager_capability() ),
-		'show_in_menu'       => 'badgeos_badgeos',
+		'show_in_menu'       => $advanced_feature_parent,
 		'query_var'          => false,
 		'rewrite'            => false,
 		'capability_type'    => 'post',
@@ -101,7 +103,7 @@ function badgeos_register_post_types() {
 		'public'             => apply_filters( 'badgeos_public_submissions', false ),
 		'publicly_queryable' => apply_filters( 'badgeos_public_submissions', false ),
 		'show_ui'            => badgeos_user_can_manage_submissions(),
-		'show_in_menu'       => 'badgeos_badgeos',
+		'show_in_menu'       => $advanced_feature_parent,
 		'show_in_nav_menus'  => apply_filters( 'badgeos_public_submissions', false ),
 		'query_var'          => true,
 		'rewrite'            => true,
@@ -133,7 +135,7 @@ function badgeos_register_post_types() {
 		'public'             => apply_filters( 'badgeos_public_nominations', false ),
 		'publicly_queryable' => apply_filters( 'badgeos_public_nominations', false ),
 		'show_ui'            => badgeos_user_can_manage_submissions(),
-		'show_in_menu'       => 'badgeos_badgeos',
+		'show_in_menu'       => $advanced_feature_parent,
 		'show_in_nav_menus'  => apply_filters( 'badgeos_public_nominations', false ),
 		'query_var'          => true,
 		'rewrite'            => true,
@@ -164,7 +166,7 @@ function badgeos_register_post_types() {
 		'public'             => false,
 		'publicly_queryable' => false,
 		'show_ui'            => current_user_can( badgeos_get_manager_capability() ),
-		'show_in_menu'       => 'badgeos_badgeos',
+		'show_in_menu'       => $advanced_feature_parent,
 		'show_in_nav_menus'  => false,
 		'query_var'          => true,
 		'rewrite'            => array( 'slug' => 'log' ),

@@ -317,106 +317,110 @@ function badgeos_obf_options_yes_api( $obf_settings = array() ) {
                     <p class="notice"><?php echo sprintf(__('Open Badge Factory API certificate expires on %s', 'badgeos'), date_i18n( get_option( 'date_format' ), $cert_expiry_date) ) ?></p>
                     <?php
                 }
+                
+                $advanced_feature_class = badgeos_obf_show_advanced_features() ? 'advanced-features' : 'hidden';
                 ?>
                 
+                <div class="<?php echo $advanced_feature_class; ?>">
+                    <h3><?php _e( 'Open Badge Factory Field Mapping', 'badgeos' ); ?></h3>
 
-		<h3><?php _e( 'Open Badge Factory Field Mapping', 'badgeos' ); ?></h3>
+                    <p><?php _e( 'Customize which Open Badge Factory fields for badge creation and issuing (listed on the left) match which WordPress and Open Badge Factory -plugin fields (listed to the right).', 'badgeos' ); ?>
+                            <br /><?php _e( 'When badges are created and issued, the info sent to Open Badge Factory will rely on the global mapping found here. (Note: Visit the edit screen for each achievement you create in Open Badge Factory to further configure the sharing and Open Badge Factory settings for that achievement.)', 'badgeos' ); ?>
+                    </p>
+                    <table class="form-table">
+                            <tr valign="top">
+                                    <th scope="row"><label for="obf_badge_title"><?php _e( 'Badge Title: ', 'badgeos' ); ?></label></th>
+                                    <td>
+                                            <select id="obf_badge_title" name="obf_settings[obf_badge_title]">
+                                                    <?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_title' ] ); ?>
+                                            </select>
+                                    </td>
+                            </tr>
+                            <tr valign="top">
+                                    <th scope="row">
+                                            <label for="obf_badge_short_description"><?php _e( 'Short Description: ', 'badgeos' ); ?></label>
+                                    </th>
+                                    <td>
+                                            <select id="obf_badge_short_description" name="obf_settings[obf_badge_short_description]">
+                                                    <?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_short_description' ] ); ?>
+                                            </select>
+                                    </td>
+                            </tr>
+                            <tr valign="top">
+                                    <th scope="row">
+                                            <label for="obf_badge_description"><?php _e( 'Description: ', 'badgeos' ); ?></label>
+                                    </th>
+                                    <td><select id="obf_badge_description" name="obf_settings[obf_badge_description]">
+                                                    <?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_description' ] ); ?>
+                                            </select></td>
+                            </tr>
+                            <tr valign="top">
+                                    <th scope="row">
+                                            <label for="obf_badge_criteria"><?php _e( 'Criteria: ', 'badgeos' ); ?></label>
+                                    </th>
+                                    <td>
+                                            <select id="obf_badge_criteria" name="obf_settings[obf_badge_criteria]">
+                                                    <?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_criteria' ] ); ?>
+                                            </select>
+                                    </td>
+                            </tr>
+                            <tr valign="top">
+                                    <th scope="row">
+                                            <label for="obf_badge_image"><?php _e( 'Image: ', 'badgeos' ); ?></label>
+                                    </th>
+                                    <td>
+                                            <select id="obf_badge_image" name="obf_settings[obf_badge_image]">
+                                                    <?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_image' ] ); ?>
+                                            </select>
+                                    </td>
+                            </tr>
+                            <tr valign="top">
+                                    <th scope="row">
+                                            <label for="obf_badge_testimonial"><?php _e( 'Testimonial: ', 'badgeos' ); ?></label>
+                                    </th>
+                                    <td><select id="obf_badge_testimonial" name="obf_settings[obf_badge_testimonial]">
+                                                    <?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_testimonial' ] ); ?>
+                                            </select></td>
+                            </tr>
+                            <tr valign="top">
+                                    <th scope="row">
+                                            <label for="obf_badge_evidence"><?php _e( 'Evidence: ', 'badgeos' ); ?></label>
+                                    </th>
+                                    <td>
+                                            <select id="obf_badge_evidence" name="obf_settings[obf_badge_evidence]">
+                                                    <?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_evidence' ] ); ?>
+                                            </select>
+                                    </td>
+                            </tr>
+                    </table>
 
-		<p><?php _e( 'Customize which Open Badge Factory fields for badge creation and issuing (listed on the left) match which WordPress and Open Badge Factory -plugin fields (listed to the right).', 'badgeos' ); ?>
-			<br /><?php _e( 'When badges are created and issued, the info sent to Open Badge Factory will rely on the global mapping found here. (Note: Visit the edit screen for each achievement you create in Open Badge Factory to further configure the sharing and Open Badge Factory settings for that achievement.)', 'badgeos' ); ?>
-		</p>
-		<table class="form-table">
-			<tr valign="top">
-				<th scope="row"><label for="obf_badge_title"><?php _e( 'Badge Title: ', 'badgeos' ); ?></label></th>
-				<td>
-					<select id="obf_badge_title" name="obf_settings[obf_badge_title]">
-						<?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_title' ] ); ?>
-					</select>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row">
-					<label for="obf_badge_short_description"><?php _e( 'Short Description: ', 'badgeos' ); ?></label>
-				</th>
-				<td>
-					<select id="obf_badge_short_description" name="obf_settings[obf_badge_short_description]">
-						<?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_short_description' ] ); ?>
-					</select>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row">
-					<label for="obf_badge_description"><?php _e( 'Description: ', 'badgeos' ); ?></label>
-				</th>
-				<td><select id="obf_badge_description" name="obf_settings[obf_badge_description]">
-						<?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_description' ] ); ?>
-					</select></td>
-			</tr>
-			<tr valign="top">
-				<th scope="row">
-					<label for="obf_badge_criteria"><?php _e( 'Criteria: ', 'badgeos' ); ?></label>
-				</th>
-				<td>
-					<select id="obf_badge_criteria" name="obf_settings[obf_badge_criteria]">
-						<?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_criteria' ] ); ?>
-					</select>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row">
-					<label for="obf_badge_image"><?php _e( 'Image: ', 'badgeos' ); ?></label>
-				</th>
-				<td>
-					<select id="obf_badge_image" name="obf_settings[obf_badge_image]">
-						<?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_image' ] ); ?>
-					</select>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row">
-					<label for="obf_badge_testimonial"><?php _e( 'Testimonial: ', 'badgeos' ); ?></label>
-				</th>
-				<td><select id="obf_badge_testimonial" name="obf_settings[obf_badge_testimonial]">
-						<?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_testimonial' ] ); ?>
-					</select></td>
-			</tr>
-			<tr valign="top">
-				<th scope="row">
-					<label for="obf_badge_evidence"><?php _e( 'Evidence: ', 'badgeos' ); ?></label>
-				</th>
-				<td>
-					<select id="obf_badge_evidence" name="obf_settings[obf_badge_evidence]">
-						<?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_evidence' ] ); ?>
-					</select>
-				</td>
-			</tr>
-		</table>
+                    <h3><?php _e( 'Open Badge Factory Notification Settings', 'badgeos' ); ?></h3>
+                    <p><?php _e( 'Send custom notifications to users when they earn a Open Badge Factory-enabled achievement.', 'badgeos' ); ?></p>
 
-		<h3><?php _e( 'Open Badge Factory Notification Settings', 'badgeos' ); ?></h3>
-		<p><?php _e( 'Send custom notifications to users when they earn a Open Badge Factory-enabled achievement.', 'badgeos' ); ?></p>
+                    <table class="form-table obf-notifications">
+                            <tr valign="top" class="obf-notifications-enable-message">
+                                    <th scope="row">
+                                            <label for="obf_badge_sendemail_add_message"><?php _e( 'Add a global custom message to each notification: ', 'badgeos' ); ?></label>
+                                    </th>
+                                    <td>
+                                            <select id="obf_badge_sendemail_add_message" name="obf_settings[obf_badge_sendemail_add_message]">
+                                                    <option value="false"<?php selected( $obf_settings[ 'obf_badge_sendemail_add_message' ], 'false' ); ?>><?php _e( 'No', 'badgeos' ) ?></option>
+                                                    <option value="true"<?php selected( $obf_settings[ 'obf_badge_sendemail_add_message' ], 'true' ); ?>><?php _e( 'Yes', 'badgeos' ) ?></option>
+                                            </select>
+                                    </td>
+                            </tr>
 
-		<table class="form-table obf-notifications">
-			<tr valign="top" class="obf-notifications-enable-message">
-				<th scope="row">
-					<label for="obf_badge_sendemail_add_message"><?php _e( 'Add a global custom message to each notification: ', 'badgeos' ); ?></label>
-				</th>
-				<td>
-					<select id="obf_badge_sendemail_add_message" name="obf_settings[obf_badge_sendemail_add_message]">
-						<option value="false"<?php selected( $obf_settings[ 'obf_badge_sendemail_add_message' ], 'false' ); ?>><?php _e( 'No', 'badgeos' ) ?></option>
-						<option value="true"<?php selected( $obf_settings[ 'obf_badge_sendemail_add_message' ], 'true' ); ?>><?php _e( 'Yes', 'badgeos' ) ?></option>
-					</select>
-				</td>
-			</tr>
-
-			<tr valign="top" class="obf-notifications-message">
-				<th scope="row">
-					<label for="obf_badge_sendemail"><?php _e( 'Custom notification message: ', 'badgeos' ); ?></label>
-				</th>
-				<td>
-					<textarea id="obf_badge_sendemail_message" name="obf_settings[obf_badge_sendemail_message]" cols="80" rows="10"><?php echo esc_textarea( $obf_settings[ 'obf_badge_sendemail_message' ] ); ?></textarea>
-				</td>
-			</tr>
-		</table>
+                            <tr valign="top" class="obf-notifications-message">
+                                    <th scope="row">
+                                            <label for="obf_badge_sendemail"><?php _e( 'Custom notification message: ', 'badgeos' ); ?></label>
+                                    </th>
+                                    <td>
+                                            <textarea id="obf_badge_sendemail_message" name="obf_settings[obf_badge_sendemail_message]" cols="80" rows="10"><?php echo esc_textarea( $obf_settings[ 'obf_badge_sendemail_message' ] ); ?></textarea>
+                                    </td>
+                            </tr>
+                    </table>
+                </div>
+		
 		<?php do_action( 'obf_settings', $obf_settings ); ?>
 	</div>
 <?php
@@ -926,3 +930,10 @@ function badgeos_obf_issue_badge_callback($options) {
     
     return null;
 }
+
+function badgeos_obf_show_advanced_features() {
+    $badgeos_settings = get_option( 'badgeos_settings' );
+    //load settings
+    $show_advanced_features = ( isset( $badgeos_settings['show_advanced_features'] ) ) ? $badgeos_settings['show_advanced_features'] == 'enabled' : false;
+    return $show_advanced_features;
+} 			
