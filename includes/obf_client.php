@@ -554,7 +554,8 @@ class ObfClient
         $params = array (
                 'recipient' => $recipients,
                 'issued_on' => $issuedOn,
-                'api_consumer_id' => $this->get_api_consumer_id()
+                'api_consumer_id' => $this->get_api_consumer_id(),
+                'show_report' => 1
         );
         if (!empty($logEntry)) {
             $params['log_entry'] = $logEntry;
@@ -842,6 +843,9 @@ class ObfClient
     }
     protected function get_api_consumer_id()
     {
-        return $this->get_config('api_consumer_id');
+        $consumer_id = $this->get_config('api_consumer_id');
+        if (!empty($consumer_id))
+            return $this->get_config('api_consumer_id');
+        return 'obf-wp';
     }
 }
