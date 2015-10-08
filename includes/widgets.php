@@ -11,7 +11,7 @@ function badgeos_register_widgets() {
 
 }
 
-require_once( badgeos_get_directory_path() .'includes/widgets/earned-user-achievements-widget.php' );
-require_once( badgeos_get_directory_path() .'includes/widgets/earned-user-achievements-widget-obf.php' );
-require_once( badgeos_get_directory_path() .'includes/widgets/credly-credit-issuer-widget.php' );
+require_once( badgeos_obf_get_directory_path() .'includes/widgets/earned-user-achievements-widget.php' );
+require_once( badgeos_obf_get_directory_path() .'includes/widgets/earned-user-achievements-widget-obf.php' );
+require_once( badgeos_obf_get_directory_path() .'includes/widgets/credly-credit-issuer-widget.php' );
 

@@ -27,6 +27,33 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>;.
 */
 
+
+/**
+ * Displays error messages from Open Badge Factory API key retrieval
+ * @since  1.4.5
+ * @return void
+ */
+function badgeos_obf_install_errors() {
+        $has_notice = get_option( 'obf_install_error' );
+	// If we have an error message, we'll display it
+	echo '<div id="message" class="error"><p>'. $has_notice .'</p></div>';
+	// and then delete it
+	delete_option( 'obf_install_error' );
+}
+/**
+ * Check if BadgeOS is already activated, 
+ * and show a message about the two not being compatible with each other.
+ * 
+ * This prevents a nastly error message from showing, and everything failing.
+ */
+if (class_exists('BadgeOS') && function_exists('badgeos_obf_get_directory_path') 
+        && !array_key_exists('badgeos_obf', $GLOBALS) && array_key_exists('badgeos', $GLOBALS)
+    ) {
+    update_option('obf_install_error', _('Open Badge Factory -plugin cannot co-exist with BadgeOS-plugin. Please disable the BadgeOS -plugin, if you wish to continue using the Open Badge Factory -plugin.') );
+    add_action( 'all_admin_notices', 'badgeos_obf_install_errors' );
+    //var_dump("Open Badge Factory plugin cannot co-exist with BadgeOS-plugin.");
+    return;
+}
 class BadgeOS {
 
 	/**
@@ -96,6 +123,7 @@ class BadgeOS {
 		require_once( $this->directory_path . 'includes/obf.php' );
 		require_once( $this->directory_path . 'includes/credly-badge-builder.php' );
 		require_once( $this->directory_path . 'includes/widgets.php' );
+                require_once( $this->directory_path . 'includes/badgeos_global_functions.php' );
 	}
 
 	/**
@@ -201,6 +229,8 @@ class BadgeOS {
 	 * Activation hook for the plugin.
 	 */
 	function activate() {
+            
+            
 
 		// Include our important bits
 		$this->includes();
@@ -350,7 +380,7 @@ $GLOBALS['badgeos'] = new BadgeOS();
  * @since 1.0.0
  * @return string The filepath of the BadgeOS plugin root directory
  */
-function badgeos_get_directory_path() {
+function badgeos_obf_get_directory_path() {
 	return $GLOBALS['badgeos']->directory_path;
 }
 
@@ -360,7 +390,7 @@ function badgeos_get_directory_path() {
  * @since 1.0.0
  * @return string The URL for the BadgeOS plugin root directory
  */
-function badgeos_get_directory_url() {
+function badgeos_obf_get_directory_url() {
 	return $GLOBALS['badgeos']->directory_url;
 }
 
@@ -370,7 +400,7 @@ function badgeos_get_directory_url() {
  * @since  1.0.0
  * @return bool True if debug mode is enabled, false otherwise
  */
-function badgeos_is_debug_mode() {
+function badgeos_obf_is_debug_mode() {
 
 	//get setting for debug mode
 	$badgeos_settings = get_option( 'badgeos_settings' );

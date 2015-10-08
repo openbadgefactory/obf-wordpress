@@ -179,7 +179,7 @@ function badgeos_user_profile_data( $user = null ) {
 		echo '</table>';
 
 		// If debug mode is on, output our achievements array
-		if ( badgeos_is_debug_mode() ) {
+		if ( badgeos_obf_is_debug_mode() ) {
 
 			echo __( 'DEBUG MODE ENABLED', 'badgeos' ) . '<br />';
 			echo __( 'Metadata value for:', 'badgeos' ) . ' _badgeos_achievements<br />';
