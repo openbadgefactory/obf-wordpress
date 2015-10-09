@@ -277,6 +277,14 @@ class BadgeOS {
 			$obf_settings['obf_badge_sendemail_add_message'] = 'false';
 			update_option( 'obf_settings', $obf_settings );
 		}
+                
+                // Disable other service on activate
+		$credly_settings = (array) get_option( 'credly_settings', array() );
+
+		if ( empty( $credly_settings ) || isset( $credly_settings[ 'credly_enable' ] ) ) {
+			$credly_settings['credly_enable']                      = 'false';
+                        update_option( 'credly_settings', $credly_settings );
+                }
 
 		// Register our post types and flush rewrite rules
 		badgeos_flush_rewrite_rules();
