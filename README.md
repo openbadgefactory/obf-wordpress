@@ -107,6 +107,9 @@ There is NO WARRANTY for this software, express or implied, including the implie
 
 Installation
 ------------
+
+A more detailed install guide can be cound [here](doc/install/index.md)
+
 1. Upload 'obf' to the '/wp-content/plugins/' directory of your WordPress installation
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Enter Open Badge Factory API certficate for the badge Issuer in the OBF Integration settings to enable badge sharing. (First get an account at openbadgefactory.com if you do not have one.)
