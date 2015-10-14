@@ -166,7 +166,7 @@ function badgeos_register_post_types() {
 		'public'             => false,
 		'publicly_queryable' => false,
 		'show_ui'            => current_user_can( badgeos_get_manager_capability() ),
-		'show_in_menu'       => $advanced_feature_parent,
+		'show_in_menu'       => 'badgeos_badgeos',
 		'show_in_nav_menus'  => false,
 		'query_var'          => true,
 		'rewrite'            => array( 'slug' => 'log' ),
