@@ -694,7 +694,7 @@ function badgeos_obf_remove_row_actions( $actions, $post )
         $actions['issue-obf-badge'] = $issue_str;
     }
     $actions['edit'] = '<a href="' .get_edit_post_link($post->ID) . '">' .__('Edit awarding rules', 'badgeos'). '</a>';
-    $actions['view'] = '<a href="' .get_edit_post_link($post->ID) . '">' .__('View badge', 'badgeos'). '</a>';
+    $actions['view'] = '<a href="' .get_post_permalink($post->ID) . '">' .__('View badge', 'badgeos'). '</a>';
 
     return $actions;
 }
