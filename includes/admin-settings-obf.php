@@ -175,6 +175,7 @@ function badgeos_obf_options_page() {
 	global $badgeos_obf;
 
 	$obf_settings = $badgeos_obf->obf_settings;
+        
 ?>
 	<div class="wrap" >
 		<div id="icon-options-general" class="icon32"></div>
@@ -916,8 +917,8 @@ add_action('admin_menu', 'badgeos_obf_add_issue_page');
 
 function badgeos_obf_issue_badge_callback($options) {
     global $badgeos_obf;
-    $users = $options['users'];
-    $emails = $options['emails'];
+    $users = array_key_exists('users', $options) ? $options['users'] : array();
+    $emails = array_key_exists('emails', $options) ? $options['emails'] : '';
     $emails = explode("\n", str_replace("\r", "", $emails));
     $emails = array_filter($emails);
     $users = array_filter($users);
