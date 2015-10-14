@@ -212,7 +212,7 @@ function badgeos_settings_page() {
                         $achievement_creator_role = ( isset( $badgeos_settings['achievement_creator_role'] ) ) ? $badgeos_settings['achievement_creator_role'] : 'manage_options';
 			$submission_manager_role = ( isset( $badgeos_settings['submission_manager_role'] ) ) ? $badgeos_settings['submission_manager_role'] : 'manage_options';
 			$submission_email = ( isset( $badgeos_settings['submission_email'] ) ) ? $badgeos_settings['submission_email'] : '';
-                        $show_advanced_features = ( isset( $badgeos_settings['show_advanced_features'] ) ) ? $badgeos_settings['show_advanced_features'] : '';
+                        $show_advanced_features = ( isset( $badgeos_settings['show_advanced_features'] ) ) ? $badgeos_settings['show_advanced_features'] : 'disabled';
 			$submission_email_addresses = ( isset( $badgeos_settings['submission_email_addresses'] ) ) ? $badgeos_settings['submission_email_addresses'] : '';
 			$debug_mode = ( isset( $badgeos_settings['debug_mode'] ) ) ? $badgeos_settings['debug_mode'] : 'disabled';
 			$ms_show_all_achievements = ( isset( $badgeos_settings['ms_show_all_achievements'] ) ) ? $badgeos_settings['ms_show_all_achievements'] : 'disabled';
