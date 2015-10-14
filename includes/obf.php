@@ -91,7 +91,7 @@ class BadgeOS_Obf {
 		$this->send_email              = true;
 		$this->custom_message          = ( 'true' == $this->obf_settings['obf_badge_sendemail_add_message'] ) ? $this->obf_settings['obf_badge_sendemail_message'] : '';
 
-		// Set our user settings
+                // Set our user settings
 		if ( is_user_logged_in() ) {
 			$this->user_id             = get_current_user_id();
 			$this->user_enabled        = ( 'false' === get_user_meta( $this->user_id, 'obf_user_enable', true ) ? 'false' : 'true' );
@@ -100,6 +100,15 @@ class BadgeOS_Obf {
 			$this->hooks();
 		}
                 $this->obf_client = ObfClient::get_instance(null, $this->obf_settings);
+                $certificate_file = $this->obf_client->get_cert_filename();
+                $certificate_exists = !empty($certificate_file) && file_exists($certificate_file);
+                if (
+                        !empty($this->obf_settings['obf_client_id']) && 
+                        $this->obf_settings['obf_client_id'] != '__EMPTY__' && 
+                        !$certificate_exists
+                    ) {
+                    $this->obf_settings['obf_client_id'] = '__EMPTY__';
+                }
 
 	}
         function import_all_obf_badges() {
@@ -891,7 +900,7 @@ class BadgeOS_Obf {
 
 		<div id="obf-badge-settings">
                     <table class="form-table">
-                        <tr valign="top"><th scope="row"><label for="_badgeos_obf_editing_disabled"><?php _e( 'Editing Disabled', 'badgeos' ); ?></label></th>
+                        <tr valign="top" style="display: none;"><th scope="row"><label for="_badgeos_obf_editing_disabled"><?php _e( 'Editing Disabled', 'badgeos' ); ?></label></th>
                             <td>
                                 <select id="_badgeos_obf_editing_disabled" name="_badgeos_obf_editing_disabled">
                                     <option value="1" <?php selected( $obf_editing_disabled, 'true' ); ?>><?php _e( 'Yes', 'badgeos' ) ?></option>
