@@ -887,7 +887,7 @@ class BadgeOS_Obf {
 						<option value="1" <?php selected( $send_to_obf, 'true' ); ?>><?php _e( 'Yes', 'badgeos' ) ?></option>
 						<option value="0" <?php selected( $send_to_obf, 'false' ); ?>><?php _e( 'No', 'badgeos' ) ?></option>
 					</select>
-                                    <span class="description"><?php _e('Open Badge Factory will automatically email the badge to the user.', 'badgeos'); ?></span>
+                                    <span class="description cmb_metabox_description"><?php _e('Open Badge Factory will automatically email the badge to the user.', 'badgeos'); ?></span>
 				</td>
 			</tr>
 		</table>
@@ -918,9 +918,10 @@ class BadgeOS_Obf {
 					</select>
 				</td>
 			</tr>
-			<tr valign="top"><th scope="row"><label for="_badgeos_obf_expiration"><?php _e( 'Expiration ( In days; 0 = never )', 'badgeos' ); ?></label></th>
+			<tr valign="top"><th scope="row"><label for="_badgeos_obf_expiration"><?php _e( 'Expiration', 'badgeos' ); ?></label></th>
 				<td>
 					<input type="text" id="_badgeos_obf_expiration" name="_badgeos_obf_expiration" value="<?php echo $obf_expiration; ?>" class="widefat" />
+                                        <span class="description cmb_metabox_description"><?php _e('Enter number of days, and 0 if badge never expires.', 'badgeos'); ?></span>
 				</td>
 			</tr>
 			<tr valign="top" style="display: none;"><th scope="row"><label for="_badgeos_obf_is_giveable"><?php _e( 'Allow Badge to be Given by Others', 'badgeos' ); ?></label></th>

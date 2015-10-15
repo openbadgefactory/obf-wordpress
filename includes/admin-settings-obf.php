@@ -862,6 +862,7 @@ function badgeos_obf_issue_badge_page() {
                     <option value="100">100</option>
                 </select>
             </label>
+            <p class="description"><?php _e('Select one or more users by checking the checkboxes below') ?></p>
             <ul id="obf_issue_badge_user_list" class="filterable-items-list">
             <?php
             $users = get_users();
@@ -895,7 +896,7 @@ function badgeos_obf_issue_badge_page() {
         </th>
         <td>
                 <textarea class="widefat" rows="10" cols="80" id="obf_issue_badge_emails" name="obf_issue_badge[emails]"></textarea>
-                <p class="description"><?php _e('If you wish to issue badges to people who do not have user accounts on this site, or they are unknown, a list of email addresses can be input here. One email-address per line.', 'badgeos'); ?></description>
+                <p class="description"><?php _e('Enter additional email addresses here (1 per line) if you wish to issue the badge to people who do not have accounts on this site, or they are unknown.', 'badgeos'); ?></description>
         </td>
     </tr>
     <tr>
