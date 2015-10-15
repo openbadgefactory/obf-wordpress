@@ -375,7 +375,7 @@ function badgeos_obf_options_yes_api( $obf_settings = array() ) {
                                             </select>
                                     </td>
                             </tr>
-                            <tr valign="top">
+                            <tr valign="top" style="display: none;">
                                     <th scope="row">
                                             <label for="obf_badge_testimonial"><?php _e( 'Testimonial: ', 'badgeos' ); ?></label>
                                     </th>
@@ -383,7 +383,7 @@ function badgeos_obf_options_yes_api( $obf_settings = array() ) {
                                                     <?php echo obf_fieldmap_list_options( $obf_settings[ 'obf_badge_testimonial' ] ); ?>
                                             </select></td>
                             </tr>
-                            <tr valign="top">
+                            <tr valign="top" style="display: none;">
                                     <th scope="row">
                                             <label for="obf_badge_evidence"><?php _e( 'Evidence: ', 'badgeos' ); ?></label>
                                     </th>
@@ -395,11 +395,13 @@ function badgeos_obf_options_yes_api( $obf_settings = array() ) {
                             </tr>
                     </table>
 
+                    <div style="display: none;">
                     <h3><?php _e( 'Open Badge Factory Notification Settings', 'badgeos' ); ?></h3>
-                    <p><?php _e( 'Send custom notifications to users when they earn a Open Badge Factory-enabled achievement.', 'badgeos' ); ?></p>
-
+                    <p><?php _e( 'Send custom notifications to users when they earn a Open Badge Factory-enabled achievement.', 'badgeos' ); ?></p>    
+                    </div>
+                    
                     <table class="form-table obf-notifications">
-                            <tr valign="top" class="obf-notifications-enable-message">
+                            <tr valign="top" class="obf-notifications-enable-message"  style="display: none;">
                                     <th scope="row">
                                             <label for="obf_badge_sendemail_add_message"><?php _e( 'Add a global custom message to each notification: ', 'badgeos' ); ?></label>
                                     </th>
@@ -411,7 +413,7 @@ function badgeos_obf_options_yes_api( $obf_settings = array() ) {
                                     </td>
                             </tr>
 
-                            <tr valign="top" class="obf-notifications-message">
+                            <tr valign="top" class="obf-notifications-message"  style="display: none;">
                                     <th scope="row">
                                             <label for="obf_badge_sendemail"><?php _e( 'Custom notification message: ', 'badgeos' ); ?></label>
                                     </th>

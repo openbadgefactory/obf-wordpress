@@ -712,37 +712,21 @@ class BadgeOS_Obf {
 
 		$obf_badge_id = get_post_meta( $badge_id, '_badgeos_obf_badge_id', true );
 
-		$testimonial = obf_fieldmap_get_field_value( $badge_id, $this->field_testimonial );
-		$testimonial = ( strlen( $testimonial ) > 1000 ? ( substr( $testimonial, 0, 996 ) . '...' ) : $testimonial );
+		//$testimonial = obf_fieldmap_get_field_value( $badge_id, $this->field_testimonial );
+		//$testimonial = ( strlen( $testimonial ) > 1000 ? ( substr( $testimonial, 0, 996 ) . '...' ) : $testimonial );
 
-		if ( is_numeric( $obf_user_id ) ) {
-
-			$args = array(
-				'recipient'     => array($obf_user_id),
-				'badge_id'      => $obf_badge_id,
-				'evidence_file' => obf_fieldmap_get_field_value( $badge_id, $this->field_evidence ),
-				'testimonial'   => $testimonial,
-				'notify'        => (bool) $this->send_email,
-				'custom_message' => $this->custom_message,
-			);
-
-		} elseif ( is_email( $obf_user_id ) ) {
-
-			// Get the userdata object for our current user
-			$user_info = get_userdata( $user_id );
-
-			$args = array(
-				'recipient'     => array($obf_user_id),
-				'first_name'    => $user_info->user_firstname,
-				'last_name'     => $user_info->user_lastname,
-				'badge_id'      => $obf_badge_id,
-				'evidence_file' => obf_fieldmap_get_field_value( $badge_id, $this->field_evidence ),
-				'testimonial'   => $testimonial,
-				'notify'        => (bool) $this->send_email,
-				'custom_message' => $this->custom_message,
-			);
-
-		}
+                $expires_in_days = ( get_post_meta( $badge_id, '_badgeos_obf_expiration', true ) ? get_post_meta( $badge_id, '_badgeos_obf_expiration', true ) : '0' );
+                $expires = 0;
+                if (is_numeric($expires_in_days) && $expires_in_days != 0) {
+                    $expires = time() + (((int)$expires_in_days) * 86400);
+                }
+                
+                
+                $args = array(
+                    'recipient'     => array($obf_user_id),
+                    'badge_id'      => $obf_badge_id,
+                    'expires'       => $expires
+                );
 
 		// Remove array keys with an empty value TODO: Do we want this?
 		//$args = array_diff( $args, array( '' ) );
@@ -809,9 +793,15 @@ class BadgeOS_Obf {
 	 */
 	private function post_user_badges_args( $emails = array(), $badge_id = 0 ) {
             $obf_badge_id = get_post_meta( $badge_id, '_badgeos_obf_badge_id', true );
+            $expires_in_days = ( get_post_meta( $badge_id, '_badgeos_obf_expiration', true ) ? get_post_meta( $badge_id, '_badgeos_obf_expiration', true ) : '0' );
+            $expires = 0;
+            if (is_numeric($expires_in_days) && $expires_in_days != 0) {
+                $expires = time() + (((int)$expires_in_days) * 86400);
+            }
             $args = array(
                 'recipient'     => $emails,
 		'badge_id'      => $obf_badge_id,
+                'expires'       => $expires
             );
             return $args;
         }
@@ -874,10 +864,13 @@ class BadgeOS_Obf {
 
 		//Check existing post meta
 		$send_to_obf             = ( get_post_meta( $post->ID, '_badgeos_send_to_obf', true ) ? get_post_meta( $post->ID, '_badgeos_send_to_obf', true ) : 'false' );
-		$obf_include_evidence    = ( get_post_meta( $post->ID, '_badgeos_obf_include_evidence', true ) ? get_post_meta( $post->ID, '_badgeos_obf_include_evidence', true ): 'false' );
-		$obf_include_testimonial = ( get_post_meta( $post->ID, '_badgeos_obf_include_testimonial', true ) ? get_post_meta( $post->ID, '_badgeos_obf_include_testimonial', true ) : 'false' );
+		//$obf_include_evidence    = ( get_post_meta( $post->ID, '_badgeos_obf_include_evidence', true ) ? get_post_meta( $post->ID, '_badgeos_obf_include_evidence', true ): 'false' );
+		//$obf_include_testimonial = ( get_post_meta( $post->ID, '_badgeos_obf_include_testimonial', true ) ? get_post_meta( $post->ID, '_badgeos_obf_include_testimonial', true ) : 'false' );
+                $obf_include_evidence    = 'false';
+                $obf_include_testimonial = 'false'; // No support for testimonials at the moment.
 		$obf_expiration          = ( get_post_meta( $post->ID, '_badgeos_obf_expiration', true ) ? get_post_meta( $post->ID, '_badgeos_obf_expiration', true ) : '0' );
-		$obf_is_giveable         = ( get_post_meta( $post->ID, '_badgeos_obf_is_giveable', true ) ? get_post_meta( $post->ID, '_badgeos_obf_is_giveable', true ) : 'false' );
+		//$obf_is_giveable         = ( get_post_meta( $post->ID, '_badgeos_obf_is_giveable', true ) ? get_post_meta( $post->ID, '_badgeos_obf_is_giveable', true ) : 'false' );
+                $obf_is_giveable         = 'true'; // Do not process drafts
                 $obf_editing_disabled    = ( get_post_meta( $post->ID, '_badgeos_obf_editing_disabled', true ) ? get_post_meta( $post->ID, '_badgeos_obf_editing_disabled', true ) : 'false' );
 		$obf_categories          = maybe_unserialize( get_post_meta( $post->ID, '_badgeos_obf_categories', true ) );
 		$obf_badge_id            = get_post_meta( $post->ID, '_badgeos_obf_badge_id', true );
@@ -886,7 +879,7 @@ class BadgeOS_Obf {
 		<input type="hidden" name="obf_details_nonce" value="<?php echo wp_create_nonce( 'obf_details' ); ?>" />
 		<table class="form-table">
 			<tr valign="top">
-				<td colspan="2"><?php _e( "This setting makes the earned badge for this achievement sharable via Open Badge Factory and Open Badge Passport on social networks, such as Facebook, Twitter, LinkedIn, Mozilla Backpack, or the badge earner's own blog or site.", 'badgeos' ); ?> (<?php printf( __( '<a href="%s">Configure global settings</a> for Obf integration.', 'badgeos' ), admin_url( 'admin.php?page=badgeos_sub_obf_integration' ) ); ?> )</td>
+				<td colspan="2"><?php _e( "This setting makes the earned badge for this achievement sharable via Open Badge Factory and Open Badge Passport on social networks, such as Facebook, Twitter, LinkedIn, Mozilla Backpack, or the badge earner's own blog or site.", 'badgeos' ); ?> (<?php printf( __( '<a href="%s">Configure global settings</a> for Open Badge Factory integration.', 'badgeos' ), admin_url( 'admin.php?page=badgeos_sub_obf_integration' ) ); ?> )</td>
 			</tr>
 			<tr valign="top"><th scope="row"><label for="_badgeos_send_to_obf"><?php _e( 'Send to Open Badge Factory when earned', 'badgeos' ); ?></label></th>
 				<td>
@@ -894,6 +887,7 @@ class BadgeOS_Obf {
 						<option value="1" <?php selected( $send_to_obf, 'true' ); ?>><?php _e( 'Yes', 'badgeos' ) ?></option>
 						<option value="0" <?php selected( $send_to_obf, 'false' ); ?>><?php _e( 'No', 'badgeos' ) ?></option>
 					</select>
+                                    <span class="description"><?php _e('Open Badge Factory will automatically email the badge to the user.', 'badgeos'); ?></span>
 				</td>
 			</tr>
 		</table>
@@ -908,7 +902,7 @@ class BadgeOS_Obf {
                                 </select>
                             </td>
 			</tr>
-			<tr valign="top"><th scope="row"><label for="_badgeos_obf_include_evidence"><?php _e( 'Include Evidence', 'badgeos' ); ?></label></th>
+			<tr valign="top" style="display: none;"><th scope="row"><label for="_badgeos_obf_include_evidence"><?php _e( 'Include Evidence', 'badgeos' ); ?></label></th>
 				<td>
 					<select id="_badgeos_obf_include_evidence" name="_badgeos_obf_include_evidence">
 						<option value="1" <?php selected( $obf_include_evidence, 'true' ); ?>><?php _e( 'Yes', 'badgeos' ) ?></option>
@@ -916,7 +910,7 @@ class BadgeOS_Obf {
 					</select>
 				</td>
 			</tr>
-			<tr valign="top"><th scope="row"><label for="_badgeos_obf_include_testimonial"><?php _e( 'Include Testimonial', 'badgeos' ); ?></label></th>
+			<tr valign="top" style="display: none;"><th scope="row"><label for="_badgeos_obf_include_testimonial"><?php _e( 'Include Testimonial', 'badgeos' ); ?></label></th>
 				<td>
 					<select id="_badgeos_obf_include_testimonial" name="_badgeos_obf_include_testimonial">
 						<option value="1" <?php selected( $obf_include_testimonial, 'true' ); ?>><?php _e( 'Yes', 'badgeos' ) ?></option>
@@ -929,12 +923,13 @@ class BadgeOS_Obf {
 					<input type="text" id="_badgeos_obf_expiration" name="_badgeos_obf_expiration" value="<?php echo $obf_expiration; ?>" class="widefat" />
 				</td>
 			</tr>
-			<tr valign="top"><th scope="row"><label for="_badgeos_obf_is_giveable"><?php _e( 'Allow Badge to be Given by Others', 'badgeos' ); ?></label></th>
+			<tr valign="top" style="display: none;"><th scope="row"><label for="_badgeos_obf_is_giveable"><?php _e( 'Allow Badge to be Given by Others', 'badgeos' ); ?></label></th>
 				<td>
 					<select id="_badgeos_obf_is_giveable" name="_badgeos_obf_is_giveable">
 						<option value="1" <?php selected( $obf_is_giveable, 'true' ); ?>><?php _e( 'Yes', 'badgeos' ) ?></option>
 						<option value="0" <?php selected( $obf_is_giveable, 'false' ); ?>><?php _e( 'No', 'badgeos' ) ?></option>
 					</select>
+                                        <span class="description"><?php _e('Is the badge issuable (Yes), or a draft (No).', 'badgeos'); ?></span>
 				</td>
 			</tr>
 			<tr valign="top" class="obf_category_search"><th scope="row"><label for="obf_category_search"><?php _e( 'Open Badge Factory Category Search', 'badgeos' ); ?></label></th>
