@@ -844,13 +844,14 @@ class BadgeOS_Obf {
 	 */
 	public function badge_metabox_add() {
 
-		foreach ( badgeos_get_achievement_types_slugs() as $achievement_type ) {
+		foreach ( $this->obf_badge_achievement_types(false) as $achievement_type ) {
 
 			add_meta_box( 'badgeos_obf_details_meta_box', __( 'Badge Sharing Options', 'badgeos' ), array( $this, 'badge_metabox_show' ), $achievement_type, 'advanced', 'default' );
-
+                        remove_meta_box( 'postimagediv', $achievement_type, 'side' ); // Remove featured image metabox, as it cannot be changed.
+                        add_meta_box( 'badgeos_obf_image_meta_box', __( 'Badge Image', 'badgeos' ), array( $this, 'badge_image_metabox_show' ), $achievement_type, 'side', 'default' );
 		}
 	}
-
+        
 
 	/**
 	 * Output a Obf Badge Settings metabox on the badge CPT
@@ -957,6 +958,17 @@ class BadgeOS_Obf {
 	<?php
 	}
 
+        /**
+	 * Output a OBF Badge image metabox on the badge CPT
+	 *
+	 * @since  1.0.0
+	 * @return void
+	 */
+	public function badge_image_metabox_show() {
+
+		global $post;
+                the_post_thumbnail( 'thumbnail' );
+        }
 
 	/**
 	 * Save our Obf Badge Settings metabox
