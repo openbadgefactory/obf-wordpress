@@ -357,7 +357,7 @@ function badgeos_add_ons_page() {
 	?>
 	<div class="wrap badgeos-addons">
 		<div id="icon-options-general" class="icon32"></div>
-		<h2><?php printf( __( 'Open Badge Factory Add-Ons &nbsp;&mdash;&nbsp; %s', 'badgeos' ), '<a href="http://badgeos.org/add-ons/?ref=badgeos" class="button-primary" target="_blank">' . __( 'Browse All Add-Ons', 'badgeos' ) . '</a>' ); ?></h2>
+		<h2><?php _e( 'Add-Ons', 'badgeos' ); ?></h2>
 		<p><?php _e( 'These add-ons extend the functionality of the Open Badge Factory -plugin.', 'badgeos' ); ?></p>
 		<?php echo badgeos_add_ons_get_feed(); ?>
 	</div>
