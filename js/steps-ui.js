@@ -124,12 +124,12 @@ function badgeos_delete_step( step_id ) {
 // Update all steps
 function badgeos_update_steps(e) {
 
-	jQuery( '.save-steps-spinner' ).show();
+        jQuery( '.save-steps-spinner' ).show();
 	step_data = {
 		action: 'update_steps',
 		steps: []
 	};
-
+	
 	// Loop through each step and collect its data
 	jQuery( '.step-row' ).each( function() {
 
@@ -160,6 +160,10 @@ function badgeos_update_steps(e) {
 		ajaxurl,
 		step_data,
 		function( response ) {
+                        if (jQuery( '.step-row' ).length == 0) {
+                            jQuery( '.save-steps-spinner' ).hide();
+                            return;
+                        }
 
 			// Parse our response and update our step titles
 			var titles = jQuery.parseJSON( response );
