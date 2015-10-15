@@ -705,6 +705,25 @@ function badgeos_obf_remove_row_actions( $actions, $post )
 }
 add_filter( 'page_row_actions', 'badgeos_obf_remove_row_actions', 10, 2 );
 
+/**
+ * Remove quick edit links on the badge list.
+ * @param type $actions
+ * @param type $post
+ * @return type
+ */
+function badgeos_obf_log_remove_row_actions( $actions, $post )
+{
+    if( $post->post_type != 'badgeos-log-entry' ) {
+        return $actions;  
+    }
+    
+    unset( $actions['inline hide-if-no-js'] );
+    unset( $actions['edit'] );
+    
+    return $actions;
+}
+add_filter( 'post_row_actions', 'badgeos_obf_log_remove_row_actions', 10, 2 );
+
 
  
 /**
