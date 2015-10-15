@@ -512,7 +512,7 @@ class BadgeOS_Obf {
 
 		foreach ( $categories as $name => $value ) {
 
-			$markup .= '<label for="' . esc_attr( $name ). '"><input type="checkbox" name="_badgeos_obf_categories[' . $name . ']" id="'. esc_attr( $name ) . '" value="' . esc_attr( $value ) . '" checked="checked" /> ' . ucwords( $name ) . '</label><br />';
+			$markup .= '<label for="' . esc_attr( $name ). '"><input type="checkbox" name="_badgeos_obf_categories[' . $name . ']" id="'. esc_attr( $name ) . '" value="' . esc_attr( $value ) . '" checked="checked" disabled="true" /> ' . ucwords( $name ) . '</label><br />';
 		}
 
 		return $markup;
@@ -934,7 +934,7 @@ class BadgeOS_Obf {
                                         <span class="description"><?php _e('Is the badge issuable (Yes), or a draft (No).', 'badgeos'); ?></span>
 				</td>
 			</tr>
-			<tr valign="top" class="obf_category_search"><th scope="row"><label for="obf_category_search"><?php _e( 'Open Badge Factory Category Search', 'badgeos' ); ?></label></th>
+			<tr valign="top" class="obf_category_search" style="display: none;"><th scope="row"><label for="obf_category_search"><?php _e( 'Open Badge Factory Category Search', 'badgeos' ); ?></label></th>
 				<td>
 					<input type="text" id="obf_category_search" name="obf_category_search" value="" size="50" />
 					<a id="obf_category_search_submit" class="button" /><?php _e( 'Search Categories', 'badgeos' ); ?></a>
