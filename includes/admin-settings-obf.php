@@ -186,8 +186,8 @@ function badgeos_obf_options_page() {
 			<?php
 				settings_fields( 'obf_settings_group' );
 			?>
-			<p><?php printf( __( '<a href="%1$s" target="_blank">Open Badge Factory</a> Support is coming! <a href="%1$s" target="_blank">Learn more</a>.  <br /><br />If you do not yet have a Open Badge Factory account, <a href="%1$s" target="_blank">create one now</a>. It\'s free.', 'badgeos' ), 'https://openbadgefactory.com/signup' ); ?></p>
-
+                        <p><?php printf( __( '<a href="%1$s" target="_blank">Open Badge Factory</a> is a cloud platform that provides the tools your organization needs to implement a meaningful and sustainable Open Badges system. Be successful with your badges! If you do not yet have a Open Badge Factory account, <a href="%2$s" target="_blank">create one now</a>. It\'s free.', 'badgeos' ), 'https://openbadgefactory.com', 'https://openbadgefactory.com/signup' ); ?></p>
+			
 			<table class="form-table">
 				<tr valign="top">
 					<th scope="row">
@@ -280,6 +280,7 @@ function badgeos_obf_options_no_api( $obf_settings = array() ) {
 				</th>
 				<td>
 					<input id="api_key" type="text" name="obf_settings[api_key]" class="widefat" value="<?php echo esc_attr( $obf_settings[ 'api_key' ] ); ?>" style="max-width: 1000px;" />
+                                        <p class="description"><?php _e('Find your API Key by logging in to Open Badge Factory. It is located under Admin Tools > API key.', 'badgeos'); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -309,6 +310,7 @@ function badgeos_obf_options_yes_api( $obf_settings = array() ) {
 				<td>
 					<input id="api_key" type="text" name="obf_settings[api_key]" class="widefat" value="<?php echo esc_attr( $obf_settings[ 'api_key' ] ); ?>" />
                                         <input id="obf_client_id" type="hidden" name="obf_settings[obf_client_id]" class="widefat" value="<?php echo esc_attr( $obf_settings[ 'obf_client_id' ] ); ?>" />
+                                        <p class="description"><?php _e('Find your API Key by logging in to Open Badge Factory. It is located under Admin Tools > API key.', 'badgeos'); ?></p>
 				</td>
 			</tr>
 		</table>
