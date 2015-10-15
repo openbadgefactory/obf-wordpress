@@ -107,6 +107,9 @@ ul.badgeos-achievement-earners-list li {
 	margin:5px;
 	padding:0;
 }
+ul.badgeos-achievement-earners-list li p {
+    font-size: 0.8em;
+}
 .badgeos-feedback-buttons .button,
 .badgeos-feedback-buttons .button:visited,
 .badgeos-feedback .submission-comment-toggle,
