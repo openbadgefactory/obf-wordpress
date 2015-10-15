@@ -65,7 +65,7 @@ class BadgeOS_Obf {
 			'obf_badge_testimonial' => 'congratulations_text',
 			'obf_badge_evidence' => 'permalink',
 			'obf_badge_sendemail_add_message' => 'false',
-			'obf_badge_sendemail_message' => __( 'NOTE: To claim this official badge and share it on social networks click on the "Save & Share" button above. If you already have a Obf account, simply sign in and then "Accept" the badge. If you are not a member, Create an Account (it\'s free), confirm your email address, and then "Accept" your badge.', 'badgeos' ),
+			'obf_badge_sendemail_message' => __( 'NOTE: To claim this official badge and share it on social networks click on the "Save & Share" button above. If you already have an Open Badge Passport account, simply sign in and then "Accept" the badge. If you are not a member, Create an Account (it\'s free), confirm your email address, and then "Accept" your badge.', 'badgeos' ),
 		);
 
 		$this->obf_settings = array_merge( $default_settings, $this->obf_settings );
@@ -370,7 +370,7 @@ class BadgeOS_Obf {
 			return;
 
 		//display the admin notice
-		printf( __( '<div class="updated"><p>Note: Obf Integration is turned on, but you must first <a href="%s">enter your Obf credentials</a> to allow earned badges to be shared by recipients (or Disable Obf Integration to hide this notice).</p></div>', 'badgeos' ), admin_url( 'admin.php?page=badgeos_sub_obf_integration' ) );
+		printf( __( '<div class="updated"><p>Note: Open Badge Factory Integration is turned on, but you must first <a href="%s">enter your Open Badge Factory -credentials</a> to allow earned badges to be shared by recipients (or Disable Open Badge Factory Integration to hide this notice).</p></div>', 'badgeos' ), admin_url( 'admin.php?page=badgeos_sub_obf_integration' ) );
 
 	}
 
@@ -532,7 +532,7 @@ class BadgeOS_Obf {
 
 		<tr>
 			<th scope="row"><?php _e( 'Badge Sharing', 'badgeos' ); ?></th>
-			<td><label for="obf_user_enable"><input type="checkbox" name="obf_user_enable" value="true" <?php checked( $user->obf_user_enable, 'true' ); ?>/> <?php _e( 'Send eligible earned badges to Obf', 'badgeos' ); ?></td>
+			<td><label for="obf_user_enable"><input type="checkbox" name="obf_user_enable" value="true" <?php checked( $user->obf_user_enable, 'true' ); ?>/> <?php _e( 'Send eligible earned badges to Open Badge Factory', 'badgeos' ); ?></td>
 		</tr>
 
 	<?php
@@ -886,9 +886,9 @@ class BadgeOS_Obf {
 		<input type="hidden" name="obf_details_nonce" value="<?php echo wp_create_nonce( 'obf_details' ); ?>" />
 		<table class="form-table">
 			<tr valign="top">
-				<td colspan="2"><?php _e( "This setting makes the earned badge for this achievement sharable via Obf on social networks, such as Facebook, Twitter, LinkedIn, Mozilla Backpack, or the badge earner's own blog or site.", 'badgeos' ); ?> (<?php printf( __( '<a href="%s">Configure global settings</a> for Obf integration.', 'badgeos' ), admin_url( 'admin.php?page=badgeos_sub_obf_integration' ) ); ?> )</td>
+				<td colspan="2"><?php _e( "This setting makes the earned badge for this achievement sharable via Open Badge Factory and Open Badge Passport on social networks, such as Facebook, Twitter, LinkedIn, Mozilla Backpack, or the badge earner's own blog or site.", 'badgeos' ); ?> (<?php printf( __( '<a href="%s">Configure global settings</a> for Obf integration.', 'badgeos' ), admin_url( 'admin.php?page=badgeos_sub_obf_integration' ) ); ?> )</td>
 			</tr>
-			<tr valign="top"><th scope="row"><label for="_badgeos_send_to_obf"><?php _e( 'Send to Obf when earned', 'badgeos' ); ?></label></th>
+			<tr valign="top"><th scope="row"><label for="_badgeos_send_to_obf"><?php _e( 'Send to Open Badge Factory when earned', 'badgeos' ); ?></label></th>
 				<td>
 					<select id="_badgeos_send_to_obf" name="_badgeos_send_to_obf">
 						<option value="1" <?php selected( $send_to_obf, 'true' ); ?>><?php _e( 'Yes', 'badgeos' ) ?></option>
@@ -937,20 +937,20 @@ class BadgeOS_Obf {
 					</select>
 				</td>
 			</tr>
-			<tr valign="top" class="obf_category_search"><th scope="row"><label for="obf_category_search"><?php _e( 'Obf Category Search', 'badgeos' ); ?></label></th>
+			<tr valign="top" class="obf_category_search"><th scope="row"><label for="obf_category_search"><?php _e( 'Open Badge Factory Category Search', 'badgeos' ); ?></label></th>
 				<td>
 					<input type="text" id="obf_category_search" name="obf_category_search" value="" size="50" />
 					<a id="obf_category_search_submit" class="button" /><?php _e( 'Search Categories', 'badgeos' ); ?></a>
 				</td>
 			</tr>
-			<tr valign="top" id="obf_search_results" <?php if ( ! is_array( $obf_categories ) ) { ?>style="display:none"<?php } ?>><th scope="row"><label><?php _e( 'Obf Badge Category', 'badgeos' ); ?></label></th>
+			<tr valign="top" id="obf_search_results" <?php if ( ! is_array( $obf_categories ) ) { ?>style="display:none"<?php } ?>><th scope="row"><label><?php _e( 'Open Badge Factory Badge Category', 'badgeos' ); ?></label></th>
 				<td>
 					<fieldset>
 						<?php echo $this->obf_existing_category_output( $obf_categories ); ?>
 					</fieldset>
 				</td>
 			</tr>
-			<tr valign="top"><th scope="row"><label for="_badgeos_obf_badge_id"><?php _e( 'Obf Badge ID', 'badgeos' ); ?></label></th>
+			<tr valign="top"><th scope="row"><label for="_badgeos_obf_badge_id"><?php _e( 'Open Badge Factory Badge ID', 'badgeos' ); ?></label></th>
 				<td>
 					<input type="text" id="_badgeos_obf_badge_id" name="_badgeos_obf_badge_id" value="<?php echo esc_attr( $obf_badge_id ); ?>" class="widefat" readonly="readonly" />
 				</td>
@@ -1386,7 +1386,7 @@ function badgeos_log_user_sent_achievement_to_obf( $user_id, $achievement_id ) {
 		return;
 
 	// Log the action
-	$title = sprintf( __( '%1$s sent %2$s to Obf', 'badgeos' ),
+	$title = sprintf( __( '%1$s sent %2$s to Open Badge Factory', 'badgeos' ),
 			$user->user_login,
 			get_the_title( $achievement_id )
 			);

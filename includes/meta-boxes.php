@@ -57,7 +57,7 @@ function badgeos_custom_metaboxes( array $meta_boxes ) {
 			array(
 				'name' => __( 'Default Badge Image', 'badgeos' ),
 				'desc' => sprintf(
-					__( 'To set a default image, use the <strong>Default Achievement Image</strong> metabox to the right. For best results, use a square .png file with a transparent background, at least 200x200 pixels. Or, design a badge using the %1$s.', 'badgeos' ),
+					__( 'To set a default image, use the <strong>Default Achievement Image</strong> metabox to the right. For best results, use a square .png file with a transparent background, at least 200x200 pixels.', 'badgeos' ),
 					badgeos_get_badge_builder_link( array( 'link_text' => __( 'Credly Badge Builder', 'badgeos' ) ) )
 					),
 				'id'   => $prefix . 'upload_badge_image_achievement',
@@ -125,7 +125,7 @@ function badgeos_custom_metaboxes( array $meta_boxes ) {
 			),
 			array(
 				'name' => __( 'Congratulations Text', 'badgeos' ),
-				'desc' => __( 'Displayed after achievement is earned. If sending to Credly, a great place for a testimonial for those who complete this achievement.', 'badgeos' ),
+				'desc' => __( 'Displayed after achievement is earned. A great place for a testimonial for those who complete this achievement.', 'badgeos' ),
 				'id'   => $prefix . 'congratulations_text',
 				'type' => 'textarea',
 			),

@@ -480,6 +480,7 @@ class BadgeOS_Credly {
      * @return void
      */
     public function credly_profile_setting( $user ) {
+        if ('false' !== $this->credly_settings['credly_enable']) {     
     ?>
 
         <tr>
@@ -488,6 +489,7 @@ class BadgeOS_Credly {
         </tr>
 
     <?php
+        }
     }
 
 

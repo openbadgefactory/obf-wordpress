@@ -893,6 +893,7 @@ function badgeos_obf_issue_badge_page() {
         </th>
         <td>
                 <textarea class="widefat" rows="10" cols="80" id="obf_issue_badge_emails" name="obf_issue_badge[emails]"></textarea>
+                <p class="description"><?php _e('If you wish to issue badges to people who do not have user accounts on this site, or they are unknown, a list of email addresses can be input here. One email-address per line.', 'badgeos'); ?></description>
         </td>
     </tr>
     <tr>

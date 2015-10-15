@@ -11,3 +11,7 @@ If you open an awarding rule for editing, you can choose from multiple earning o
 ![Required steps](wp_plugin_steps.png "Required steps")
 
 After you save an awarding rule, the badge associated with the awarding rule will be automatically awarded to users who complete the required steps.
+
+You can monitor user step unlocking process and achivements via the Log Entries menu.
+
+You can also define meta-achivements by adding badges as required steps. Choose Specific Achievement of Type > Awarding Rule > your badge at Required Steps.
