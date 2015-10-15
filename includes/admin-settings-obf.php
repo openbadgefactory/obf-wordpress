@@ -929,10 +929,46 @@ function badgeos_obf_issue_badge_callback($options) {
     }
 
     if (count($users) > 0 || count($emails) > 0) {
-        $badgeos_obf->post_obf_user_badges($users, $emails, $badge_id, true);
+        try {
+            $issue_result = $badgeos_obf->post_obf_user_badges($users, $emails, $badge_id, true);
+        } catch (Exception $ex) {
+            $issue_result=null;
+            $notice = array('type' => 'error', 'message' => sprintf(__('Badge issuing failed. Server returned %s', 'badgeos'), $ex->getMessage()));
+        }
+        if (!empty($issue_result)) {
+            $notice = array('type' => 'success', 'message' => __('Badge issued successfully.', 'badgeos'));
+        } else if (empty($notice)) {
+            $notice = array('type' => 'error', 'message' => __('Badge issuing failed.', 'badgeos'));
+        }
+        update_option( 'obf_notice', $notice  );
+        
     }
     
     return null;
+}
+
+add_action( 'all_admin_notices', 'badgeos_obf_notice' );
+/**
+ * Displays notice messages from Open Badge Factory
+ * @since  1.4.5
+ * @return void
+ */
+function badgeos_obf_notice() {
+        $plugin_name = 'open-badge-factory';
+	if (  !( $has_notice = get_option( 'obf_notice' ) ) ) // substr(get_current_screen()->id, 0, strlen($pluin_name)) != $plugin_name ||
+            return;
+		
+        $type = $has_notice['type'];
+        $message = $has_notice['message'];
+	// If we have an error message, we'll display it
+        if ($type == 'error') {
+            echo '<div id="message" class="error"><p>'. $message .'</p></div>';
+        } else {
+            echo '<div id="message" class="notice notice-'.$type.'"><p>'. $message .'</p></div>';
+        }
+	
+	// and then delete it
+	delete_option( 'obf_notice' );
 }
 
 function badgeos_obf_show_advanced_features() {
