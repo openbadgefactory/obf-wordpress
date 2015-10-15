@@ -328,7 +328,7 @@ function badgeos_obf_options_yes_api( $obf_settings = array() ) {
                     <h3><?php _e( 'Open Badge Factory Field Mapping', 'badgeos' ); ?></h3>
 
                     <p><?php _e( 'Customize which Open Badge Factory fields for badge creation and issuing (listed on the left) match which WordPress and Open Badge Factory -plugin fields (listed to the right).', 'badgeos' ); ?>
-                            <br /><?php _e( 'When badges are created and issued, the info sent to Open Badge Factory will rely on the global mapping found here. (Note: Visit the edit screen for each achievement you create in Open Badge Factory to further configure the sharing and Open Badge Factory settings for that achievement.)', 'badgeos' ); ?>
+                            <br /><?php _e( 'When badges are imported from Open Badge Factory, wordpress will rely on the global mapping found here.', 'badgeos' ); ?>
                     </p>
                     <table class="form-table">
                             <tr valign="top">
