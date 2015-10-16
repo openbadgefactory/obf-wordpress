@@ -234,17 +234,17 @@ class BadgeOS {
 		// Include our important bits
 		$this->includes();
 
-		// Create Badge awarding rule achievement type
-		if ( !get_page_by_title( 'Awarding Rule', 'OBJECT', 'achievement-type' ) ) {
+		// Create Badge achievement type
+		if ( !get_page_by_title( 'Badge', 'OBJECT', 'achievement-type' ) ) {
 			$badge_post_id = wp_insert_post( array(
-				'post_title'   => __( 'Awarding Rule', 'badgeos'),
-				'post_content' => __( 'Badge awarding rule type', 'badgeos' ),
+				'post_title'   => __( 'Badge', 'badgeos'),
+				'post_content' => __( 'Badges badge type', 'badgeos' ),
 				'post_status'  => 'publish',
 				'post_author'  => 1,
 				'post_type'    => 'achievement-type',
 			) );
-			update_post_meta( $badge_post_id, '_badgeos_singular_name', __( 'Awarding Rule', 'badgeos' ) );
-                        update_post_meta( $badge_post_id, '_badgeos_plural_name', __( 'Awarding Rules', 'badgeos' ) );
+			update_post_meta( $badge_post_id, '_badgeos_singular_name', __( 'Badge', 'badgeos' ) );
+                        update_post_meta( $badge_post_id, '_badgeos_plural_name', __( 'Badges', 'badgeos' ) );
 			update_post_meta( $badge_post_id, '_badgeos_show_in_menu', true );
                         update_post_meta( $badge_post_id, '_badgeos_use_obf_badges', true );
 		}

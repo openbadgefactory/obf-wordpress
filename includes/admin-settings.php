@@ -433,7 +433,7 @@ function badgeos_help_support_page() { ?>
                     <ol>
                     <li><?php _e('Get the Open Badge Factory API certificate from Open Badge Factory (<strong>Admin tools > Api Key > Generate certificate signing request token', 'badgeos'); ?></strong>)
                     <li><?php _e('Enter the generated Open Badge Factory API key in your wordpress\' <strong>Open Badge Factory > OBF Integration</strong> -page to enable badge sharing.', 'badgeos'); ?></li>
-                    <li><?php _e('Set up awarding rules for your badges in your wordpress\' <strong>Open Badge Factory > Awarding Rules</strong> -page.', 'badgeos'); ?></li>
+                    <li><?php _e('Set up awarding rules for your badges in your wordpress\' <strong>Open Badge Factory > Badges</strong> -page.', 'badgeos'); ?></li>
                     </ol>
 
                     <?php add_thickbox(); $apikey_image_url = badgeos_get_directory_url() .'/doc/install/generated_api_key.png' ?>
@@ -449,19 +449,19 @@ function badgeos_help_support_page() { ?>
                     <div id="steps-image-full" style="display:none;">
                          <p><img class="obf-help-image" src="<?php echo $step_image_url; ?>" alt="Required steps" title="Required steps" /></li></p>
                     </div>
-                    <h3><?php _e('2. Creating an awarding rule', 'badgeos'); ?></h3>
+                    <h3><?php _e('2. Creating awarding rules', 'badgeos'); ?></h3>
                     <p><?php echo sprintf(__('To create badge awarding rules you should have a badge or badges created at <a href="%s">Open Badge Factory</a>.', 'badgeos'), 'https://openbadgefactory.com'); ?></p>
-                    <p><?php _e('If everything is set up, you should have a <strong>Open Badge Factory > Awarding Rules</strong> -menu item in your wordpress admin dashboard.', 'badgeos'); ?></p>
-                    <p><?php _e('Awarding Rules -page contains all the ready to be issued badges you\'ve created in Open Badge Factory. If a badge you have created isn\'t visible, make sure it is not set as a draft.', 'badgeos'); ?></p>
-                    <p><?php _e('If you open an awarding rule for editing, you can choose from multiple earning options. The most flexible earning option is using required steps. You can add one or multiple steps a user needs to complete in order to earn the badge.', 'badgeos'); ?></p>
+                    <p><?php _e('If everything is set up, you should have a <strong>Open Badge Factory > Badges</strong> -menu item in your wordpress admin dashboard.', 'badgeos'); ?></p>
+                    <p><?php _e('Badges -page contains all the ready to be issued badges you\'ve created in Open Badge Factory. If a badge you have created isn\'t visible, make sure it is not set as a draft.', 'badgeos'); ?></p>
+                    <p><?php _e('If you open a badge for editing, you can choose from multiple earning options. The most flexible earning option is using required steps. You can add one or multiple steps a user needs to complete in order to earn the badge.', 'badgeos'); ?></p>
                     <p>
                         <a href="#TB_inline?width=600&height=550&inlineId=steps-image-full" class="thickbox">
                             <img class="obf-help-image thumbnail" src="<?php echo $step_image_url; ?>" alt="Required steps" title="Required steps" /></li>
                         </a>
                     </p>
-                    <p><?php _e('After you save an awarding rule, the badge associated with the awarding rule will be automatically awarded to users who complete the required steps.', 'badgeos'); ?></p>
+                    <p><?php _e('After you save a with awarding rules, the badge associated with the awarding rule will be automatically awarded to users who complete the required steps.', 'badgeos'); ?></p>
                     <p><?php _e('You can monitor user step unlocking process and achivements via the <strong>Log Entries</strong> menu.', 'badgeos'); ?></p>
-                    <p><?php _e('You can also define meta-achivements by adding badges as required steps. Choose <strong>Specific Achievement of Type > Awarding Rule > your badge</strong> at Required Steps.', 'badgeos'); ?></p>
+                    <p><?php _e('You can also define meta-achivements by adding badges as required steps. Choose <strong>Specific Achievement of Type > Badges > your badge</strong> at Required Steps.', 'badgeos'); ?></p>
                 </div>
                 
                 <div class="card">
