@@ -129,7 +129,7 @@ There is NO WARRANTY for this software, express or implied, including the implie
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Enter Open Badge Factory API certficate for the badge Issuer in the OBF Integration settings to enable badge sharing. (First get an account at openbadgefactory.com if you do not have one.)
 4. Set up awarding rules for your badges.
-5. Visit the Help/Support section of the Open Badge Factory menu for shortcodes to turn any page or post on your site into a Open Badge Factory list of available achievements and badges.
+5. Visit the Help/Support section of the Open Badge Factory menu for further help and shortcodes to turn any page or post on your site into a Open Badge Factory list of available achievements and badges.
 
 == Frequently Asked Questions ==
 
