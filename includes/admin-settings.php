@@ -413,41 +413,85 @@ function badgeos_help_support_page() { ?>
 	<div class="wrap" >
 		<div id="icon-options-general" class="icon32"></div>
 		<h2><?php _e( 'Open Badge Factory Help and Support', 'badgeos' ); ?></h2>
-		<h2><?php _e( 'About Open Badge Factory', 'badgeos' ); ?>:</h2>
-		<p><?php printf(
-			__( 'Open Badge Factory&trade; -plugin, is a plugin to WordPress that allows your site\'s users to complete tasks, demonstrate achievements, and earn badges. You define the achievement types, organize your requirements any way you like, and choose from a range of options to determine whether each task or requirement has been achieved. Badges earned in Open Badge Factory -plugin are Mozilla OBI compatible.', 'badgeos' ),
-			'<a href="https://openbadgefactory.com/" target="_blank">Open Badge Factory</a>'
-		); ?></p>
-		<p><?php printf(
-			__( "Open Badge Factory -plugin is extremely extensible. Check out examples of what we've built with it, and stay connected to the project site for updates, add-ins and news. Share your ideas and code improvements on %s so we can keep making Open Badge Factory better for everyone.", 'badgeos' ),
-			'<a href="https://github.com/discendum" target="_blank">GitHub</a>'
-		); ?></p>
-		<?php do_action( 'badgeos_help_support_page_about' ); ?>
+                <div class="card">
+                    <h2><?php _e( 'About Open Badge Factory', 'badgeos' ); ?>:</h2>
+                    <p><?php printf(
+                            __( 'Open Badge Factory&trade; -plugin, is a plugin to WordPress that allows your site\'s users to complete tasks, demonstrate achievements, and earn badges. You define the achievement types, organize your requirements any way you like, and choose from a range of options to determine whether each task or requirement has been achieved. Badges earned in Open Badge Factory -plugin are Mozilla OBI compatible.', 'badgeos' ),
+                            '<a href="https://openbadgefactory.com/" target="_blank">Open Badge Factory</a>'
+                    ); ?></p>
+                    <p><?php printf(
+                            __( "Open Badge Factory -plugin is extremely extensible. Check out examples of what we've built with it, and stay connected to the project site for updates, add-ins and news. Share your ideas and code improvements on %s so we can keep making Open Badge Factory better for everyone.", 'badgeos' ),
+                            '<a href="https://github.com/discendum" target="_blank">GitHub</a>'
+                    ); ?></p>
+                    <?php do_action( 'badgeos_help_support_page_about' ); ?>
+                </div>
+		
+                <div class="card">
+                    <h2><?php _e('First steps after installing the plugin', 'badgeos'); ?></h2>
+                    <h3><?php _e('1. Setting up the plugin', 'badgeos'); ?></h3>
 
-		<h2><?php _e( 'Help / Support', 'badgeos' ); ?>:</h2>
-		<p><?php printf(
-			__( 'For support on using Open Badge Factory -plugin or to suggest feature enhancements, visit the %1$s. The Open Badge Factory team does perform custom development that extends the Open Badge Factory platform in some incredibly powerful ways. %2$s with inquiries. Also take a look at %3$s.', 'badgeos' ),
-			sprintf(
-				'<a href="http://openbadgefactory.com" target="_blank">%s</a>',
-				__( 'Open Badge Factory site', 'badgeos' )
-			),
-			sprintf(
-				'<a href="mailto:contact@openbadgefactory.com" target="_blank">%s</a>',
-				__( 'Contact us', 'badgeos' )
-			),
-			sprintf(
-				'<a href="http://openbadgepassport.com/">%s</a>',
-				__( 'Open Badge Passport', 'badgeos' )
-			)
-		); ?></p>
-		<p><?php printf( __( 'Please submit bugs or issues to %s for the Open Badge Factory Project.', 'badgeos' ), '<a href="https://github.com/discendum" target="_blank">Github</a>' ); ?></p>
-		<?php do_action( 'badgeos_help_support_page_help' ); ?>
+                    <ol>
+                    <li><?php _e('Get the Open Badge Factory API certificate from Open Badge Factory (<strong>Admin tools > Api Key > Generate certificate signing request token', 'badgeos'); ?></strong>)
+                    <li><?php _e('Enter the generated Open Badge Factory API key in your wordpress\' <strong>Open Badge Factory > OBF Integration</strong> -page to enable badge sharing.', 'badgeos'); ?></li>
+                    <li><?php _e('Set up awarding rules for your badges in your wordpress\' <strong>Open Badge Factory > Awarding Rules</strong> -page.', 'badgeos'); ?></li>
+                    </ol>
 
-		<h2><?php _e( 'Shortcodes', 'badgeos' ); ?>:</h2>
-		<p><?php _e(
-			 'With Open Badge Factory activated, the following shortcodes can be placed on any page or post within WordPress to expose a variety of Open Badge Factory functions.', 'badgeos'
-		); ?></p>
-		<?php do_action( 'badgeos_help_support_page_shortcodes' ); ?>
+                    <?php add_thickbox(); $apikey_image_url = badgeos_get_directory_url() .'/doc/install/generated_api_key.png' ?>
+                    <div id="api-key-image-full" style="display:none;">
+                         <p><img class="obf-help-image" src="<?php echo $apikey_image_url; ?>" alt="Generated API key" title="Generated API key" /></li></p>
+                    </div>
+                    <a href="#TB_inline?width=600&height=550&inlineId=api-key-image-full" class="thickbox">
+                        <img class="obf-help-image thumbnail" src="<?php echo $apikey_image_url; ?>" alt="Generated API key" title="Generated API key" /></li>
+                    </a>
+
+
+                    <?php $step_image_url = badgeos_get_directory_url().'/doc/install/wp_plugin_steps.png'; ?>
+                    <div id="steps-image-full" style="display:none;">
+                         <p><img class="obf-help-image" src="<?php echo $step_image_url; ?>" alt="Required steps" title="Required steps" /></li></p>
+                    </div>
+                    <h3><?php _e('2. Creating an awarding rule', 'badgeos'); ?></h3>
+                    <p><?php echo sprintf(__('To create badge awarding rules you should have a badge or badges created at <a href="%s">Open Badge Factory</a>.', 'badgeos'), 'https://openbadgefactory.com'); ?></p>
+                    <p><?php _e('If everything is set up, you should have a <strong>Open Badge Factory > Awarding Rules</strong> -menu item in your wordpress admin dashboard.', 'badgeos'); ?></p>
+                    <p><?php _e('Awarding Rules -page contains all the ready to be issued badges you\'ve created in Open Badge Factory. If a badge you have created isn\'t visible, make sure it is not set as a draft.', 'badgeos'); ?></p>
+                    <p><?php _e('If you open an awarding rule for editing, you can choose from multiple earning options. The most flexible earning option is using required steps. You can add one or multiple steps a user needs to complete in order to earn the badge.', 'badgeos'); ?></p>
+                    <p>
+                        <a href="#TB_inline?width=600&height=550&inlineId=steps-image-full" class="thickbox">
+                            <img class="obf-help-image thumbnail" src="<?php echo $step_image_url; ?>" alt="Required steps" title="Required steps" /></li>
+                        </a>
+                    </p>
+                    <p><?php _e('After you save an awarding rule, the badge associated with the awarding rule will be automatically awarded to users who complete the required steps.', 'badgeos'); ?></p>
+                    <p><?php _e('You can monitor user step unlocking process and achivements via the <strong>Log Entries</strong> menu.', 'badgeos'); ?></p>
+                    <p><?php _e('You can also define meta-achivements by adding badges as required steps. Choose <strong>Specific Achievement of Type > Awarding Rule > your badge</strong> at Required Steps.', 'badgeos'); ?></p>
+                </div>
+                
+                <div class="card">
+                    <h2><?php _e( 'Help / Support', 'badgeos' ); ?>:</h2>
+                    <p><?php printf(
+                            __( 'For support on using Open Badge Factory -plugin or to suggest feature enhancements, visit the %1$s. The Open Badge Factory team does perform custom development that extends the Open Badge Factory platform in some incredibly powerful ways. %2$s with inquiries. Also take a look at %3$s.', 'badgeos' ),
+                            sprintf(
+                                    '<a href="http://openbadgefactory.com" target="_blank">%s</a>',
+                                    __( 'Open Badge Factory site', 'badgeos' )
+                            ),
+                            sprintf(
+                                    '<a href="mailto:contact@openbadgefactory.com" target="_blank">%s</a>',
+                                    __( 'Contact us', 'badgeos' )
+                            ),
+                            sprintf(
+                                    '<a href="http://openbadgepassport.com/">%s</a>',
+                                    __( 'Open Badge Passport', 'badgeos' )
+                            )
+                    ); ?></p>
+                    <p><?php printf( __( 'Please submit bugs or issues to %s for the Open Badge Factory Project.', 'badgeos' ), '<a href="https://github.com/discendum" target="_blank">Github</a>' ); ?></p>
+                    <?php do_action( 'badgeos_help_support_page_help' ); ?>
+                </div>
+                
+                <div class="card">
+                    <h2><?php _e( 'Shortcodes', 'badgeos' ); ?>:</h2>
+                    <p><?php _e(
+                             'With Open Badge Factory activated, the following shortcodes can be placed on any page or post within WordPress to expose a variety of Open Badge Factory functions.', 'badgeos'
+                    ); ?></p>
+                    <?php do_action( 'badgeos_help_support_page_shortcodes' ); ?>
+                </div>
 	</div>
 	<?php
 }

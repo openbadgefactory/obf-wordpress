@@ -58,6 +58,11 @@ ul#obf-badges li .badge-desc {
     max-width: 48px;
     max-height: 48px;
 }
+.obf-help-image { max-width: 600px; }
+.obf-help-image.thumbnail { max-width: 280px; }
+.open-badge-factory_page_badgeos_sub_help_support .card {
+    max-width: inherit;
+}
 @media (max-width: 782px) {
     .wp-list-table tr:not(.inline-edit-row):not(.no-items) td.column-obf_image:not(.check-column) {
         display: none;
@@ -67,5 +72,8 @@ ul#obf-badges li .badge-desc {
     }
     .column-obf_image {
         display: none;
+    }
+    .obf-help-image:not(.thumbnail) {
+        max-width: 480px;
     }
 }
