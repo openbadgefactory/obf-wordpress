@@ -1,18 +1,15 @@
-=== Open Badge Factory wordpress plugin ===
+=== Open Badge Factory ===
 
-Open Badge Factory readme.txt.
-
-== Upstream plugin ==
-Contributors: badgeos, learningtimes, credly, webdevstudios, williamsba1, rzen, jtsternberg, ryanduff, Messenlehner, LisaSabinWilson, tw2113
-Donate link: http://badgeos.org/contribute/donate/
-Tags: badge, badges, openbadges, learningtimes, credly, OBI, mozilla, open badges, achievement, award, reward, engagement, submission, nomination, API, open credit, credit
+Contributors: jounisuo, badgeos, learningtimes, credly, webdevstudios, williamsba1, rzen, jtsternberg, ryanduff, Messenlehner, LisaSabinWilson, tw2113
+Tags: badge, badges, openbadges, open badge factory, OBI, mozilla, open badges, achievement, award, reward, engagement, submission, nomination, API
+Donate link: https://github.com/discendum
 Requires at least: 3.6
 Tested up to: 4.2
 Stable tag: 1.4.6
 License: GNU AGPLv3
 License URI: http://www.gnu.org/licenses/agpl-3.0.html
 
-Open Badge Factory -plugin turns your site into an achievement and badging system. Easily use badges and set up the steps and achievements users complete to earn them.
+Open Badge Factory -plugin turns your site into a badge awarding system. Set up automatic badge awarding rules, and users will earn badges.
 
 == Description ==
 
@@ -134,8 +131,49 @@ There is NO WARRANTY for this software, express or implied, including the implie
 4. Set up awarding rules for your badges.
 5. Visit the Help/Support section of the Open Badge Factory menu for shortcodes to turn any page or post on your site into a Open Badge Factory list of available achievements and badges.
 
+== Frequently Asked Questions ==
+
+= What is an Open Badge? =
+
+Open Badges is an online standard to recognize and verify learning. It was created by the Mozilla Foundation in 2011 and has been adopted by schools, vocational and public organizations and companies around the world.
+
+Open Badges was developed because there is a strong need in our web-enabled society to recognize and demonstrate all the informal learning that happens through work, hobbies, volunteering and various other activities in our lives.
+
+The idea behind badges is familiar from military and scouting organizations. An Open Badge is a digital picture, which contains metadata. The metadata provides information about the issuer of the badge and the criteria used to recognize the skills and achievements of the badge earner. This makes an Open Badge a trusted open credential, with validated evidence of learning.
+
+Because the system is based on an open standard, the earner can combine multiple badges from different issuers to tell a more complete story of his or her achievements. The earner can display the badges in his or her e-Portfolio or share them on the Web for employment, social networking, education or lifelong learning purposes.
+
+= What is Open Badge Factory? =
+
+Open Badge Factory is a reliable and flexible platform for issuing Open Badges. It provides a comprehensive set of tools for creating, issuing and managing Open Badges. Open Badge Factory is what your organization needs if you are planning on designing and managing a meaningful, consistent and sustainable badge system that will build your reputation over time!
+
+= Are the badges created by Open Badge Factory compatible with the Mozilla Open Badges Infrastructure? =
+
+Yes. The badges created and issued by Open Badge Factory fully align with the Open Badges Infrastructure (OBI) developed by Mozilla.
+
+= Can we use OBF for free or is there a charge? =
+
+We offer 3 service levels; Free, Basic and Premium.
+
+Take a look at [https://openbadgefactory.com/faq](https://openbadgefactory.com/faq) for more details.
+
+
+== Screenshots ==
+
+1. Example of multiple methods for awarding and defining achievements
+
+2. Example of defined required steps for awarding badges
+
+3. Earned badges are awarded via Open Badge Factory, and are shareable via Open Badge Passport to any social network, blog or website.
+
+4. Use a simple, but powerful "Required Steps" -interface to define how badges are earned.
 
 == Changelog ==
 
 = 1.4.6 =
 * Support for Open Badge Factory integration added
+
+== Upgrade Notice ==
+
+= 1.4.6 =
+* First public release of Open Badge Factory -plugin.
