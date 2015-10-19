@@ -252,8 +252,9 @@ class BadgeOS_Obf {
             return $post_id;
         }
         
-        function import_obf_badge_image($post_id, $badge_id, $base64_image) {
+        function import_obf_badge_image($post_id, $badge_id, $base64_image, $force = false) {
             // gives us access to the download_url() and wp_handle_sideload() functions
+            global $wpdb;
             require_once(ABSPATH . 'wp-admin/includes/file.php');
             
             $data = explode(',', $base64_image);
@@ -266,6 +267,23 @@ class BadgeOS_Obf {
                 $extension = $matches[1];
             }
             $tmp_file = wp_tempnam($badge_id . "." . $extension);
+            
+            // Check if image is already imported.
+            $attachement_posts = $wpdb->get_results( 
+                    $wpdb->prepare(
+                            "SELECT id FROM {$wpdb->posts} p LEFT JOIN {$wpdb->postmeta} pm ON (pm.post_id = p.id)" . 
+                            "WHERE post_type = 'attachment' AND post_mime_type = '%s' " .
+                            "AND pm.meta_key = '_badgeos_obf_image_badge_id' AND pm.meta_value = '%s' " .
+                            "LIMIT 1", 
+                            $mimetype,
+                            $badge_id), 
+                    OBJECT 
+                    );
+            if ( false == $force && $attachement_posts && count($attachement_posts) == 1){
+                $attach_id = $attachement_posts[0]->id;
+                return $attach_id;
+            }
+            
             $ifp = fopen($tmp_file, "wb"); 
 
             fwrite($ifp, base64_decode($data[1])); 
@@ -281,6 +299,7 @@ class BadgeOS_Obf {
                     'error' => 0,
                     'size' => filesize($tmp_file),
             );
+            
             
             $overrides = array(
                 'test_form' => false,
@@ -303,6 +322,8 @@ class BadgeOS_Obf {
                     $filename = $results['file']; // full path to the file
                     $local_url = $results['url']; // URL to the file in the uploads dir
                     $type = $results['type']; // MIME type of the file
+                    
+                    $basefilename = preg_replace('/\.[^.]+$/', '', basename($filename));
 
                     // Get the path to the upload directory.
                     $wp_upload_dir = wp_upload_dir();
@@ -310,12 +331,12 @@ class BadgeOS_Obf {
                     // perform any actions here based in the above results
                     $attachment = array(
                         'post_mime_type' => $type,
-                        'post_title' => preg_replace('/\.[^.]+$/', '', basename($filename)),
+                        'post_title' => $basefilename,
                         'post_content' => '',
                         'post_status' => 'inherit',
                         'guid' => $wp_upload_dir['url'] . '/' . basename($filename)
                     );
-                    $attach_id = wp_insert_attachment( $attachment, $filename, 289 );
+                    $attach_id = wp_insert_attachment( $attachment, $filename, 0 );
                     
                     // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
                     require_once( ABSPATH . 'wp-admin/includes/image.php' );
@@ -323,6 +344,7 @@ class BadgeOS_Obf {
                     // Generate the metadata for the attachment, and update the database record.
                     $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
                     wp_update_attachment_metadata( $attach_id, $attach_data );
+                    update_post_meta($attach_id, '_badgeos_obf_image_badge_id', $badge_id);
                     
                     return $attach_id;
             }
