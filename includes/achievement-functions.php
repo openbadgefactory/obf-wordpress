@@ -841,6 +841,12 @@ function badgeos_maybe_update_achievement_type( $data = array(), $post_args = ar
 }
 add_filter( 'wp_insert_post_data' , 'badgeos_maybe_update_achievement_type' , '99', 2 );
 
+function badgeos_maybe_flush_rewrite_rules($post_id, $post = array()) {
+    if ('achievement-type' === $post->post_type) {
+        badgeos_flush_rewrite_rules();
+    }
+}
+add_action( 'save_post', 'badgeos_maybe_flush_rewrite_rules', 10, 3 );
 /**
  * Check if an achievement type name has changed.
  *

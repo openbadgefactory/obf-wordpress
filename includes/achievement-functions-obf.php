@@ -69,4 +69,4 @@ function badgeos_obf_remove_multiple_obf_badge_types_update( $data = array(), $p
     
     return $data;
 }
-add_filter( 'wp_insert_post_data' , 'badgeos_obf_remove_multiple_obf_badge_types_update' , '99', 2 );
+add_filter( 'wp_insert_post_data' , 'badgeos_obf_remove_multiple_obf_badge_types_update' , '50', 2 );

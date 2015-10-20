@@ -95,6 +95,7 @@ class BadgeOS {
 	 */
 	function includes() {
                 require_once( $this->directory_path . 'vendor/autoload.php' );
+                require_once( $this->directory_path . 'includes/badgeos_global_functions.php' );
 		require_once( $this->directory_path . 'includes/obf_client.php' );
 		require_once( $this->directory_path . 'includes/p2p/load.php' );
 		require_once( $this->directory_path . 'includes/class.BadgeOS_Editor_Shortcodes.php' );
@@ -122,7 +123,6 @@ class BadgeOS {
 		require_once( $this->directory_path . 'includes/obf.php' );
 		require_once( $this->directory_path . 'includes/credly-badge-builder.php' );
 		require_once( $this->directory_path . 'includes/widgets.php' );
-                require_once( $this->directory_path . 'includes/badgeos_global_functions.php' );
 	}
 
 	/**
