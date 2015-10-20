@@ -462,6 +462,11 @@ function badgeos_help_support_page() { ?>
                     <p><?php _e('After you save a with awarding rules, the badge associated with the awarding rule will be automatically awarded to users who complete the required steps.', 'badgeos'); ?></p>
                     <p><?php _e('You can monitor user step unlocking process and achivements via the <strong>Log Entries</strong> menu.', 'badgeos'); ?></p>
                     <p><?php _e('You can also define meta-achivements by adding badges as required steps. Choose <strong>Specific Achievement of Type > Badges > your badge</strong> at Required Steps.', 'badgeos'); ?></p>
+                    
+                    <h3><?php _e('III. Advanced features', 'badgeos'); ?></h3>
+                    <p><?php _e('When you are confident with setting up and creating awarding rules, you may choose to enable advanced features.', 'badgeos'); ?></p>
+                    <p><?php _e('Advanced features can be enabled on the <strong>Open Badge Factory > Settings</strong> -page, by changing <strong>Show advanced features</strong> to <strong>Enabled</strong>.', 'badgeos'); ?></p>
+                    <p><?php _e('After enabling advanced features, you can rename achievement types, access submissions and nominations from the menu, and map badge fields to wordpress fields.', 'badgeos'); ?></p>
                 </div>
                 
                 <div class="card">

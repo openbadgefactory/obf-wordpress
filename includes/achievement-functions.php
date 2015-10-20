@@ -573,7 +573,7 @@ function badgeos_get_achievement_post_thumbnail( $post_id = 0, $image_size = 'ba
 			}
 
 			// Available filter: 'badgeos_default_achievement_post_thumbnail'
-			$image = '<img src="' . apply_filters( 'badgeos_default_achievement_post_thumbnail', 'https://credlyapp.s3.amazonaws.com/badges/af2e834c1e23ab30f1d672579d61c25a_15.png' ) . '" width="' . $image_sizes['width'] . '" height="' . $image_sizes['height'] . '" class="' . $class .'">';
+			$image = '<img src="' . apply_filters( 'badgeos_default_achievement_post_thumbnail', badgeos_get_directory_url() . '/images/obf-default-achievement-image.png' ) . '" width="' . $image_sizes['width'] . '" height="' . $image_sizes['height'] . '" class="' . $class .'">';
 
 		}
 	}
@@ -738,22 +738,23 @@ function badgeos_achievement_set_default_thumbnail( $post_id ) {
 		global $wpdb;
 
 		// Grab the default image
-		$file = apply_filters( 'badgeos_default_achievement_post_thumbnail', 'https://credlyapp.s3.amazonaws.com/badges/af2e834c1e23ab30f1d672579d61c25a_15.png' );
+		$file = apply_filters( 'badgeos_default_achievement_post_thumbnail', badgeos_get_directory_url() . '/images/obf-default-achievement-image.png' );
 
 		// Check for an existing copy of our default image
-		$file_name = 'af2e834c1e23ab30f1d672579d61c25a_15';
+		$file_name = 'obf-default-achievement-image';
 		$attachment = $wpdb->get_col(
 			$wpdb->prepare(
-				"SELECT ID FROM $wpdb->posts WHERE post_type = '%s' AND guid LIKE '%%af2e834c1e23ab30f1d672579d61c25a_15%%' ", 'attachment'
+				"SELECT ID FROM $wpdb->posts WHERE post_type = '%s' AND guid LIKE '%%obf-default-achievement-image%%' ", 'attachment'
 			)
 		);
+                $external_default_image = true;
 
 		if ( !empty( $attachment[0] ) ) {
 			$thumbnail_id = $attachment[0];
 		} else {
 			// Download file to temp location
-			$tmp = download_url( $file );
-
+                        $tmp = download_url( $file );
+			
 			// Set variables for storage
 			// fix file filename for query strings
 			preg_match( '/[^\?]+\.(jpe?g|jpe|gif|png)\b/i', $file, $matches );
@@ -761,8 +762,10 @@ function badgeos_achievement_set_default_thumbnail( $post_id ) {
 			$file_array['tmp_name'] = $tmp;
 
 			// If error storing temporarily, unlink
-			if ( is_wp_error( $tmp ) ) {
-				@unlink( $file_array['tmp_name'] );
+			if ( ($external_default_image && is_wp_error( $tmp )) || (!$external_default_image && !file_exists($tmp)) ) {
+                                if ($external_default_image) {
+                                    @unlink( $file_array['tmp_name'] );
+                                }
 				$file_array['tmp_name'] = '';
 			}
 
@@ -770,7 +773,7 @@ function badgeos_achievement_set_default_thumbnail( $post_id ) {
 			$thumbnail_id = media_handle_sideload( $file_array, $post_id );
 		}
 		// If upload errored, unlink the image file
-		if ( empty( $thumbnail_id ) || is_wp_error( $thumbnail_id ) ) {
+		if ( $external_default_image && ( empty( $thumbnail_id ) || is_wp_error( $thumbnail_id ) )) {
 			@unlink( $file_array['tmp_name'] );
 
 		// Otherwise, if the achievement type truly doesn't have
