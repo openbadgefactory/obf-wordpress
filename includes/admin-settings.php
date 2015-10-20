@@ -852,6 +852,28 @@ function badgeos_get_achievement_creator_capability() {
 }
 
 /**
+ * Get the lowest capability needed.
+ * This is used for the menus main item capability requirement.
+ */
+function badgeos_get_minimum_capability() {
+    $caps = array();
+    $caps[] = badgeos_get_manager_capability();
+    $caps[] = badgeos_get_submission_manager_capability();
+    $caps[] = badgeos_get_achievement_creator_capability();
+    $lowest_to_highest = array(
+        'edit_posts',
+        'publish_posts',
+        'delete_others_posts',
+        'manage_options'
+    );
+    foreach ($lowest_to_highest as $cap) {
+        if (in_array($cap, $caps)) {
+            return $cap;
+        }
+    }
+    return $caps[0];
+}
+/**
  * Check if a user can manage submissions.
  *
  * @since  1.4.0

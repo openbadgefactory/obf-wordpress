@@ -649,9 +649,8 @@ function badgeos_obf_fix_achievement_capability_create() {
         $cap = "create_".strtolower($post_type->name);
         if (in_array($post_type->name, $our_post_types)) {
             $post_type->cap->create_posts = $cap;
+            map_meta_cap( $cap, 1);
         }
-        
-        map_meta_cap( $cap, 1);
     }
 }
 add_action( 'init', 'badgeos_obf_fix_achievement_capability_create',100);
