@@ -148,5 +148,5 @@ This project uses Composer to manage dependencies. If you don't have Composer in
 
 And then, install the project dependencies using Composer:
 
-    php composer.phar install
+    php composer.phar install --no-dev
 
