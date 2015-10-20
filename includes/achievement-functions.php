@@ -665,7 +665,7 @@ function badgeos_get_achievement_earners_list( $achievement_id = 0 ) {
 function badgeos_ms_show_all_achievements(){
 	$ms_show_all_achievements = NULL;
 	if ( is_multisite() ) {
-    	$badgeos_settings = get_option( 'badgeos_settings' );
+    	$badgeos_settings = badgeos_obf_get_settings();
     	$ms_show_all_achievements = ( isset( $badgeos_settings['ms_show_all_achievements'] ) ) ? $badgeos_settings['ms_show_all_achievements'] : 'disabled';
     	if( 'enabled' == $ms_show_all_achievements )
     		return true;

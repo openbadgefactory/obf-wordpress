@@ -46,6 +46,7 @@ class BadgeOS_Obf {
 
 		// Set our options based on our Obf settings
 		$this->obf_settings = (array) get_option( 'obf_settings', array() );
+                unset($this->obf_settings['obf_api_url']);
 
 		$default_settings = array(
 			'api_key' => '',

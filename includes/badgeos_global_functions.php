@@ -28,7 +28,7 @@ function badgeos_get_directory_url() {
 function badgeos_is_debug_mode() {
 
 	//get setting for debug mode
-	$badgeos_settings = get_option( 'badgeos_settings' );
+	$badgeos_settings = badgeos_obf_get_settings();
 	$debug_mode = ( !empty( $badgeos_settings['debug_mode'] ) ) ? $badgeos_settings['debug_mode'] : 'disabled';
 
 	if ( $debug_mode == 'enabled' ) {

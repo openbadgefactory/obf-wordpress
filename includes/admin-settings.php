@@ -45,7 +45,7 @@ add_filter( 'option_page_capability_credly_settings_group', 'badgeos_edit_settin
 function badgeos_settings_validate( $input = '' ) {
 
 	// Fetch existing settings
-	$original_settings = get_option( 'badgeos_settings' );
+	$original_settings = badgeos_obf_get_settings();
 
 	// Sanitize the settings data submitted
 	$input['minimum_role'] = isset( $input['minimum_role'] ) ? sanitize_text_field( $input['minimum_role'] ) : $original_settings['minimum_role'];
@@ -54,10 +54,14 @@ function badgeos_settings_validate( $input = '' ) {
 	$input['debug_mode'] = isset( $input['debug_mode'] ) ? sanitize_text_field( $input['debug_mode'] ) : $original_settings['debug_mode'];
 	$input['ms_show_all_achievements'] = isset( $input['ms_show_all_achievements'] ) ? sanitize_text_field( $input['ms_show_all_achievements'] ) : $original_settings['ms_show_all_achievements'];
         $input['show_advanced_features'] = isset( $input['show_advanced_features'] ) ? sanitize_text_field( $input['show_advanced_features'] ) : $original_settings['show_advanced_features'];
+        if (array_key_exists('db_version', $original_settings)) {
+            $input['db_version'] = $original_settings['db_version'];
+        }
         
         badgeos_register_achievement_capabilites($input['achievement_creator_role']);
 	// Allow add-on settings to be sanitized
 	do_action( 'badgeos_settings_validate', $input );
+        badgeos_obf_clear_settings_cache();
 
 	// Return sanitized inputs
 	return $input;
@@ -205,7 +209,7 @@ function badgeos_settings_page() {
 
 		<form method="post" action="options.php">
 			<?php settings_fields( 'badgeos_settings_group' ); ?>
-			<?php $badgeos_settings = get_option( 'badgeos_settings' ); ?>
+			<?php $badgeos_settings = badgeos_obf_get_settings(); ?>
 			<?php
 			//load settings
 			$minimum_role = ( isset( $badgeos_settings['minimum_role'] ) ) ? $badgeos_settings['minimum_role'] : 'manage_options';
@@ -346,6 +350,7 @@ function badgeos_license_settings() {
 
 }
 add_action( 'badgeos_settings', 'badgeos_license_settings', 0 );
+add_action( 'badgeos_settings', 'badgeos_obf_clear_settings_cache', 10 );
 
 /**
  * Add-ons settings page
@@ -828,7 +833,7 @@ add_filter( 'media_view_strings', 'badgeos_media_modal_featured_image_text', 10,
  * @return string User capability.
  */
 function badgeos_get_manager_capability() {
-	$badgeos_settings = get_option( 'badgeos_settings' );
+	$badgeos_settings = badgeos_obf_get_settings();
 	return isset( $badgeos_settings[ 'minimum_role' ] ) ? $badgeos_settings[ 'minimum_role' ] : 'manage_options';
 }
 
@@ -840,7 +845,7 @@ function badgeos_get_manager_capability() {
  * @return string User capability.
  */
 function badgeos_get_submission_manager_capability() {
-	$badgeos_settings = get_option( 'badgeos_settings' );
+	$badgeos_settings = badgeos_obf_get_settings();
 	return isset( $badgeos_settings[ 'submission_manager_role' ] ) ? $badgeos_settings[ 'submission_manager_role' ] : badgeos_get_manager_capability();
 }
 
@@ -852,7 +857,7 @@ function badgeos_get_submission_manager_capability() {
  * @return string User capability.
  */
 function badgeos_get_achievement_creator_capability() {
-	$badgeos_settings = get_option( 'badgeos_settings' );
+	$badgeos_settings = badgeos_obf_get_settings();
 	return isset( $badgeos_settings[ 'achievement_creator_role' ] ) ? $badgeos_settings[ 'achievement_creator_role' ] : badgeos_get_manager_capability();
 }
 

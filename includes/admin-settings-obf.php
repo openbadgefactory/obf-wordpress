@@ -995,7 +995,7 @@ function badgeos_obf_notice() {
 }
 
 function badgeos_obf_show_advanced_features() {
-    $badgeos_settings = get_option( 'badgeos_settings' );
+    $badgeos_settings = badgeos_obf_get_settings();
     //load settings
     $show_advanced_features = ( isset( $badgeos_settings['show_advanced_features'] ) ) ? $badgeos_settings['show_advanced_features'] == 'enabled' : false;
     return $show_advanced_features;

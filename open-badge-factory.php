@@ -61,6 +61,9 @@ class BadgeOS {
 	 * @var string
 	 */
 	public static $version = '1.4.6';
+        public static $db_version = 2;
+        
+        private $settings;
 
 	function __construct() {
 		// Define plugin constants
@@ -78,6 +81,7 @@ class BadgeOS {
 
 		// Hook in all our important pieces
 		add_action( 'plugins_loaded', array( $this, 'includes' ) );
+                add_action( 'plugins_loaded', array( $this, 'check_plugin_update' ) );
 		add_action( 'init', array( $this, 'register_scripts_and_styles' ) );
 		add_action( 'init', array( $this, 'include_cmb' ), 999 );
 		add_action( 'init', array( $this, 'register_achievement_relationships' ) );
@@ -87,7 +91,7 @@ class BadgeOS {
 		add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ) );
 		add_action( 'init', array( $this, 'credly_init' ) );
 		add_action( 'init', array( $this, 'obf_init' ) );
-
+                add_action( 'init', array( $this, 'check_plugin_update_init' ) );
 	}
 
 	/**
@@ -250,14 +254,15 @@ class BadgeOS {
 		}
 
 		// Setup default BadgeOS options
-		$badgeos_settings = ( $exists = get_option( 'badgeos_settings' ) ) ? $exists : array();
+		$badgeos_settings = ( $exists = $this->get_settings() ) ? $exists : array();
 		if ( empty( $badgeos_settings ) ) {
 			$badgeos_settings['minimum_role']     = 'manage_options';
                         $badgeos_settings['achievement_creator_role'] = 'manage_options';
 			$badgeos_settings['submission_manager_role'] = 'manage_options';
 			$badgeos_settings['submission_email'] = 'enabled';
 			$badgeos_settings['debug_mode']       = 'disabled';
-			update_option( 'badgeos_settings', $badgeos_settings );
+                        $badgeos_settings['db_version']       = self::$db_version;
+			$this->update_settings( $badgeos_settings );
                         badgeos_register_achievement_capabilites($badgeos_settings['achievement_creator_role']);
 		}
 
@@ -381,6 +386,90 @@ class BadgeOS {
 	function obf_init() {
 		$GLOBALS['badgeos_obf'] = new BadgeOS_Obf();
 	}
+        
+        
+        /**
+         * Run database upgrade function if upgrading from a previous version.
+         */
+        public function check_plugin_update() {
+            $settings = $this->get_settings();
+            $previous_db_version = array_key_exists('db_version', $settings) ? (int)$settings['db_version'] : 0;
+            if ($previous_db_version < self::$db_version) {
+                $this->upgrade_plugin_db($previous_db_version);
+            }
+        }
+        /**
+         * Run database upgrade function if upgrading from a previous version.
+         */
+        public function check_plugin_update_init() {
+            $settings = $this->get_settings();
+            $previous_db_version = array_key_exists('db_version', $settings) ? (int)$settings['db_version'] : 0;
+            if ($previous_db_version < self::$db_version) {
+                $this->upgrade_plugin_db($previous_db_version, true);
+            }
+        }
+        /**
+         * Database upgrades.
+         * @param boolean $init If running on the init hook or not.
+         */
+        public function upgrade_plugin_db($from, $init = false) {
+            if (!$init) {
+                //Updated to be run on the plugins_loaded hook. (Before init)
+            } else {
+                // Updates to be run on the init hook.
+                if ($from < 1) {
+                    // Fix error 404 on badge view.
+                    badgeos_flush_rewrite_rules();
+                }
+                
+                $this->update_setting('db_version', self::$db_version);
+            }
+        }
+        /**
+         * Get plugin settings
+         * 
+         * @return array The settings
+         */
+        public function get_settings() {
+            if (empty($this->settings)) {
+                $this->settings = get_option('badgeos_settings');
+            }
+            return $this->settings;
+        }
+        /**
+         * Update plugin settings
+         * 
+         * @param array $settings The settings
+         * @return \BadgeOS
+         */
+        public function update_settings($settings) {
+            $this->settings = $settings;
+            update_option('badgeos_settings', $settings);
+            return $this;
+        }
+        /**
+         * Update a plugin setting with value.
+         * 
+         * @param string $setting_name
+         * @param mixed $setting_value
+         * @return \BadgeOS
+         */
+        public function update_setting($setting_name, $setting_value) {
+            $settings = $this->get_settings();
+            $settings[$setting_name] = $setting_value;
+            update_option('badgeos_settings', $settings);
+            return $this;
+        }
+        /**
+         * Clear the settings cache variable, 
+         * to force loading of settings with get_option.
+         * 
+         * @return \BadgeOS
+         */
+        public function clear_settings_cache() {
+            $this->settings = null;
+            return $this;
+        }
 
 }
 $GLOBALS['badgeos'] = new BadgeOS();
@@ -423,4 +512,33 @@ function badgeos_obf_is_debug_mode() {
 
 	return false;
 
+}
+
+/**
+ * Get plugin settings
+ * 
+ * @since 1.4.6
+ * @return array
+ */
+function badgeos_obf_get_settings() {
+    return $GLOBALS['badgeos']->get_settings();
+}
+
+/**
+ * Update plugin settings
+ * 
+ * @since 1.4.6
+ * @return BadgeOS
+ */
+function badgeos_obf_update_settings($settings) {
+    return $GLOBALS['badgeos']->update_settings($settings);
+}
+/**
+ * Clear the variable containing plugin settings,
+ * so that next time badgeos_obf_get_settings is called,
+ * the settings will be loaded with get_option.
+ * @return BadgeOS
+ */
+function badgeos_obf_clear_settings_cache() {
+    return $GLOBALS['badgeos']->clear_settings_cache();
 }

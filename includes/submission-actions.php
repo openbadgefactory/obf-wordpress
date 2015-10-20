@@ -442,7 +442,7 @@ function badgeos_set_submission_status( $submission_id, $status, $args = array()
 
 	$args = apply_filters( 'badgeos_' . $args[ 'submission_type' ] . '_args', $args );
 
-	$args[ 'badgeos_settings' ] = get_option( 'badgeos_settings' );
+	$args[ 'badgeos_settings' ] = badgeos_obf_get_settings();
 
 	$submission_id = $args[ 'submission_id' ] = absint( $args[ 'submission_id' ] );
 	$args[ 'achievement_id' ] = absint( $args[ 'achievement_id' ] );
