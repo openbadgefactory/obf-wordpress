@@ -428,7 +428,7 @@ function badgeos_help_support_page() { ?>
 		
                 <div class="card">
                     <h2><?php _e('First steps after installing the plugin', 'badgeos'); ?></h2>
-                    <h3><?php _e('1. Setting up the plugin', 'badgeos'); ?></h3>
+                    <h3><?php _e('I. Setting up the plugin', 'badgeos'); ?></h3>
 
                     <ol>
                     <li><?php _e('Get the Open Badge Factory API certificate from Open Badge Factory (<strong>Admin tools > Api Key > Generate certificate signing request token', 'badgeos'); ?></strong>)
@@ -449,7 +449,7 @@ function badgeos_help_support_page() { ?>
                     <div id="steps-image-full" style="display:none;">
                          <p><img class="obf-help-image" src="<?php echo $step_image_url; ?>" alt="Required steps" title="Required steps" /></li></p>
                     </div>
-                    <h3><?php _e('2. Creating awarding rules', 'badgeos'); ?></h3>
+                    <h3><?php _e('II. Creating awarding rules', 'badgeos'); ?></h3>
                     <p><?php echo sprintf(__('To create badge awarding rules you should have a badge or badges created at <a href="%s">Open Badge Factory</a>.', 'badgeos'), 'https://openbadgefactory.com'); ?></p>
                     <p><?php _e('If everything is set up, you should have a <strong>Open Badge Factory > Badges</strong> -menu item in your wordpress admin dashboard.', 'badgeos'); ?></p>
                     <p><?php _e('Badges -page contains all the ready to be issued badges you\'ve created in Open Badge Factory. If a badge you have created isn\'t visible, make sure it is not set as a draft.', 'badgeos'); ?></p>
