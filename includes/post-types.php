@@ -236,7 +236,10 @@ function badgeos_register_achievement_type_cpt() {
 				'singular_name'      => $achievement_name_singular,
 				'add_new'            => __( 'Add New', 'badgeos' ),
 				'add_new_item'       => sprintf( __( 'Add New %s', 'badgeos' ), $achievement_name_singular ),
-				'edit_item'          => sprintf( __( 'Edit %s', 'badgeos' ), $achievement_name_singular ),
+				'edit_item'          => (
+                                        $use_obf ? sprintf( __( 'Edit %s awarding rules', 'badgeos' ), strtolower($achievement_name_singular) ) :
+                                        sprintf( __( 'Edit %s', 'badgeos' ), $achievement_name_singular )
+                                        ),
 				'new_item'           => sprintf( __( 'New %s', 'badgeos' ), $achievement_name_singular ),
 				'all_items'          => $achievement_name_plural,
 				'view_item'          => sprintf( __( 'View %s', 'badgeos' ), $achievement_name_singular ),
