@@ -54,6 +54,7 @@ function badgeos_settings_validate( $input = '' ) {
 	$input['debug_mode'] = isset( $input['debug_mode'] ) ? sanitize_text_field( $input['debug_mode'] ) : $original_settings['debug_mode'];
 	$input['ms_show_all_achievements'] = isset( $input['ms_show_all_achievements'] ) ? sanitize_text_field( $input['ms_show_all_achievements'] ) : $original_settings['ms_show_all_achievements'];
         $input['show_advanced_features'] = isset( $input['show_advanced_features'] ) ? sanitize_text_field( $input['show_advanced_features'] ) : $original_settings['show_advanced_features'];
+        $input['svg_support'] = isset( $input['svg_support'] ) ? sanitize_text_field( $input['svg_support'] ) : $original_settings['svg_support'];
         if (array_key_exists('db_version', $original_settings)) {
             $input['db_version'] = $original_settings['db_version'];
         }
@@ -220,6 +221,7 @@ function badgeos_settings_page() {
 			$submission_email_addresses = ( isset( $badgeos_settings['submission_email_addresses'] ) ) ? $badgeos_settings['submission_email_addresses'] : '';
 			$debug_mode = ( isset( $badgeos_settings['debug_mode'] ) ) ? $badgeos_settings['debug_mode'] : 'disabled';
 			$ms_show_all_achievements = ( isset( $badgeos_settings['ms_show_all_achievements'] ) ) ? $badgeos_settings['ms_show_all_achievements'] : 'disabled';
+                        $svg_support = ( isset( $badgeos_settings['svg_support'] ) ) ? $badgeos_settings['svg_support'] : 'enabled';
 
 			wp_nonce_field( 'badgeos_settings_nonce', 'badgeos_settings_nonce' );
 			?>
@@ -276,6 +278,14 @@ function badgeos_settings_page() {
 					<td>
 						<input id="submission_email_addresses" name="badgeos_settings[submission_email_addresses]" type="text" value="<?php echo esc_attr( $submission_email_addresses ); ?>" class="regular-text" />
 						<p class="description"><?php _e( 'Comma-separated list of email addresses to send submission/nomination notifications, in addition to the Site Admin email.', 'badgeos' ); ?></p>
+					</td>
+				</tr>
+                                <tr valign="top"><th scope="row"><label for="svg_support"><?php _e( 'SVG Support:', 'badgeos' ); ?></label></th>
+					<td>
+						<select id="svg_support" name="badgeos_settings[svg_support]">
+							<option value="disabled" <?php selected( $svg_support, 'disabled' ); ?>><?php _e( 'Disabled', 'badgeos' ) ?></option>
+							<option value="enabled" <?php selected( $svg_support, 'enabled' ); ?>><?php _e( 'Enabled', 'badgeos' ) ?></option>
+						</select>
 					</td>
 				</tr>
 				<tr valign="top"><th scope="row"><label for="debug_mode"><?php _e( 'Debug Mode:', 'badgeos' ); ?></label></th>

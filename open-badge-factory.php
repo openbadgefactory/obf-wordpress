@@ -61,7 +61,7 @@ class BadgeOS {
 	 * @var string
 	 */
 	public static $version = '1.4.6';
-        public static $db_version = 2;
+        public static $db_version = 3;
         
         private $settings;
 
@@ -92,6 +92,7 @@ class BadgeOS {
 		add_action( 'init', array( $this, 'credly_init' ) );
 		add_action( 'init', array( $this, 'obf_init' ) );
                 add_action( 'init', array( $this, 'check_plugin_update_init' ) );
+                add_action( 'init', array( $this, 'svg_support_maybe_init' ) );
 	}
 
 	/**
@@ -125,6 +126,7 @@ class BadgeOS {
 		require_once( $this->directory_path . 'includes/user.php' );
 		require_once( $this->directory_path . 'includes/credly.php' );
 		require_once( $this->directory_path . 'includes/obf.php' );
+		require_once( $this->directory_path . 'includes/obf_svg_support.php' );
 		require_once( $this->directory_path . 'includes/credly-badge-builder.php' );
 		require_once( $this->directory_path . 'includes/widgets.php' );
 	}
@@ -145,6 +147,7 @@ class BadgeOS {
 		wp_register_script( 'badgeos-achievements', $this->directory_url . 'js/badgeos-achievements.js', array( 'jquery' ), '1.1.0', true );
 		wp_register_script( 'credly-badge-builder', $this->directory_url . 'js/credly-badge-builder.js', array( 'jquery' ), '1.3.0', true );
                 wp_register_script( 'badgeos-obf-fastfilterlive', $this->directory_url . 'js/customfastfilterlive.js' );
+                wp_register_script( 'badgeos-obf-fix-svg', $this->directory_url . 'js/fix_svg.js', array( 'jquery' )  );
                 
 
 		// Register styles
@@ -336,11 +339,12 @@ class BadgeOS {
                 wp_enqueue_script( 'badgeos-obf-shuffle' );
                 wp_enqueue_script( 'badgeos-obf-shuffle-impl' );
                 wp_enqueue_script( 'badgeos-obf-fastfilterlive' );
-                
+                wp_enqueue_script( 'badgeos-obf-fix-svg' );
 
 		// Load styles
 		wp_enqueue_style( 'badgeos-admin-styles' );
                 wp_enqueue_style( 'badgeos-obf-admin-styles' );
+                
 
 	}
 
@@ -359,7 +363,7 @@ class BadgeOS {
 			'errormessage'    => __( 'Error: Timed out', 'badgeos' )
 		);
 		wp_localize_script( 'badgeos-achievements', 'BadgeosCredlyData', $data );
-
+                wp_enqueue_script( 'badgeos-obf-fix-svg' );
 	}
 
 	/**
@@ -387,6 +391,16 @@ class BadgeOS {
 		$GLOBALS['badgeos_obf'] = new BadgeOS_Obf();
 	}
         
+        /**
+         * Initialize Open Badge Factory SVG Support
+         */
+        function svg_support_maybe_init() {
+            $settings = $this->get_settings();
+            if (array_key_exists('svg_support', $settings) && 'enabled' == $settings['svg_support']) {
+                $GLOBALS['badgeos_obf_svg_support'] = BadgeOS_Obf_Svg_Support::get_instance();
+            }
+        }
+        
         
         /**
          * Run database upgrade function if upgrading from a previous version.
@@ -413,8 +427,11 @@ class BadgeOS {
          * @param boolean $init If running on the init hook or not.
          */
         public function upgrade_plugin_db($from, $init = false) {
-            if (!$init) {
+            if (false == $init) {
                 //Updated to be run on the plugins_loaded hook. (Before init)
+                if ($from < 3) {
+                    $this->update_setting('svg_support', 'enabled');
+                }
             } else {
                 // Updates to be run on the init hook.
                 if ($from < 1) {
@@ -457,7 +474,7 @@ class BadgeOS {
         public function update_setting($setting_name, $setting_value) {
             $settings = $this->get_settings();
             $settings[$setting_name] = $setting_value;
-            update_option('badgeos_settings', $settings);
+            $this->update_settings($settings);
             return $this;
         }
         /**

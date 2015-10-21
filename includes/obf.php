@@ -258,6 +258,9 @@ class BadgeOS_Obf {
             global $wpdb;
             require_once(ABSPATH . 'wp-admin/includes/file.php');
             
+            $svg_support = BadgeOS_Obf_Svg_Support::get_instance();
+            $svg_support->allow_upload();
+            
             $data = explode(',', $base64_image);
             $mimetype = 'image/jpg';
             if (1 === preg_match('/data:([\/\w]+);/', $data[0], $matches)) {
