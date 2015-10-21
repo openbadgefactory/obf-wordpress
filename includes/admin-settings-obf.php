@@ -34,17 +34,16 @@ function badgeos_obf_settings_validate( $options = array() ) {
 
                 // Certificate directory not writable.
                 if (!is_writable($certDir)) {
-                    $error .= '<p>'. __( 'API certificate dir is not writeable.', 'badgeos' ). '</p>';
+                    $error .= '<p>'. sprintf(__( 'API certificate dir (%s) is not writeable.', 'badgeos' ), $certDir). '</p>';
                     badgeos_obf_get_api_key_error( $error );
-                }
-                
-                if (!empty($apikey)) {
-                    $clientId = badgeos_obf_get_api_cert($apikey, $certDir);
-                    if (false !== $clientId) {
-                        $options['obf_client_id'] = sanitize_text_field($clientId);
+                } else {
+                    if (!empty($apikey)) {
+                        $clientId = badgeos_obf_get_api_cert($apikey, $certDir);
+                        if (false !== $clientId) {
+                            $options['obf_client_id'] = sanitize_text_field($clientId);
+                        }
                     }
                 }
-
 	}
 
 	// we're not saving these values
