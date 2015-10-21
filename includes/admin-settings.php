@@ -441,6 +441,9 @@ function badgeos_help_support_page() { ?>
                     <?php do_action( 'badgeos_help_support_page_about' ); ?>
                 </div>
 		
+                <?php
+                if (badgeos_user_can_manage_achievements()) {
+                    ?>
                 <div class="card">
                     <h2><?php _e('First steps after installing the plugin', 'badgeos'); ?></h2>
                     <h3><?php _e('I. Setting up the plugin', 'badgeos'); ?></h3>
@@ -476,13 +479,33 @@ function badgeos_help_support_page() { ?>
                     </p>
                     <p><?php _e('After you save a with awarding rules, the badge associated with the awarding rule will be automatically awarded to users who complete the required steps.', 'badgeos'); ?></p>
                     <p><?php _e('You can monitor user step unlocking process and achivements via the <strong>Log Entries</strong> menu.', 'badgeos'); ?></p>
-                    <p><?php _e('You can also define meta-achivements by adding badges as required steps. Choose <strong>Specific Achievement of Type > Badges > your badge</strong> at Required Steps.', 'badgeos'); ?></p>
+                    <p><?php _e('You can also define meta-achivements by adding badges as required steps. Choose <strong>Specific Achievement of Type &gt; Badges &gt; your badge</strong> at Required Steps.', 'badgeos'); ?></p>
                     
                     <h3><?php _e('III. Advanced features', 'badgeos'); ?></h3>
                     <p><?php _e('When you are confident with setting up and creating awarding rules, you may choose to enable advanced features.', 'badgeos'); ?></p>
-                    <p><?php _e('Advanced features can be enabled on the <strong>Open Badge Factory > Settings</strong> -page, by changing <strong>Show advanced features</strong> to <strong>Enabled</strong>.', 'badgeos'); ?></p>
+                    <p><?php _e('Advanced features can be enabled on the <strong>Open Badge Factory &gt; Settings</strong> -page, by changing <strong>Show advanced features</strong> to <strong>Enabled</strong>.', 'badgeos'); ?></p>
                     <p><?php _e('After enabling advanced features, you can rename achievement types, access submissions and nominations from the menu, and map badge fields to wordpress fields.', 'badgeos'); ?></p>
                 </div>
+                <?php
+                }
+                ?>
+                
+                
+                <?php
+                if (badgeos_user_can_manage_submissions()) {
+                    ?>
+                <div class="card">
+                    <h2><?php _e('Using the advanced features', 'badgeos'); ?></h2>
+                    
+                    <h3><?php _e('Submissions', 'badgeos'); ?></h3>
+                    <p><?php _e('You can award badges through approved submissions. Create a page or post, insert Open Badge Factory shortcode Submission Form and the Achievement ID of the badge you wish to issue. Publish the post so your users can leave submissions to earn the badge.', 'badgeos'); ?></p>
+                    <p><?php _e('You can see all your users submissions at <strong>Open Badge Factory &gt; Submissions</strong> -page. Review and comment the submissions to award the badge.', 'badgeos'); ?></p>
+                    <p><?php _e('You can specify the role who can approve submissions/nominations at <strong>Open Badge Factory &gt; Setting</strong> -page.', 'badgeos'); ?></p> 
+                </div>
+                    <?php
+                }
+                ?>
+                
                 
                 <div class="card">
                     <h2><?php _e( 'Help / Support', 'badgeos' ); ?>:</h2>
@@ -907,4 +930,12 @@ function badgeos_user_can_manage_submissions( $user_id = 0 ) {
 	}
 
 	return ( user_can( $user_id, badgeos_get_submission_manager_capability() ) || user_can( $user_id, badgeos_get_manager_capability() ) );
+}
+
+function badgeos_user_can_manage_achievements( $user_id = 0 ) {
+	if ( empty( $user_id ) ) {
+		$user_id = get_current_user_id();
+	}
+
+	return ( user_can( $user_id, badgeos_get_achievement_creator_capability() ) || user_can( $user_id, badgeos_get_manager_capability() ) );
 }

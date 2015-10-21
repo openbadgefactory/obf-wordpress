@@ -85,6 +85,12 @@ function badgeos_custom_metaboxes( array $meta_boxes ) {
 			//	'id'   => $prefix . 'upload_badge_image_achievement',
 			//	'type' => 'text_only',
 			//),
+                        array(
+                            'name'     => __('Achievement ID', 'badgeos'),
+                            'desc'     => $post_id,
+                            'id'       => $prefix . 'achievement_id',
+                            'type'     => 'text_only'
+                        ),
 			array(
 				'name' => __( 'Points Awarded', 'badgeos' ),
 				'desc' => ' '.__( 'Points awarded for earning this achievement (optional). Leave empty if no points are awarded.', 'badgeos' ),
