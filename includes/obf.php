@@ -787,6 +787,7 @@ class BadgeOS_Obf {
                     $ok_user_ids[] = $user_id;
 
                 }
+                $emails = array_map('strtolower', $emails);
                 $emails = array_unique($emails);
 
                 if (count($emails) == 0) {
