@@ -147,7 +147,6 @@ class BadgeOS {
 		wp_register_script( 'badgeos-achievements', $this->directory_url . 'js/badgeos-achievements.js', array( 'jquery' ), '1.1.0', true );
 		wp_register_script( 'credly-badge-builder', $this->directory_url . 'js/credly-badge-builder.js', array( 'jquery' ), '1.3.0', true );
                 wp_register_script( 'badgeos-obf-fastfilterlive', $this->directory_url . 'js/customfastfilterlive.js' );
-                wp_register_script( 'badgeos-obf-fix-svg', $this->directory_url . 'js/fix_svg.js', array( 'jquery' )  );
                 
 
 		// Register styles
@@ -339,7 +338,6 @@ class BadgeOS {
                 wp_enqueue_script( 'badgeos-obf-shuffle' );
                 wp_enqueue_script( 'badgeos-obf-shuffle-impl' );
                 wp_enqueue_script( 'badgeos-obf-fastfilterlive' );
-                wp_enqueue_script( 'badgeos-obf-fix-svg' );
 
 		// Load styles
 		wp_enqueue_style( 'badgeos-admin-styles' );
@@ -363,7 +361,6 @@ class BadgeOS {
 			'errormessage'    => __( 'Error: Timed out', 'badgeos' )
 		);
 		wp_localize_script( 'badgeos-achievements', 'BadgeosCredlyData', $data );
-                wp_enqueue_script( 'badgeos-obf-fix-svg' );
 	}
 
 	/**
