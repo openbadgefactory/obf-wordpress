@@ -16,9 +16,6 @@
 function badgeos_register_settings() {
 	register_setting( 'badgeos_settings_group', 'badgeos_settings', 'badgeos_settings_validate' );
 	register_setting( 'credly_settings_group', 'credly_settings', 'badgeos_credly_settings_validate' );
-	register_setting( 'obf_settings_group', 'obf_settings', 'badgeos_obf_settings_validate' );
-        register_setting( 'obf_import_group', 'obf_import', 'badgeos_obf_import_callback' );
-        register_setting( 'obf_issue_badge_group', 'obf_issue_badge', 'badgeos_obf_issue_badge_callback' );
 }
 add_action( 'admin_init', 'badgeos_register_settings' );
 

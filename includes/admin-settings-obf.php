@@ -11,7 +11,11 @@
  * @link https://openbadgefactory.com
  */
 
-
+function badgeos_obf_register_settings() {
+    register_setting( 'obf_settings_group', 'obf_settings', 'badgeos_obf_settings_validate' );
+    register_setting( 'obf_import_group', 'obf_import', 'badgeos_obf_import_callback' );
+}
+add_action( 'admin_init', 'badgeos_obf_register_settings' );
 
 /**
  * Open Badge Factory API Settings validation
@@ -809,6 +813,25 @@ function badgeos_obf_issue_badge_page() {
     $wp_roles = new WP_Roles();
     $roles = $wp_roles->get_names();
     
+    $emails = array_key_exists('obf_issue_badge', $_POST) && isset($_POST['obf_issue_badge']['emails']) ? $_POST['obf_issue_badge']['emails'] : '';
+    $users = array_key_exists('obf_issue_badge', $_POST) && isset($_POST['obf_issue_badge']['users']) ? $_POST['obf_issue_badge']['users'] : array();
+
+    if (isset( $_POST['obf_issue_badge_nonce'] )
+		&& wp_verify_nonce( $_POST['obf_issue_badge_nonce'], 'obf_issue_badge_nonce' ) ) {
+        if (isset($_POST['obf_issue_badge']) ) {
+            $success = badgeos_obf_issue_badge_callback($_POST['obf_issue_badge']);
+            badgeos_obf_notice();
+            if ($success) { // Clear selections on success.
+                $emails = '';
+                $users = array();
+            }
+        }
+    } elseif (isset( $_POST['obf_issue_badge_nonce'] )) {
+        $message = __('Nonce verification failed.', 'badgeos');
+        echo '<div id="message" class="error"><p>'. $message .'</p></div>';
+    }
+    
+    
     if (!$is_givable) {
         ?>
         <p id="message" class="warning notice notice-error">
@@ -821,10 +844,10 @@ function badgeos_obf_issue_badge_page() {
     ?>
     <div class="wrap" >
        
-        <form method="post" action="options.php">
+        <form method="post">
 
         <?php
-            settings_fields( 'obf_issue_badge_group' );
+            wp_nonce_field( 'obf_issue_badge_nonce', 'obf_issue_badge_nonce' );
         ?>
     <table class="form-table">
         <tbody>
@@ -884,8 +907,8 @@ function badgeos_obf_issue_badge_page() {
             <p class="description"><?php _e('Select one or more users by checking the checkboxes below') ?></p>
             <ul id="obf_issue_badge_user_list" class="filterable-items-list">
             <?php
-            $users = get_users();
-            foreach($users as $user) {
+            $all_users = get_users();
+            foreach($all_users as $user) {
                 $user_id = $user->data->ID;
                 $email = $user->data->user_email;
                 $name = $user->data->display_name;
@@ -894,7 +917,7 @@ function badgeos_obf_issue_badge_page() {
                 ?>
                 <li class="user-select filterable-item" data-groups='<?php echo json_encode($roles); ?>' data-name='<?php echo esc_attr($name); ?>'>
                         <label for="obf_issue_badge_users_<?php echo $user_id; ?>">
-                            <input type="checkbox" id="obf_issue_badge_users_<?php echo $user_id; ?>" name="obf_issue_badge[users][<?php echo $user_id; ?>]" value="<?php echo $user_id; ?>"></input>
+                            <input type="checkbox" id="obf_issue_badge_users_<?php echo $user_id; ?>" name="obf_issue_badge[users][<?php echo $user_id; ?>]" <?php echo array_key_exists($user_id, $users) ? 'checked' : ''; ?> value="<?php echo $user_id; ?>"></input>
                             <?php echo esc_html($name); ?>
                         </label>
                 </li>
@@ -914,7 +937,7 @@ function badgeos_obf_issue_badge_page() {
         ?>
         </th>
         <td>
-                <textarea class="widefat" rows="10" cols="80" id="obf_issue_badge_emails" name="obf_issue_badge[emails]"></textarea>
+                <textarea class="widefat" rows="10" cols="80" id="obf_issue_badge_emails" name="obf_issue_badge[emails]"><?php echo $emails; ?></textarea>
                 <p class="description"><?php _e('Enter additional email addresses here (1 per line) if you wish to issue the badge to people who do not have accounts on this site, or they are unknown.', 'badgeos'); ?></description>
         </td>
     </tr>
@@ -940,6 +963,7 @@ add_action('admin_menu', 'badgeos_obf_add_issue_page');
 
 function badgeos_obf_issue_badge_callback($options) {
     global $badgeos_obf;
+    $success = false;
     $users = array_key_exists('users', $options) ? $options['users'] : array();
     $emails = array_key_exists('emails', $options) ? $options['emails'] : '';
     $emails = explode("\n", str_replace("\r", "", $emails));
@@ -959,6 +983,7 @@ function badgeos_obf_issue_badge_callback($options) {
         }
         if (!empty($issue_result)) {
             $notice = array('type' => 'success', 'message' => __('Badge issued successfully.', 'badgeos'));
+            $success = true;
         } else if (empty($notice)) {
             $notice = array('type' => 'error', 'message' => __('Badge issuing failed.', 'badgeos'));
         }
@@ -966,7 +991,7 @@ function badgeos_obf_issue_badge_callback($options) {
         
     }
     
-    return null;
+    return $success;
 }
 
 add_action( 'all_admin_notices', 'badgeos_obf_notice' );
