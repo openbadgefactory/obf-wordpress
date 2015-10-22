@@ -146,7 +146,7 @@ class BadgeOS_Obf {
                 // TODO: Display error message
                 return new WP_Error($ex->getCode(), $ex->getMessage());
             }
-            
+            $count = 0;
             foreach($obf_badges as $badge_array) {
                 $badge_id = $badge_array['id'];
                 $badge_modified = DateTime::createFromFormat('U', $badge_array['mtime']);
@@ -159,11 +159,16 @@ class BadgeOS_Obf {
                 }
                 if (!array_key_exists($badge_id, $existing_badges)) {
                     $this->import_obf_badge(null, $badge_id, true, $new_badge_overrides, $badge_array);
+                    $count ++;
                 } elseif($local_older || $local_modified_ago > $import_interval) {
                     $post_id = $existing_badges[$badge_id]['post_id'];
                     $this->import_obf_badge($post_id, $badge_id);
+                    $count ++;
                 }
                 
+            }
+            if ($count > 0) {
+                badgeos_flush_rewrite_rules();
             }
         }
 
