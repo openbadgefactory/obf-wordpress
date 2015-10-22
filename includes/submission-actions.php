@@ -1453,3 +1453,18 @@ function badgeos_get_submission_attachments( $submission_id = 0 ) {
 	// Return out filterable output
 	return apply_filters( 'badgeos_get_submission_attachments', $output, $submission_id, $attachments );
 }
+
+/**
+ * Filter the "post updated" messages to get rid of view -link.
+ *
+ * @since 1.4.0
+ *
+ * @param array $messages Array of messages to display.
+ *
+ * @return array $messages Compiled list of messages.
+ */
+function badgeos_submission_type_update_messages( $messages ) {
+	$messages['submission'] = array_fill( 1, 10, __( 'Submission updated.', 'badgeos' ) );
+	return $messages;
+}
+add_filter( 'post_updated_messages', 'badgeos_submission_type_update_messages' );
