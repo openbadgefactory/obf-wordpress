@@ -1174,6 +1174,12 @@ function badgeos_get_nomination_form( $args = array() ) {
 function badgeos_get_submission_form( $args = array() ) {
 	global $post, $user_ID;
 
+
+        if (array_key_exists('achievement_id', $args) && 
+                array_key_exists('show_achievement_link', $args) && 'true' == $args['show_achievement_link']) {
+            $achievement = get_post($args['achievement_id']);
+        }
+        
 	// Setup our defaults
 	$defaults = array(
 		'heading'    => sprintf( '<h4>%s</h4>', __( 'Create a New Submission', 'badgeos' ) ),
@@ -1190,10 +1196,15 @@ function badgeos_get_submission_form( $args = array() ) {
 
 	// Merge our defaults with the passed args
 	$args = wp_parse_args( $args, $defaults );
-
-	$sub_form = '<form class="badgeos-submission-form" method="post" enctype="multipart/form-data">';
+        
+        $sub_form = '<form class="badgeos-submission-form" method="post" enctype="multipart/form-data">';
 		// submission form heading
 		$sub_form .= '<legend>'. $args['heading'] .'</legend>';
+                if (!empty($achievement)) {
+                    $sub_form .= '<p>' . __('Achievement:', 'badgeos') . 
+                            sprintf(__(' <a href="%1$s">%2$s</a>', 'badgeos'), get_permalink($achievement->ID), $achievement->post_title) . 
+                            '</p>';
+                }
 		// submission file upload
 		$sub_form .= '<fieldset class="badgeos-file-submission">';
 		$sub_form .= '<p><label>'. $args['attachment'] .' <input type="file" name="document_file" id="document_file" /></label></p>';

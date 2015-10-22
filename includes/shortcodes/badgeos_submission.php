@@ -17,6 +17,16 @@ function badgeos_register_submission_shortcode() {
 				'description' => __( 'Achievement ID to award.', 'badgeos' ),
 				'type'        => 'text',
 				),
+                        'show_achievement_link' => array(
+                            'name'        => __('Show achievement link', 'badgeos'),
+                            'description' => __('Show link to achievement on the form?', 'badgeos'),
+                            'type'        => 'select',
+                            'values'      => array(
+                                    'true'  => __( 'True', 'badgeos' ),
+                                    'false' => __( 'False', 'badgeos' )
+                                    ),
+                            'default'     => 'true',
+                        ),
 		),
 
 	) );
@@ -36,6 +46,7 @@ function badgeos_submission_form( $atts = array() ) {
 	// Parse our attributes
 	$atts = shortcode_atts( array(
 		'achievement_id' => get_the_ID(),
+                'show_achievement_link' => 'true',
 	), $atts, 'badgeos_submission' );
 
 	// Initialize output
@@ -62,7 +73,7 @@ function badgeos_submission_form( $atts = array() ) {
 
 		// Return either the user's submission or the submission form
 		if ( badgeos_user_has_access_to_submission_form( get_current_user_id(), $atts['achievement_id'] ) ) {
-			$output .= badgeos_get_submission_form( array( 'user_id' => get_current_user_id(), 'achievement_id' => $atts['achievement_id'] ) );
+			$output .= badgeos_get_submission_form( array( 'user_id' => get_current_user_id(), 'achievement_id' => $atts['achievement_id'], 'show_achievement_link' => $atts['show_achievement_link'] ) );
 		}
 
 	// Logged-out users have no access
