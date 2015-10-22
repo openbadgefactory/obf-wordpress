@@ -225,6 +225,16 @@ class BadgeOS_Obf {
                         $postObj->{$field} = $badge_array[$key];
                     }
                 }
+                
+                // Import with creation and modification timestamps
+                if (array_key_exists('ctime', $badge_array) && is_numeric($badge_array['ctime'])) {
+                    $postObj->post_date = (new DateTime("@{$badge_array['ctime']}"))->format('Y-m-d H:i:s');
+                    
+                }
+                if (array_key_exists('mtime', $badge_array) && is_numeric($badge_array['mtime'])) {
+                    $postObj->modified_date = (new DateTime("@{$badge_array['mtime']}"))->format('Y-m-d H:i:s');
+                }
+
                 // Set some settings for the post. Imported badges are not drafts
                 $postObj->{'post_status'} = 'publish';
                 $postObj->{'ping_status'} = 'closed';
