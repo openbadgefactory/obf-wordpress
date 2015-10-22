@@ -330,7 +330,7 @@ function badgeos_save_submission_data() {
 	return badgeos_create_submission(
 		absint( $_POST['achievement_id'] ),
 		sprintf( '%1$s: %2$s', get_post_type( absint( $_POST['achievement_id'] ) ), get_the_title( absint( $_POST['achievement_id'] ) ) ),
-		esc_textarea( $_POST['badgeos_submission_content'] ),
+		wp_kses_data( $_POST['badgeos_submission_content']),
 		absint( $_POST['user_id'] )
 	);
 }
@@ -857,10 +857,23 @@ function badgeos_get_comment_form( $post_id = 0 ) {
 		// comment form heading
 		$sub_form .= '<legend>'. wp_kses_post( $language['heading'] ) .'</legend>';
 
-		// submission comment
-		$sub_form .= '<fieldset class="badgeos-submission-comment-entry">';
-		$sub_form .= '<p><textarea name="badgeos_comment"></textarea></p>';
-		$sub_form .= '</fieldset>';
+                if (user_can_richedit()) {
+                    // submission comment richedit with a unique id
+                    ob_start();
+                    wp_editor('', 'badgeos_comment_'.$post_id . '_' . rand(), array('textarea_name' => 'badgeos_comment'));
+                    $editor_html = ob_get_contents();
+                    ob_end_clean();
+                    $sub_form .= '<fieldset class="badgeos-submission-comment-entry">';
+                    $sub_form .= '<p>'.$editor_html.'</p>';
+                    $sub_form .= '</fieldset>';
+                } else {
+                    // submission comment
+                    $sub_form .= '<fieldset class="badgeos-submission-comment-entry">';
+                    $sub_form .= '<p><textarea name="badgeos_comment"></textarea></p>';
+                    $sub_form .= '</fieldset>';
+                }
+                
+		
 
 		// submission file upload
 		$sub_form .= '<fieldset class="badgeos-submission-file">';
@@ -904,7 +917,7 @@ function badgeos_save_comment_data() {
 	$comment_data = array(
 		'user_id'         => absint( $_POST['user_id'] ),
 		'comment_post_ID' => absint( $_POST['submission_id'] ),
-		'comment_content' => esc_textarea( $_POST['badgeos_comment'] ),
+		'comment_content' => wp_kses_data($_POST['badgeos_comment']),
 	);
 
 	if ( $comment_id = wp_insert_comment( $comment_data ) ) {
@@ -1186,9 +1199,21 @@ function badgeos_get_submission_form( $args = array() ) {
 		$sub_form .= '<p><label>'. $args['attachment'] .' <input type="file" name="document_file" id="document_file" /></label></p>';
 		$sub_form .= '</fieldset>';
 		// submission comment
-		$sub_form .= '<fieldset class="badgeos-submission-comment">';
-		$sub_form .= '<p><textarea name="badgeos_submission_content"></textarea></p>';
-		$sub_form .= '</fieldset>';
+                if (user_can_richedit()) {
+                    // submission comment richedit with a unique id
+                    ob_start();
+                    wp_editor('', 'badgeos_submission_content_' . $post->ID . '_' . rand(), array('textarea_name' => 'badgeos_submission_content'));
+                    $editor_html = ob_get_contents();
+                    ob_end_clean();
+                    $sub_form .= '<fieldset class="badgeos-submission-comment">';
+                    $sub_form .= '<p>'.$editor_html.'</p>';
+                    $sub_form .= '</fieldset>';
+                } else {
+                    // submission comment
+                    $sub_form .= '<fieldset class="badgeos-submission-comment">';
+                    $sub_form .= '<p><textarea name="badgeos_submission_content"></textarea></p>';
+                    $sub_form .= '</fieldset>';
+                }
 		// submit button
 		$sub_form .= '<p class="badgeos-submission-submit"><input type="submit" name="badgeos_submission_submit" value="'. $args['submit'] .'" /></p>';
 		// hidden fields
