@@ -83,6 +83,8 @@ function badgeos_do_single_filters() {
 	// add_filter( 'the_title', 'badgeos_remove_to_reformat_entries_title', 10, 2 );
 	// and filter out the post image
 	add_filter( 'post_thumbnail_html', 'badgeos_remove_to_reformat_entries_title', 10, 2 );
+        // Fix theme specific issues on our singular pages.
+        badgeos_obf_fix_frontend_theme_issues();
 }
 add_action( 'wp_enqueue_scripts', 'badgeos_do_single_filters' );
 
@@ -750,4 +752,20 @@ function badgeos_render_feedback_buttons( $feedback_id = 0 ) {
 
 	// Return our filterable output
 	return apply_filters( 'badgeos_render_feedback_buttons', $output, $feedback_id );
+}
+
+
+function badgeos_obf_fix_frontend_theme_issues() {
+    $current_theme = wp_get_theme();
+    //var_dump($current_theme);
+    $twentyfifteen = is_object($current_theme) && $current_theme->stylesheet == 'twentyfifteen';
+    $css = '';
+    if (true === $twentyfifteen) {
+        $achievement_slugs = badgeos_get_achievement_types_slugs();
+        foreach ($achievement_slugs as $achievement_slug) {
+            $css .= '.single-'.$achievement_slug.' .post-navigation .nav-next,.single-'.$achievement_slug.' .post-navigation .nav-previous { background-size: 100px; background-repeat: no-repeat; }'; // { background-size: 100px; background-repeat: no-repeat; }
+        }
+        wp_add_inline_style( 'badgeos-single', $css );
+    }
+
 }
