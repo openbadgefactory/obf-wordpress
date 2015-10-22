@@ -912,11 +912,12 @@ function badgeos_obf_issue_badge_page() {
                 $user_id = $user->data->ID;
                 $email = $user->data->user_email;
                 $name = $user->data->display_name;
+                $login = $user->data->user_login;
                 $roles = $user->roles;
                 //echo "$user_id $email $name <br/>";
                 ?>
                 <li class="user-select filterable-item" data-groups='<?php echo json_encode($roles); ?>' data-name='<?php echo esc_attr($name); ?>'>
-                        <label for="obf_issue_badge_users_<?php echo $user_id; ?>">
+                        <label for="obf_issue_badge_users_<?php echo $user_id; ?>" title="<?php echo esc_attr($login); ?>">
                             <input type="checkbox" id="obf_issue_badge_users_<?php echo $user_id; ?>" name="obf_issue_badge[users][<?php echo $user_id; ?>]" <?php echo array_key_exists($user_id, $users) ? 'checked' : ''; ?> value="<?php echo $user_id; ?>"></input>
                             <?php echo esc_html($name); ?>
                         </label>
@@ -981,9 +982,11 @@ function badgeos_obf_issue_badge_callback($options) {
             $issue_result=null;
             $notice = array('type' => 'error', 'message' => sprintf(__('Badge issuing failed. Server returned %s', 'badgeos'), $ex->getMessage()));
         }
-        if (!empty($issue_result)) {
+        if (!empty($issue_result) && !is_wp_error($issue_result)) {
             $notice = array('type' => 'success', 'message' => __('Badge issued successfully.', 'badgeos'));
             $success = true;
+        } elseif (is_wp_error($issue_result)) {
+            $notice = array('type' => 'error', 'message' => sprintf(__('Badge issuing failed. %s', 'badgeos'), $issue_result->get_error_message()));
         } else if (empty($notice)) {
             $notice = array('type' => 'error', 'message' => __('Badge issuing failed.', 'badgeos'));
         }

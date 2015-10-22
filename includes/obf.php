@@ -641,7 +641,7 @@ class BadgeOS_Obf {
 		$obf_id = $this->obf_user_email_search( $user_email );
 
 		// If we didn't return a numeric id, set it to the user email
-		if ( ! is_numeric( $obf_id ) )
+		if ( ! is_numeric( $obf_id ) && !is_email($obf_id) )
 			$obf_id = $user_email;
 
 		// Set our local meta
@@ -783,12 +783,23 @@ class BadgeOS_Obf {
                     if ( ! $force && ! obf_is_achievement_giveable( $badge_id, $user_id ) ) {
                         continue;
                     }
-                    $emails[] = $this->obf_get_user_id( $user_id );
+                    $user_email = $this->obf_get_user_id( $user_id );
+                    if (!is_email($user_email)) {
+                        $user = get_userdata($user_id);
+                        return new WP_Error('invalid', sprintf(__('User %1$s email is invalid ("%2$s")!', 'badgeos'), $user->user_login, $user_email));
+                    }
+                    $emails[] = $user_email;
                     $ok_user_ids[] = $user_id;
 
                 }
                 $emails = array_map('strtolower', $emails);
                 $emails = array_unique($emails);
+                
+                $valid_emails = array_filter($emails, 'is_email');
+                if (count($valid_emails) < count($emails)) {
+                    $invalid_emails = array_diff($emails, $valid_emails);
+                    return new WP_Error('invalid', sprintf(__('Detected %1$d invalid emails (%2$s).', 'badgeos'), count($invalid_emails), implode(', ', $invalid_emails)));
+                }
 
                 if (count($emails) == 0) {
                     return false;
@@ -800,7 +811,7 @@ class BadgeOS_Obf {
 		$results = $this->obf_client->issue_badge( $body, $body['recipient'] );
 
 		// If post was successful, trigger other actions
-		if ( $results ) {
+		if ( $results && !is_wp_error($results)) {
                     foreach($ok_user_ids as $user_id) {
                         do_action( 'post_obf_user_badge', $user_id, $badge_id, $results );
                     }
