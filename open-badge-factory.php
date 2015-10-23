@@ -61,7 +61,7 @@ class BadgeOS {
 	 * @var string
 	 */
 	public static $version = '1.4.6';
-        public static $db_version = 3;
+        public static $db_version = 4;
         
         private $settings;
 
@@ -264,6 +264,7 @@ class BadgeOS {
 			$badgeos_settings['submission_email'] = 'enabled';
 			$badgeos_settings['debug_mode']       = 'disabled';
                         $badgeos_settings['db_version']       = self::$db_version;
+                        $badgeos_settings['svg_support']      = 'enabled';
 			$this->update_settings( $badgeos_settings );
                         badgeos_register_achievement_capabilites($badgeos_settings['achievement_creator_role']);
 		}
@@ -426,7 +427,7 @@ class BadgeOS {
         public function upgrade_plugin_db($from, $init = false) {
             if (false == $init) {
                 //Updated to be run on the plugins_loaded hook. (Before init)
-                if ($from < 3) {
+                if ($from < 4) {
                     $this->update_setting('svg_support', 'enabled');
                 }
             } else {

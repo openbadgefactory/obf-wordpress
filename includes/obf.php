@@ -278,11 +278,11 @@ class BadgeOS_Obf {
             
             $data = explode(',', $base64_image);
             $mimetype = 'image/jpg';
-            if (1 === preg_match('/data:([\/\w]+);/', $data[0], $matches)) {
+            if (1 === preg_match('/data:([\/\w\+]+);/', $data[0], $matches)) {
                 $mimetype = $matches[1];
             }
             $extension = 'tmp';
-            if (1 === preg_match('/image\/(\w+);/', $data[0], $matches)) {
+            if (1 === preg_match('/image\/([\w]+)[;\+]/', $data[0], $matches)) {
                 $extension = $matches[1];
             }
             $tmp_file = wp_tempnam($badge_id . "." . $extension);
@@ -323,7 +323,7 @@ class BadgeOS_Obf {
             $overrides = array(
                 'test_form' => false,
                 'test_size' => true,
-                'test_upload' => true, 
+                'test_upload' => true,
             );
             // Copy the temporary file into the uploads directory and delete temp file
             $results = wp_handle_sideload( $file, $overrides );
