@@ -1201,7 +1201,7 @@ function badgeos_get_submission_form( $args = array() ) {
 		// submission form heading
 		$sub_form .= '<legend>'. $args['heading'] .'</legend>';
                 if (!empty($achievement)) {
-                    $sub_form .= '<p>' . __('Achievement:', 'badgeos') . 
+                    $sub_form .= '<p><strong>' . __('Achievement:', 'badgeos') . '</strong>' .
                             sprintf(__(' <a href="%1$s">%2$s</a>', 'badgeos'), get_permalink($achievement->ID), $achievement->post_title) . 
                             '</p>';
                 }
