@@ -917,9 +917,14 @@ function badgeos_obf_issue_badge_page() {
                 //echo "$user_id $email $name <br/>";
                 ?>
                 <li class="user-select filterable-item" data-groups='<?php echo json_encode($roles); ?>' data-name='<?php echo esc_attr($name); ?>'>
+                        <?php if (is_email($email)) { ?>
                         <label for="obf_issue_badge_users_<?php echo $user_id; ?>" title="<?php echo esc_attr($login); ?>">
                             <input type="checkbox" id="obf_issue_badge_users_<?php echo $user_id; ?>" name="obf_issue_badge[users][<?php echo $user_id; ?>]" <?php echo array_key_exists($user_id, $users) ? 'checked' : ''; ?> value="<?php echo $user_id; ?>"></input>
-                            <?php echo esc_html($name); ?>
+                        <?php } else { ?>
+                        <label for="obf_issue_badge_users_<?php echo $user_id; ?>" title="<?php echo esc_attr(sprintf(__('User %s has an invalid email address.', 'badgeos'), $login)); ?>">
+                            <input disabled type="checkbox" id="obf_issue_badge_users_<?php echo $user_id; ?>" name="obf_issue_badge[users][<?php echo $user_id; ?>]" value="<?php echo $user_id; ?>"></input>
+                        <?php }
+                            echo esc_html($name); ?>
                         </label>
                 </li>
                 <?php
