@@ -81,3 +81,6 @@ ul#obf-badges li .badge-desc {
 .post-type-submission .wrap > h1 > a.page-title-action[href*="post-new"] {
     display: none;
 }
+#badgeos_obf_image_meta_box .wp-post-image {
+    width: 100px;
+}
