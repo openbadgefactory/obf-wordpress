@@ -1,8 +1,10 @@
 .achievement-wrap .badgeos-item-thumbnail.wp-post-image {
     width: 100px;
+    height: auto;
 }
 .type-badge .post-thumbnail .wp-post-image {
     width: 100px;
+    height: auto;
 }
 .achievement-template-part {
 	border: #fff 1px solid;
