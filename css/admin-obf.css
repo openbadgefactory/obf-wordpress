@@ -77,3 +77,7 @@ ul#obf-badges li .badge-desc {
         max-width: 480px;
     }
 }
+/* Hide confusing add new-buttons */
+.post-type-submission .wrap > h1 > a.page-title-action[href*="post-new"] {
+    display: none;
+}
