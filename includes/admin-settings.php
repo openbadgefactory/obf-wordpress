@@ -283,6 +283,7 @@ function badgeos_settings_page() {
 							<option value="disabled" <?php selected( $svg_support, 'disabled' ); ?>><?php _e( 'Disabled', 'badgeos' ) ?></option>
 							<option value="enabled" <?php selected( $svg_support, 'enabled' ); ?>><?php _e( 'Enabled', 'badgeos' ) ?></option>
 						</select>
+                                                <p class="description"><?php _e('SVG-image support is required for Badges with images designed inside Open Badge Factory. If you are not already using another plugin that provides SVG-support, please keep this enabled. Enabling this does not allow users to upload SVG-images, it only affects badges imported from Open Badge Factory.', 'badgeos'); ?></p>
 					</td>
 				</tr>
 				<tr valign="top"><th scope="row"><label for="debug_mode"><?php _e( 'Debug Mode:', 'badgeos' ); ?></label></th>
