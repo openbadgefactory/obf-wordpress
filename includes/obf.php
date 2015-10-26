@@ -162,7 +162,6 @@ class BadgeOS_Obf {
                 }
                 if (!array_key_exists($badge_id, $existing_badges)) {
                     try {
-                        $badge_array = $this->obf_client->get_badge($badge_id);
                         $this->import_obf_badge(null, $badge_id, true, $new_badge_overrides, $badge_array);
                         $count ++;
                     } catch (Exception $ex) {
@@ -171,7 +170,7 @@ class BadgeOS_Obf {
                     
                 } elseif($local_older || $local_modified_ago > $import_interval) {
                     $post_id = $existing_badges[$badge_id]['post_id'];
-                    $this->import_obf_badge($post_id, $badge_id);
+                    $this->import_obf_badge($post_id, $badge_id, false, array(), $badge_array);
                     $count ++;
                 }
                 

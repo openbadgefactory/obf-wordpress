@@ -677,7 +677,15 @@ function badgeos_obf_import_all_badges_on_admin_init($screen) {
     global $badgeos_obf;
     if ( !badgeos_obf_screen_is_edit_obf_badges($screen) )   // Only add to edit-badges
         return;
-    $badgeos_obf->import_all_obf_badges();
+    try {
+        $import_result = $badgeos_obf->import_all_obf_badges();
+    } catch (Exception $ex) {
+        $import_result = new WP_Error($ex->getMessage());
+    }
+    if (is_wp_error($import_result)) {
+        badgeos_obf_set_notice(sprintf(__('Error importing badges. (%s)','badgeos'), $import_result->get_mesage()));
+    }
+    
 }
 add_action( 'current_screen', 'badgeos_obf_import_all_badges_on_admin_init');
 
@@ -985,17 +993,16 @@ function badgeos_obf_issue_badge_callback($options) {
             $issue_result = $badgeos_obf->post_obf_user_badges($users, $emails, $badge_id, true);
         } catch (Exception $ex) {
             $issue_result=null;
-            $notice = array('type' => 'error', 'message' => sprintf(__('Badge issuing failed. Server returned %s', 'badgeos'), $ex->getMessage()));
+            badgeos_obf_set_notice(sprintf(__('Badge issuing failed. Server returned %s', 'badgeos'), $ex->getMessage()));
         }
         if (!empty($issue_result) && !is_wp_error($issue_result)) {
-            $notice = array('type' => 'success', 'message' => __('Badge issued successfully.', 'badgeos'));
+            badgeos_obf_set_notice(__('Badge issued successfully.', 'badgeos'), 'success');
             $success = true;
         } elseif (is_wp_error($issue_result)) {
-            $notice = array('type' => 'error', 'message' => sprintf(__('Badge issuing failed. %s', 'badgeos'), $issue_result->get_error_message()));
+            badgeos_obf_set_notice(sprintf(__('Badge issuing failed. %s', 'badgeos'), $issue_result->get_error_message()));
         } else if (empty($notice)) {
-            $notice = array('type' => 'error', 'message' => __('Badge issuing failed.', 'badgeos'));
+            badgeos_obf_set_notice(__('Badge issuing failed.', 'badgeos'));
         }
-        update_option( 'obf_notice', $notice  );
         
     }
     
@@ -1003,6 +1010,14 @@ function badgeos_obf_issue_badge_callback($options) {
 }
 
 add_action( 'all_admin_notices', 'badgeos_obf_notice' );
+
+function badgeos_obf_set_notice($message, $type = 'error') {
+    if (!empty($message)) {
+        $notice = array('type' => $type, 'message' => $message);
+        update_option( 'obf_notice', $notice  );
+    }
+    
+}
 /**
  * Displays notice messages from Open Badge Factory
  * @since  1.4.5
