@@ -32,13 +32,13 @@
 
     <target name="build">
         <echo msg="Compressing the source files into a zip-archive..."/>
-        <zip destfile="${builddir}/obf-wp.zip" prefix="obf/" includeemptydirs="true">
+        <zip destfile="${builddir}/open-badge-factory.zip" prefix="open-badge-factory/" includeemptydirs="true">
             <fileset refid="srcfiles"/>
         </zip>
     </target>
 
     <target name="deploy-local">
-        <copy todir="${wordpressdir}/wp-content/plugins/obf/" overwrite="true">
+        <copy todir="${wordpressdir}/wp-content/plugins/open-badge-factory/" overwrite="true">
             <fileset refid="srcfiles" />
         </copy>
     </target>
