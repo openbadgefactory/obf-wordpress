@@ -4,8 +4,8 @@ Contributors: openbadgefactory, jounisuo, badgeos, learningtimes, credly, webdev
 Tags: badge, badges, openbadges, open badge factory, OBI, mozilla, open badges, achievement, award, reward, engagement, submission, nomination, API
 Donate link: https://github.com/discendum
 Requires at least: 3.6
-Tested up to: 4.2
-Stable tag: 1.4.6
+Tested up to: 4.3.1
+Stable tag: 1.4.7
 License: GNU AGPLv3
 License URI: http://www.gnu.org/licenses/agpl-3.0.html
 
@@ -170,10 +170,10 @@ Take a look at [https://openbadgefactory.com/faq](https://openbadgefactory.com/f
 
 == Changelog ==
 
-= 1.4.6 =
+= 1.4.7 =
 * Support for Open Badge Factory integration added
 
 == Upgrade Notice ==
 
-= 1.4.6 =
+= 1.4.7 =
 * First public release of Open Badge Factory -plugin.
