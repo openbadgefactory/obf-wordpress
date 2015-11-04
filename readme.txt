@@ -9,7 +9,7 @@ Stable tag: 1.4.7
 License: GNU AGPLv3
 License URI: http://www.gnu.org/licenses/agpl-3.0.html
 
-Open Badge Factory -plugin turns your site into a badge awarding system. Set up automatic badge awarding rules, and users will earn badges.
+Open Badge Factory is an Open Badge management system. Set up automatic badge awarding rules, and users will earn badges.
 
 == Description ==
 
@@ -40,7 +40,7 @@ Open Badge Factory is extremely powerful and infinitely extensible. Check out so
 *   Set default images for each achievement type or select unique images for every achievement item
 
 
-**Sharable Badges with Open Badge Factory Integration**
+**Shareable Badges with Open Badge Factory Integration**
 
 *   Badges are Mozilla Open Badge (OBI) compatible.
 *   Connect your Open Badge Factory account to your site and voila! You're using WordPress to issue "Open Badges" that can be displayed virtually anywhere.
