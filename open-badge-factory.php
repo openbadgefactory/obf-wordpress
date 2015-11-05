@@ -5,7 +5,7 @@
 * Description: Open Badge Factory -plugin lets your site’s users complete tasks and earn badges that recognize their achievement.  Define achievements and choose from a range of options that determine when they're complete.  Badges are Mozilla Open Badges (OBI) compatible.
 * Author: Discendum Oy
 * Version: 1.4.7
-* Author URI: https://discendum.com/
+* Author URI: http://www.discendum.com/
 * License: GNU AGPL
 * Text Domain: badgeos
 */
