@@ -5,7 +5,7 @@ Tags: badge, badges, openbadges, open badge factory, OBI, mozilla, open badges, 
 Donate link: https://github.com/discendum
 Requires at least: 3.6
 Tested up to: 4.3.1
-Stable tag: 1.4.7
+Stable tag: 1.4.7.1
 License: GNU AGPLv3
 License URI: http://www.gnu.org/licenses/agpl-3.0.html
 
@@ -170,10 +170,18 @@ Take a look at [https://openbadgefactory.com/faq](https://openbadgefactory.com/f
 
 == Changelog ==
 
+= 1.4.7.1 =
+* Fixed Open Badge Factory badges importing multiple copies on some setups
+* Fixed Badges-menu behaviour on fresh install
+
 = 1.4.7 =
 * Support for Open Badge Factory integration added
 
 == Upgrade Notice ==
+
+= 1.4.7.1 =
+* Fixed Open Badge Factory badges importing multiple copies on some setups
+* Fixed Badges-menu behaviour on fresh install
 
 = 1.4.7 =
 * First public release of Open Badge Factory -plugin.

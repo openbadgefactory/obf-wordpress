@@ -683,7 +683,7 @@ function badgeos_obf_import_all_badges_on_admin_init($screen) {
         $import_result = new WP_Error($ex->getMessage());
     }
     if (is_wp_error($import_result)) {
-        badgeos_obf_set_notice(sprintf(__('Error importing badges. (%s)','badgeos'), $import_result->get_mesage()));
+        badgeos_obf_set_notice(sprintf(__('Error importing badges. (%d %s)','badgeos'), $import_result->get_error_code(), $import_result->get_error_message()));
     }
     
 }

@@ -103,17 +103,22 @@ class BadgeOS_Obf {
                 $this->obf_client = ObfClient::get_instance(null, $this->obf_settings);
                 $certificate_file = $this->obf_client->get_cert_filename();
                 $certificate_exists = !empty($certificate_file) && file_exists($certificate_file);
-                if (
-                        !empty($this->obf_settings['obf_client_id']) && 
-                        $this->obf_settings['obf_client_id'] != '__EMPTY__' && 
-                        !$certificate_exists
-                    ) {
+                if ($this->obf_client_id_exists() && !$certificate_exists) {
                     $this->obf_settings['obf_client_id'] = '__EMPTY__';
                 }
 
 	}
+        public function obf_client_id_exists() {
+            return (
+                        !empty($this->obf_settings['obf_client_id']) && 
+                        $this->obf_settings['obf_client_id'] != '__EMPTY__'
+                    );
+        }
         function import_all_obf_badges() {
             global $wpdb;
+            if (!$this->obf_client_id_exists()) {
+                return;
+            }
             $obf_achievement_types = $this->obf_badge_achievement_types(false);
             // Get all badge posts with obf badge id, excluding those which have an achievement type that has been deleted.
             $sql = "SELECT post_id, pm.meta_value AS badge_id, post_modified_gmt AS modified_date FROM {$wpdb->postmeta} pm "
@@ -121,7 +126,7 @@ class BadgeOS_Obf {
                     . implode(', ', array_fill(0, count($obf_achievement_types), '%s'))
                     . ") AND p.post_status != 'trash' AND pm.meta_key = '_badgeos_obf_badge_id'"
                     // Badges, where the subselect below does not return anything, belong to an achievement type that has been deleted.
-                    . "AND EXISTS (SELECT id FROM wp_postmeta subpm  LEFT JOIN wp_posts subp ON (subpm.post_id = subp.id) "
+                    . "AND EXISTS (SELECT id FROM {$wpdb->postmeta} subpm  LEFT JOIN {$wpdb->posts} subp ON (subpm.post_id = subp.id) "
                     . "WHERE subp.post_type='achievement-type' AND subp.post_status NOT IN ('trashed', 'closed', 'trash') "
                     . "AND subp.post_name=p.post_type AND subpm.meta_key='_badgeos_singular_name')";
             $query = call_user_func_array(array($wpdb, 'prepare'), array_merge(array($sql), $obf_achievement_types));

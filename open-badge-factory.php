@@ -4,7 +4,7 @@
 * Plugin URI: http://www.openbadgefactory.com/
 * Description: Open Badge Factory -plugin lets your site’s users complete tasks and earn badges that recognize their achievement.  Define achievements and choose from a range of options that determine when they're complete.  Badges are Mozilla Open Badges (OBI) compatible.
 * Author: Discendum Oy
-* Version: 1.4.7
+* Version: 1.4.7.1
 * Author URI: http://www.discendum.com/
 * License: GNU AGPL
 * Text Domain: badgeos
@@ -60,7 +60,7 @@ class BadgeOS {
 	 *
 	 * @var string
 	 */
-	public static $version = '1.4.7';
+	public static $version = '1.4.7.1';
         public static $db_version = 4;
         
         private $settings;
@@ -239,6 +239,7 @@ class BadgeOS {
 
 		// Include our important bits
 		$this->includes();
+                $register_capabilities = false;
 
 		// Create Badge achievement type
 		if ( !get_page_by_title( 'Badge', 'OBJECT', 'achievement-type' ) ) {
@@ -253,6 +254,14 @@ class BadgeOS {
                         update_post_meta( $badge_post_id, '_badgeos_plural_name', __( 'Badges', 'badgeos' ) );
 			update_post_meta( $badge_post_id, '_badgeos_show_in_menu', true );
                         update_post_meta( $badge_post_id, '_badgeos_use_obf_badges', true );
+                        $badges_page = get_page_by_title( 'Badges', 'OBJECT', 'achievement-type' );
+                        if ($badges_page) {
+                            $badges_page_uses_obf = get_post_meta($badges_page->ID, '_badgeos_use_obf_badges', true);
+                            if (empty($badges_page_uses_obf) || $badges_page_uses_obf == 'false') {
+                                update_post_meta( $badges_page->ID, '_badgeos_show_in_menu', false );
+                            }
+                        }
+                        $register_capabilities = true;
 		}
 
 		// Setup default BadgeOS options
@@ -266,8 +275,11 @@ class BadgeOS {
                         $badgeos_settings['db_version']       = self::$db_version;
                         $badgeos_settings['svg_support']      = 'enabled';
 			$this->update_settings( $badgeos_settings );
-                        badgeos_register_achievement_capabilites($badgeos_settings['achievement_creator_role']);
+                        $register_capabilities = true;
 		}
+                if ($register_capabilities) {
+                    badgeos_register_achievement_capabilites($badgeos_settings['achievement_creator_role']);
+                }
 
 		// Setup default obf options
 		$obf_settings = (array) get_option( 'obf_settings', array() );
