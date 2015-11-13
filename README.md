@@ -6,9 +6,9 @@ Easily use badges and set up the steps and achievements users complete to earn t
 Description
 ------------
 
-The [Open Badge Factory](http://openbadgefactory.com "Open Badge Factory")&trade; -plugin turns your WordPress site into an achievement and badging system. Your site's users complete steps, demonstrate skills and knowledge, and earn digital badges. Easily define the achievements, organize the badge requirements any way you like, and choose from and combine a range of assessment options to determine whether each task or requirement has been achieved.
+[Open Badge Factory](http://openbadgefactory.com "Open Badge Factory")&trade; is an Open Badge management system. This plugin turns your WordPress site into an badge awarding system. Your site's users complete steps, demonstrate skills and knowledge, and earn digital badges. Easily define the achievements, organize the badge requirements any way you like, and choose from and combine a range of assessment options to determine whether each task or requirement has been achieved.
 
-Create badges and set up the achievements to earn them. Badges are Mozilla OBI compatible and sharable via [Credly](https://credly.com/ "Credly.com"), the free web service for managing and displaying lifelong credentials.
+Badges are Mozilla OBI compatible and sharable via [Open Badge Passport](http://openbadgepassport.com/ "openbadgepassport.com").
 
 The Open Badge Factory -plugin is extremely powerful and infinitely extensible. Check out some of the out-of-the-box features:
 
