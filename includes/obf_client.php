@@ -424,7 +424,7 @@ class ObfClient
      *            The email address of the recipient.
      * @return array The event data.
      */
-    public function get_assertions($badgeId = null, $email = null)
+    public function get_assertions($badgeId = null, $email = null, $extra_params = array())
     {
         $params = array (
                 'api_consumer_id' => $this->get_api_consumer_id()
@@ -439,6 +439,7 @@ class ObfClient
         if (!is_null($email)) {
             $params ['email'] = $email;
         }
+        $params = array_merge($extra_params, $params);
 
         // When getting assertions via OBF API the returned JSON isn't valid.
         // Let's use a closure that converts the returned string into valid JSON

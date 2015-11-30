@@ -173,6 +173,7 @@ Take a look at [https://openbadgefactory.com/faq](https://openbadgefactory.com/f
 = 1.4.7.1 =
 * Fixed Open Badge Factory badges importing multiple copies on some setups
 * Fixed Badges-menu behaviour on fresh install
+* Fixed a typo in import error message
 
 = 1.4.7 =
 * Support for Open Badge Factory integration added

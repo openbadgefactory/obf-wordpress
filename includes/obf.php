@@ -67,6 +67,7 @@ class BadgeOS_Obf {
 			'obf_badge_evidence' => 'permalink',
 			'obf_badge_sendemail_add_message' => 'false',
 			'obf_badge_sendemail_message' => __( 'NOTE: To claim this official badge and share it on social networks click on the "Save & Share" button above. If you already have an Open Badge Passport account, simply sign in and then "Accept" the badge. If you are not a member, Create an Account (it\'s free), confirm your email address, and then "Accept" your badge.', 'badgeos' ),
+                        'obf_assertion_sync' => 'true',
 		);
 
 		$this->obf_settings = array_merge( $default_settings, $this->obf_settings );
@@ -119,18 +120,7 @@ class BadgeOS_Obf {
             if (!$this->obf_client_id_exists()) {
                 return;
             }
-            $obf_achievement_types = $this->obf_badge_achievement_types(false);
-            // Get all badge posts with obf badge id, excluding those which have an achievement type that has been deleted.
-            $sql = "SELECT post_id, pm.meta_value AS badge_id, post_modified_gmt AS modified_date FROM {$wpdb->postmeta} pm "
-                    . "LEFT JOIN {$wpdb->posts} p ON (pm.post_id = p.id) WHERE p.post_type IN ("
-                    . implode(', ', array_fill(0, count($obf_achievement_types), '%s'))
-                    . ") AND p.post_status != 'trash' AND pm.meta_key = '_badgeos_obf_badge_id'"
-                    // Badges, where the subselect below does not return anything, belong to an achievement type that has been deleted.
-                    . "AND EXISTS (SELECT id FROM {$wpdb->postmeta} subpm  LEFT JOIN {$wpdb->posts} subp ON (subpm.post_id = subp.id) "
-                    . "WHERE subp.post_type='achievement-type' AND subp.post_status NOT IN ('trashed', 'closed', 'trash') "
-                    . "AND subp.post_name=p.post_type AND subpm.meta_key='_badgeos_singular_name')";
-            $query = call_user_func_array(array($wpdb, 'prepare'), array_merge(array($sql), $obf_achievement_types));
-            $existing = $wpdb->get_results($query, OBJECT);
+            $existing = $this->obf_get_existing_badges();
             $existing_badges = array();
             $nowdate = new DateTime();
             $import_interval = 24 * 60 * 60; // Import badges at least once per day.
@@ -408,6 +398,14 @@ class BadgeOS_Obf {
 
 		// Update Obf ID on profile save
 		add_action( 'personal_options_update', array( $this, 'obf_get_user_id' ) );
+                
+                //add_action( 'badgeos_obf_sync_assertions', array( $this, 'sync_obf_assertions' ) );
+                
+                // Sync non-wp assertions twice per day
+                if ( ! wp_next_scheduled( 'badgeos_obf_sync_assertions' ) ) {
+                    wp_schedule_event( time(), 'twicedaily', 'badgeos_obf_sync_assertions' );
+                }
+                
 
 	}
 
@@ -648,7 +646,37 @@ class BadgeOS_Obf {
 
 	}
 
-
+        /**
+         * Get our existing local copies of OBF badges
+         * 
+         * @since 1.4.7.2
+         * @return stdClass[] Array of existing badges
+         */
+        public function obf_get_existing_badges() {
+            global $wpdb;
+            $obf_achievement_types = $this->obf_badge_achievement_types(false);
+            // Get all badge posts with obf badge id, excluding those which have an achievement type that has been deleted.
+            $sql = "SELECT post_id, pm.meta_value AS badge_id, post_modified_gmt AS modified_date FROM {$wpdb->postmeta} pm "
+                    . "LEFT JOIN {$wpdb->posts} p ON (pm.post_id = p.id) WHERE p.post_type IN ("
+                    . implode(', ', array_fill(0, count($obf_achievement_types), '%s'))
+                    . ") AND p.post_status != 'trash' AND pm.meta_key = '_badgeos_obf_badge_id'"
+                    // Badges, where the subselect below does not return anything, belong to an achievement type that has been deleted.
+                    . "AND EXISTS (SELECT id FROM {$wpdb->postmeta} subpm  LEFT JOIN {$wpdb->posts} subp ON (subpm.post_id = subp.id) "
+                    . "WHERE subp.post_type='achievement-type' AND subp.post_status NOT IN ('trashed', 'closed', 'trash') "
+                    . "AND subp.post_name=p.post_type AND subpm.meta_key='_badgeos_singular_name')";
+            $query = call_user_func_array(array($wpdb, 'prepare'), array_merge(array($sql), $obf_achievement_types));
+            $existing = $wpdb->get_results($query, OBJECT);
+            return $existing;
+        }
+        
+        public function obf_get_existings_badges_obf_id_post_id_map() {
+            $existing_badges = $this->obf_get_existing_badges();
+            $post_ids = array();
+            foreach($existing_badges as $badge) {
+                $post_ids[$badge->badge_id] = $badge->post_id;
+            }
+            return $post_ids;
+        }
 	/**
 	 * Gets our Obf user ID or defaults to user email
 	 *
@@ -740,7 +768,7 @@ class BadgeOS_Obf {
 
 		// If post was successful, trigger other actions
 		if ( $results ) {
-			do_action( 'post_obf_user_badge', $user_id, $badge_id, $results );
+			do_action( 'post_obf_user_badge', $user_id, $badge_id, true );
 		}
 
 		return $results;
@@ -841,7 +869,7 @@ class BadgeOS_Obf {
 		// If post was successful, trigger other actions
 		if ( $results && !is_wp_error($results)) {
                     foreach($ok_user_ids as $user_id) {
-                        do_action( 'post_obf_user_badge', $user_id, $badge_id, $results );
+                        do_action( 'post_obf_user_badge', $user_id, $badge_id, true );
                     }
 		}
 
@@ -870,6 +898,89 @@ class BadgeOS_Obf {
                 'expires'       => $expires
             );
             return $args;
+        }
+        
+        public function maybe_sync_obf_assertions()
+        {
+            $obf_settings = (array) get_option( 'obf_settings', array() );
+            $sync_option_name = 'obf_assertion_sync';
+            //$sync_delay = 60 * 60;
+            if (
+                    !array_key_exists($sync_option_name, $obf_settings) ||
+                    'true' == $obf_settings[$sync_option_name]
+            ) {
+                $this->sync_obf_assertions();
+            }
+        }
+        /**
+         * Sync OBF assertions with the local users
+         * 
+         * @param \WP_User[]|\WP_User|null $users Array of WP_Users to sync
+         * @return \WP_Error|int Number of assertions which were matched to local users or WP_Error on failure
+         */
+        public function sync_obf_assertions($users = null)
+        {
+            if ($users instanceof \WP_User) {
+                $users = array($users);
+            }
+            $email = !empty($users) && count($users) == 1 ? $users[0]->user_email : null;
+            try {
+                $assertions = $this->obf_client->get_assertions(null, $email, array('order_by' => 'desc'));
+            } catch (Exception $ex) {
+                return new WP_Error($ex->getCode(), $ex->getMessage());
+            }
+            $count = 0;
+            
+            $badges_recipients = array();
+            $obf_id_post_id_map = $this->obf_get_existings_badges_obf_id_post_id_map();
+            if (0 == count($obf_id_post_id_map)) {
+                return 0;
+            }
+            
+            if (empty($users)) {
+                $users = get_users(array('fields' => array('ID','user_email')));
+            }
+
+            // Create an array of addresses => ids (user@example.com => 1) 
+            $user_email_user_ids = array();
+            foreach ($users as $user) {
+                if (!empty($user->user_email)) {
+                    $user_email_user_ids[strtolower($user->user_email)] = $user->ID;
+                }
+            }
+            
+            $issued_on_timestamps = array();
+            foreach ($assertions as $assertion) {
+              $obf_badge_id = $assertion['badge_id'];
+              $wp_badge_id = array_key_exists($obf_badge_id, $obf_id_post_id_map) ? $obf_id_post_id_map[$obf_badge_id] : null;
+              $badge_recipient_ids = array();
+              if (!empty($assertion['recipient']) && is_array($assertion['recipient'])) {
+                  foreach($assertion['recipient'] as $recipient) {
+                      if (array_key_exists(strtolower($recipient), $user_email_user_ids) ) {
+                          $badge_recipient_ids[] = $user_email_user_ids[$recipient];
+                          if (isset($assertion['issued_on'])) {
+                            $issued_on_timestamps[$wp_badge_id][$user_email_user_ids[strtolower($recipient)]] = $assertion['issued_on'];
+                          }
+                      }
+                  }
+              }
+              if (!empty($badge_recipient_ids) && !is_null($wp_badge_id)) {
+                if (array_key_exists($wp_badge_id, $badges_recipients)) {
+                   $badge_recipient_ids = array_unique(array_merge($badges_recipients[$wp_badge_id], $badge_recipient_ids));
+                }
+                $badges_recipients[$wp_badge_id] = $badge_recipient_ids;
+              }
+            }
+            
+            
+            foreach($badges_recipients as $wp_badge_id => $badge_recipient_ids) {
+                foreach($badge_recipient_ids as $recipient_id) {
+                        $issued_on = (isset($issued_on_timestamps[$wp_badge_id][$recipient_id])) ? $issued_on_timestamps[$wp_badge_id][$recipient_id] : null;
+                        badgeos_user_sent_achievement_to_obf($recipient_id, $wp_badge_id, true, $issued_on);
+                        $count++;
+                }
+            }
+            return $count;
         }
 
 	/**
@@ -1415,13 +1526,15 @@ function badgeos_can_user_send_achievement_to_obf( $user_id = 0, $achievement_id
  *
  * @param  integer $user_id        User ID.
  * @param  integer $achievement_id Achievement post ID.=
+ * @param  integer|null $timestamp Timestamp override, when the achievement was earned
  * @return mixed                   Updated user meta ID on success, otherwise false.
  */
-function badgeos_user_sent_achievement_to_obf( $user_id, $achievement_id ) {
+function badgeos_user_sent_achievement_to_obf( $user_id, $achievement_id, $add = false, $timestamp = null ) {
 
 	// Get all earned achievements
 	$earned_achievements = badgeos_get_user_achievements( array( 'user_id' => $user_id ) );
 
+        $existing = false;
 	// Loop through each achievement
 	if ( ! empty( $earned_achievements ) ) {
 		foreach ( $earned_achievements as $key => $achievement ) {
@@ -1429,6 +1542,8 @@ function badgeos_user_sent_achievement_to_obf( $user_id, $achievement_id ) {
 			// If acheivement doesn't match our ID, skip it
 			if ( $achievement_id !== $achievement->ID )
 				continue;
+                        
+                        $existing = true;
 
 			// If this instance has not been sent to obf, mark it as sent and exit
 			if ( ! badgeos_achievement_has_been_sent_to_obf( $achievement ) ) {
@@ -1437,10 +1552,21 @@ function badgeos_user_sent_achievement_to_obf( $user_id, $achievement_id ) {
 			}
 		}
 	}
+        if (true == $add && false == $existing) {
+            // Setup our achievement object
+            $achievement_object = badgeos_build_achievement_object( $achievement_id );
+            $achievement_object->sent_to_obf = true;
+            if (!empty($timestamp) && is_numeric($timestamp)) {
+                $achievement_object->date_earned = $timestamp;
+            }
+
+            // Update user's earned achievements
+            badgeos_update_user_achievements( array( 'user_id' => $user_id, 'new_achievements' => array( $achievement_object ) ) );
+        }
 
 	return false;
 }
-add_action( 'post_obf_user_badge', 'badgeos_user_sent_achievement_to_obf', 10, 2 );
+add_action( 'post_obf_user_badge', 'badgeos_user_sent_achievement_to_obf', 10, 4 );
 
 /**
  * Create a log entry for an achievement being sent to Obf.
@@ -1467,3 +1593,10 @@ function badgeos_log_user_sent_achievement_to_obf( $user_id, $achievement_id ) {
 	badgeos_post_log_entry( $achievement_id, $user_id, null, $title );
 }
 add_action( 'post_obf_user_badge', 'badgeos_log_user_sent_achievement_to_obf', 10, 2 );
+
+
+function sync_obf_assertions_function() {
+    global $badgeos_obf;
+    $badgeos_obf->sync_obf_assertions();
+}
+add_action( 'badgeos_obf_sync_assertions', 'sync_obf_assertions_function' );
