@@ -4,7 +4,7 @@ Contributors: openbadgefactory, jounisuo, badgeos, learningtimes, credly, webdev
 Tags: badge, badges, openbadges, open badge factory, OBI, mozilla, open badges, achievement, award, reward, engagement, submission, nomination, API
 Donate link: https://github.com/discendum
 Requires at least: 3.6
-Tested up to: 4.3.1
+Tested up to: 4.4
 Stable tag: 1.4.7.1
 License: GNU AGPLv3
 License URI: http://www.gnu.org/licenses/agpl-3.0.html
