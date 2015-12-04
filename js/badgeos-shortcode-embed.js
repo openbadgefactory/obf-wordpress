@@ -110,10 +110,10 @@
 	};
 	var select2_post_multiples = $.extend( true, {}, select2_post_defaults, { multiple: true } );
 
-	$( '#badgeos_achievement_id, #badgeos_nomination_achievement_id, #badgeos_submission_achievement_id' ).select2( select2_post_defaults );
-	$( '#badgeos_achievements_list_include, #badgeos_achievements_list_exclude' ).select2( select2_post_multiples );
+	$( '#obf_achievement_id, #obf_nomination_achievement_id, #obf_submission_achievement_id' ).select2( select2_post_defaults );
+	$( '#obf_achievements_list_include, #obf_achievements_list_exclude' ).select2( select2_post_multiples );
 
-	$( '#badgeos_achievements_list_type' ).select2({
+	$( '#obf_achievements_list_type' ).select2({
 		ajax: {
 			url: ajaxurl,
 			type: 'POST',
@@ -143,7 +143,7 @@
 		multiple: true
 	});
 
-	$( '#badgeos_achievements_list_user_id' ).select2({
+	$( '#obf_achievements_list_user_id' ).select2({
 		ajax: {
 			url: ajaxurl,
 			type: 'POST',
