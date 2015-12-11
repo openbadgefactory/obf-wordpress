@@ -406,7 +406,6 @@ class BadgeOS_Obf {
                     wp_schedule_event( time(), 'twicedaily', 'badgeos_obf_sync_assertions' );
                 }
                 
-
 	}
 
 	/**
@@ -916,10 +915,14 @@ class BadgeOS_Obf {
          * Sync OBF assertions with the local users
          * 
          * @param \WP_User[]|\WP_User|null $users Array of WP_Users to sync
+         * @since 1.4.7.2
          * @return \WP_Error|int Number of assertions which were matched to local users or WP_Error on failure
          */
         public function sync_obf_assertions($users = null)
         {
+            if (!$this->obf_client_id_exists()) {
+                return;
+            }
             if ($users instanceof \WP_User) {
                 $users = array($users);
             }
@@ -982,7 +985,7 @@ class BadgeOS_Obf {
             }
             return $count;
         }
-
+        
 	/**
 	 * Encode our image file so we can pass it to the Obf API
 	 *
@@ -1595,6 +1598,11 @@ function badgeos_log_user_sent_achievement_to_obf( $user_id, $achievement_id ) {
 add_action( 'post_obf_user_badge', 'badgeos_log_user_sent_achievement_to_obf', 10, 2 );
 
 
+/**
+ * Sync OBF assertions
+ * @since 1.4.7.2
+ * @global type $badgeos_obf
+ */
 function sync_obf_assertions_function() {
     global $badgeos_obf;
     $badgeos_obf->sync_obf_assertions();
