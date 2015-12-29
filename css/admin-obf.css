@@ -84,3 +84,6 @@ ul#obf-badges li .badge-desc {
 #badgeos_obf_image_meta_box .wp-post-image {
     max-width: 150px; max-height: 150px;
 }
+
+#badgeos_steps_ui #steps_list .step-row .spinner { margin-bottom: -20px; }
+#badgeos_steps_ui #steps_list .step-row { clear: right; }
