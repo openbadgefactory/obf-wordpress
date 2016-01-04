@@ -14,6 +14,7 @@ $badgeos_ajax_actions = array(
 	'get-achievements',
 	'get-feedback',
 	'get-achievements-select2',
+        'get-posts-select2',
 	'get-achievement-types',
 	'get-users',
 	'update-feedback',
@@ -293,6 +294,37 @@ function badgeos_ajax_get_achievements_select2() {
 		WHERE  post_title LIKE %s
 		       {$post_type}
 		       AND post_status = 'publish'
+		",
+		"%%{$search}%%"
+	) );
+
+	// Return our results
+	wp_send_json_success( $results );
+}
+
+/**
+ * AJAX Helper for selecting posts in Achievement required steps metabox.
+ * 
+ * @since 1.4.7.3
+ */
+function badgeos_ajax_get_posts_select2() {
+    global $wpdb;
+
+	// Pull back the search string
+	$search     = isset( $_REQUEST['q'] ) ? like_escape( $_REQUEST['q'] ) : '';
+        $post_types = array('post');
+	$post_type  = sprintf( 'AND post_type IN(\'%s\')', implode( "','", $post_types ) );
+        $limit      = isset( $_REQUEST['limit'] ) ? (int)$_REQUEST['limit'] : 50;
+
+	$results = $wpdb->get_results( $wpdb->prepare(
+		"
+		SELECT ID, post_title
+		FROM   $wpdb->posts
+		WHERE  post_title LIKE %s
+		       {$post_type}
+		       AND post_status = 'publish'
+                       
+                LIMIT {$limit}
 		",
 		"%%{$search}%%"
 	) );

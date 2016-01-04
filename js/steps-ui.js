@@ -78,6 +78,7 @@ jQuery(document).ready(function($) {
 			achievement_selector.siblings('.select-achievement-post').hide();
 			if ( 'badgeos_specific_new_comment' == trigger_type ) {
 				achievement_selector.siblings('input.select-achievement-post').show();
+                                achievement_selector.siblings('div.select2-container.select-achievement-post').show();
 			}
 		}
 	});
@@ -90,6 +91,25 @@ jQuery(document).ready(function($) {
                 e.preventDefault();
             }
         });
+        
+        jQuery('#steps_list li.step-row .select-achievement-post[type="text"]').each( 
+                function (index, value ) {
+                    jQuery(value).select2(
+                        {
+                            ajax: { 
+                                url: ajaxurl, 
+                                type: 'POST', 
+                                data: function(term) { return {q: term, action: 'get-posts-select2'}; }, 
+                                results: function(results, page) {console.log(results); return { results: results.data}; }
+                            },
+                            id: function (item) { return item.ID; },
+                            formatResult: function(item) { return item.post_title; }, 
+                            formatSelection: function(item) { return item.post_title; },
+                            width: '240'
+                        }
+                    );
+                }
+        );
         badgeos_set_steps_modified(false);
 });
 

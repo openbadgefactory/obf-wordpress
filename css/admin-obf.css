@@ -87,3 +87,4 @@ ul#obf-badges li .badge-desc {
 
 #badgeos_steps_ui #steps_list .step-row .spinner { margin-bottom: -20px; }
 #badgeos_steps_ui #steps_list .step-row { clear: right; }
+#badgeos_steps_ui #steps_list .step-row .select-achievement-post { display: inline-block; }
