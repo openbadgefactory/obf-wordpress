@@ -19,6 +19,9 @@ function badgeos_steps_ui_admin_scripts() {
     global $post_type;
     if ( in_array( $post_type, badgeos_get_achievement_types_slugs() ) ) {
     	wp_enqueue_script( 'badgeos-steps-ui', $GLOBALS['badgeos']->directory_url . 'js/steps-ui.js', array( 'jquery-ui-sortable' ), '2.0.0' );
+        $data = array('stepsmodifiedmessage' => __('Required steps have been changed. Save all steps before proceeding.'));
+        wp_localize_script( 'badgeos-steps-ui', 'BadgeosStepsData', $data );
+
     }
 }
 add_action( 'admin_print_scripts-post-new.php', 'badgeos_steps_ui_admin_scripts', 11 );

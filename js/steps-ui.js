@@ -27,7 +27,7 @@ jQuery(document).ready(function($) {
 
 	// Listen for our change to our trigger type selectors
 	$('#steps_list').on( 'change', '.select-trigger-type', function() {
-
+                badgeos_set_steps_modified(true);
 		// Grab our selected trigger type and achievement selector
 		var trigger_type = $(this).val();
 		var achievement_selector = $(this).siblings('.select-achievement-type');
@@ -48,7 +48,7 @@ jQuery(document).ready(function($) {
 
 	// Listen for a change to our achivement type selectors
 	$('#steps_list').on( 'change', '.select-achievement-type', function() {
-
+                badgeos_set_steps_modified(true);
 		// Setup our necessary variables
 		var achievement_selector = $(this);
 		var achievement_type     = achievement_selector.val();
@@ -83,8 +83,20 @@ jQuery(document).ready(function($) {
 	});
 	// Trigger a change for our achievement type post selector to determine if it should show
 	$( '.select-achievement-type' ).change();
+        
+        jQuery('#publish').on('click', function(e) {
+            if ($('#steps_list.steps-modified:visible').length > 0) {
+                alert(BadgeosStepsData.stepsmodifiedmessage);
+                e.preventDefault();
+            }
+        });
+        badgeos_set_steps_modified(false);
 });
 
+function badgeos_set_steps_modified(modified) {
+    if (modified === undefined) modified = true;
+    jQuery('#steps_list').toggleClass('steps-modified', modified === true);
+}
 // Add a step
 function badgeos_add_new_step( achievement_id ) {
 	jQuery.post(
@@ -129,6 +141,8 @@ function badgeos_update_steps(e) {
 		action: 'update_steps',
 		steps: []
 	};
+        
+        badgeos_set_steps_modified(false);
 	
 	// Loop through each step and collect its data
 	jQuery( '.step-row' ).each( function() {
