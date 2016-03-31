@@ -5,7 +5,7 @@ Tags: badge, badges, openbadges, open badge factory, OBI, mozilla, open badges, 
 Donate link: https://github.com/discendum
 Requires at least: 3.6
 Tested up to: 4.4
-Stable tag: 1.4.7.2
+Stable tag: 1.4.7.3
 License: GNU AGPLv3
 License URI: http://www.gnu.org/licenses/agpl-3.0.html
 
@@ -170,6 +170,9 @@ Take a look at [https://openbadgefactory.com/faq](https://openbadgefactory.com/f
 
 == Changelog ==
 
+= 1.4.7.3 =
+* Support for Canadian (+possible others) Open Badge Factory API, by defining the API URL.
+
 = 1.4.7.2 =
 * Shortcode achievement and user selection UI fixes
 * Better syncronization of issued badges between obf and wp
@@ -183,6 +186,9 @@ Take a look at [https://openbadgefactory.com/faq](https://openbadgefactory.com/f
 * Support for Open Badge Factory integration added
 
 == Upgrade Notice ==
+
+= 1.4.7.3 =
+* Support for Canadian (+possible others) Open Badge Factory API, by defining the API URL.
 
 = 1.4.7.2 =
 * Shortcode achievement and user selection UI fixes

@@ -158,7 +158,7 @@ class ObfClient
      * @return boolean Returns true on success.
      * @throws \Exception If something goes wrong.
      */
-    public function authenticate($signature)
+    public function authenticate($signature, $apiurl)
     {
         $pkidir = realpath($this->get_pki_dir());
 
@@ -179,7 +179,7 @@ class ObfClient
         unset($curlopts ['SSLCERT']);
         unset($curlopts ['SSLKEY']);
 
-        $apiurl = $this->get_api_url();
+        //$apiurl = $this->url_checker($api_url);
 
         $url = $apiurl . '/client/OBF.rsa.pub';
 

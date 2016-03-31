@@ -4,7 +4,7 @@
 * Plugin URI: http://www.openbadgefactory.com/
 * Description: Open Badge Factory -plugin lets your site’s users complete tasks and earn badges that recognize their achievement.  Define achievements and choose from a range of options that determine when they're complete.  Badges are Mozilla Open Badges (OBI) compatible.
 * Author: Discendum Oy
-* Version: 1.4.7.2
+* Version: 1.4.7.3
 * Author URI: http://www.discendum.com/
 * License: GNU AGPL
 * Text Domain: badgeos
@@ -60,8 +60,8 @@ class BadgeOS {
 	 *
 	 * @var string
 	 */
-	public static $version = '1.4.7.2';
-        public static $db_version = 5;
+	public static $version = '1.4.7.3';
+        public static $db_version = 6;
         
         private $settings;
 
@@ -452,6 +452,9 @@ class BadgeOS {
                     if (array_key_exists('badgeos_obf', $GLOBALS)) {
                         sync_obf_assertions_function();
                     }
+                }
+                if ($from < 6) {
+                    $this->update_setting('obf_api_url',"https:openbadgefactory.com/v1");
                 }
                 
                 $this->update_setting('db_version', self::$db_version);

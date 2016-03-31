@@ -46,7 +46,7 @@ class BadgeOS_Obf {
 
 		// Set our options based on our Obf settings
 		$this->obf_settings = (array) get_option( 'obf_settings', array() );
-                unset($this->obf_settings['obf_api_url']);
+                //unset($this->obf_settings['obf_api_url']);
 
 		$default_settings = array(
 			'api_key' => '',
@@ -82,7 +82,8 @@ class BadgeOS_Obf {
 			$this->obf_settings[ 'obf_badge_image' ] = $default_settings[ 'obf_badge_image' ];
 		}
 
-		$this->api_key                 = $this->obf_settings['api_key'];
+        $this->api_key                 = $this->obf_settings['api_key'];
+		$this->api_url                 = $this->obf_settings['obf_api_url'];
 		$this->field_title             = $this->obf_settings['obf_badge_title'];
 		$this->field_short_description = $this->obf_settings['obf_badge_short_description'];
 		$this->field_description       = $this->obf_settings['obf_badge_description'];
@@ -667,8 +668,13 @@ class BadgeOS_Obf {
             $existing = $wpdb->get_results($query, OBJECT);
             return $existing;
         }
-        
-        public function obf_get_existings_badges_obf_id_post_id_map() {
+        /**
+        * Creates array where badges obf id is key and wordpress post id is value.
+        *
+        * @since 1.4.7.2
+        * @return array An array of existing badges where key[obf_id]=value[wp_post_id];
+        */
+        public function obf_get_existing_badges_id_map() {
             $existing_badges = $this->obf_get_existing_badges();
             $post_ids = array();
             foreach($existing_badges as $badge) {
@@ -935,7 +941,7 @@ class BadgeOS_Obf {
             $count = 0;
             
             $badges_recipients = array();
-            $obf_id_post_id_map = $this->obf_get_existings_badges_obf_id_post_id_map();
+            $obf_id_post_id_map = $this->obf_get_existing_badges_id_map();
             if (0 == count($obf_id_post_id_map)) {
                 return 0;
             }

@@ -24,6 +24,8 @@ add_action( 'admin_init', 'badgeos_obf_register_settings' );
  * @return array          Sanitized form input data
  */
 function badgeos_obf_settings_validate( $options = array() ) {
+
+
 	// If attempting to retrieve an api key from credly
 	if (
 		isset( $_POST['badgeos_obf_api_key_nonce'] )
@@ -33,19 +35,35 @@ function badgeos_obf_settings_validate( $options = array() ) {
 		$username = ( !empty( $options['obf_user'] ) ? sanitize_text_field( $options['obf_user'] ) : '' );
 		$password = ( !empty( $options['obf_password'] ) ? sanitize_text_field( $options['obf_password'] ) : '' );
                 $apikey = $options['api_key'];
-
+                $url = $options['obf_api_url'];
                 $certDir = realpath($options['obf_cert_dir']);
-
+                $correcturl = true;
                 // Certificate directory not writable.
                 if (!is_writable($certDir)) {
-                    $error .= '<p>'. sprintf(__( 'API certificate dir (%s) is not writeable.', 'badgeos' ), $certDir). '</p>';
-                    badgeos_obf_get_api_key_error( $error );
+                    //clear obf_api_url input if error
+                    unset( $options['obf_api_url'] );
+                    $correcturl = false;
+
+                    add_settings_error('myUnigiqe', esc_attr( 'settings_updated' ),  sprintf( __( 'API certificate dir (%s) is not writeable.', 'badgeos' )), 'error');
                 } else {
-                    if (!empty($apikey)) {
-                        $clientId = badgeos_obf_get_api_cert($apikey, $certDir);
+                    if (!empty($apikey) && !empty($url)) {
+                    	$apiurl = badgeos_obf_url_checker($url);
+                        $clientId = badgeos_obf_get_api_cert($apikey, $apiurl, $certDir);
                         if (false !== $clientId) {
                             $options['obf_client_id'] = sanitize_text_field($clientId);
+                            $options['obf_api_url'] = $apiurl;
                         }
+                        else{
+                        	//clear obf_api_url input if error
+                        	unset( $options['obf_api_url'] );
+                    		$correcturl = false;
+                        }
+                    }
+                    else{
+                    	add_settings_error('myUnigiqe', esc_attr( 'settings_updated' ),  sprintf( __( 'API key or URL is missing', 'badgeos' )), 'error');
+                    	//clear obf_api_url input if error
+                    	unset( $options['obf_api_url'] );
+                    	$correcturl = false;
                     }
                 }
 	}
@@ -53,14 +71,91 @@ function badgeos_obf_settings_validate( $options = array() ) {
 	// we're not saving these values
 	unset( $options['obf_user'] );
 	unset( $options['obf_password'] );
-        unset( $options['api_key'] );
+    unset( $options['api_key'] );
 	// sanitize all our options
 	foreach ( $options as $key => $opt ) {
 		$clean_options[$key] = sanitize_text_field( $opt );
 	}
+
+	/*
+		check if apiurl is changed and clear existing badges from database.
+	*/
+	badgeos_obf_maybe_clear_all_obf_badges($apiurl, $correcturl);
+
 	return $clean_options;
+}
+
+/**
+* Clear existing badges if apiurl is changed.
+* @since  1.4.7.3
+*/
+function badgeos_obf_maybe_clear_all_obf_badges($apiurl=null, $correcturl=false) {
+
+	/**
+	* @var $badgeos_obf BadgeOS_Obf
+	*/
+	global $badgeos_obf;
+
+
+	$obf_settings = $badgeos_obf->obf_settings;
+    	if (!empty($certDir)) {
+            $obf_settings = array_merge($obf_settings, array('obf_cert_dir' => $certDir));
+        }
+        
+    $client = ObfClient::get_instance(null, $obf_settings);
+
+    //get saved api_url
+	$old_api_url = $client->get_api_url();
+
+	//correcturl is true if no errors in connects
+	if($old_api_url != $apiurl && !empty($apiurl) && false !== $correcturl){
+		//Get all existing badge ids from db;
+		$existing_badges = $badgeos_obf->obf_get_existing_badges_id_map();
+
+		//loop and move trash
+		foreach($existing_badges as $badge) {
+			wp_trash_post($badge);
+		}
+	}
 
 }
+
+/**
+* creates apiurl
+* @since  1.4.7.3
+* @param  string $api_url
+* @return "https://"+url+"/v1"
+*/
+function badgeos_obf_url_checker($url) {
+	if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+		$url = "https://" . $url;
+	}
+	if (!preg_match("/\/v1$/", $url)) {
+		$url = $url . "/v1";
+   	}
+
+    return $url;
+}
+
+/**
+ * creates apiurl
+ * @since  1.4.7.3
+ * @param  string $api_url
+ * @return "https://"+url+"/v1"
+ */
+  	function url_checker($url) {
+        if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+            $url = "https://" . $url;
+        }
+        if (!preg_match("/\/v1$/", $url)) {
+            $url = $url . "/v1";
+        }
+
+        return $url;
+    }
+
+
+
 
 /**
  * Retrieves Open Badge Factory api key via username/password
@@ -69,7 +164,7 @@ function badgeos_obf_settings_validate( $options = array() ) {
  * @param  string $password OBF user passowrd
  * @return string           API client id on success, false otherwise
  */
-function badgeos_obf_get_api_cert( $apikey, $certDir ) {
+function badgeos_obf_get_api_cert( $apikey, $apiurl, $certDir ) {
         global $badgeos_obf;
 
 	$obf_settings = $badgeos_obf->obf_settings;
@@ -80,14 +175,14 @@ function badgeos_obf_get_api_cert( $apikey, $certDir ) {
         $client = ObfClient::get_instance(null, $obf_settings);
         $errorDetails = '';
         try {
-            $success = $client->authenticate($apikey);
+            $success = $client->authenticate($apikey, $apiurl);
         } catch (\Exception $ex) {
             $success = false;
             $errorDetails = $ex->getMessage();
         }
         if (true !== $success) {
-            $error = '<p>'. sprintf( __( 'There was an error creating an Open Badge Factory API (%s) certificate: %s', 'badgeos' ), $client->get_api_url(), $errorDetails ) . '</p>';
-            return badgeos_obf_get_api_key_error( $error );
+            $error = '<p>'. sprintf( __( 'There was an error creating an Open Badge Factory API (%s) certificate: %s', 'badgeos' ), $apiurl, $errorDetails ) . '</p>';
+            add_settings_error('connecterror', esc_attr( 'settings_updated' ), $error, 'error');
         } else if (($client_id = $client->get_client_id()) && !empty($client_id)) {
             return $client->get_client_id();
         }
@@ -116,14 +211,14 @@ function badgeos_obf_get_api_key( $username = '', $password = '' ) {
 	// If the response is a WP error
 	if ( is_wp_error( $response ) ) {
 		$error = '<p>'. sprintf( __( 'There was an error getting a Open Badge Factory API Key: %s', 'badgeos' ), $response->get_error_message() ) . '</p>';
-		return badgeos_obf_get_api_key_error( $error );
+		 add_settings_error('responseError', esc_attr( 'settings_updated' ), $error, 'error');
 	}
 
 	// If the response resulted from potentially bad credentials
 	if ( '401' == wp_remote_retrieve_response_code( $response ) ) {
 		$error = '<p>'. __( 'There was an error getting a Open Badge Factory API Key: Please check your username and password.', 'badgeos' ) . '</p>';
 		// Save our error message.
-		return badgeos_obf_get_api_key_error( $error );
+		add_settings_error('401error', esc_attr( 'settings_updated' ), $error, 'error');
 	}
 
 	$api_key = json_decode( $response['body'] );
@@ -228,6 +323,20 @@ function badgeos_obf_options_page() {
 			?>
 		</form>
 	</div>
+	 <script type="text/javascript">
+        jQuery(document).ready(function($) {
+
+        	jQuery('input[name="urledit"]').click(function(){
+        		var $this = $(this);
+
+        		if($this.is(':checked')){
+        			jQuery('#api_url').attr('readOnly', false);
+        		}else{
+        			jQuery('#api_url').attr('readOnly', true);
+        		}
+        	});
+        });
+    </script>
 <?php
 
 }
@@ -279,10 +388,19 @@ function badgeos_obf_options_no_api( $obf_settings = array() ) {
 			</tr>
 			<tr valign="top">
 				<th scope="row">
+					<label for="api_url"><?php _e( 'URL: ', 'badgeos' ); ?></label>
+				</th>
+				<td>
+					<input id="api_url" type="text" name="obf_settings[obf_api_url]" class="widefat" value="<?php echo esc_attr( $obf_settings['obf_api_url'] ) ?>" readOnly="false" />
+                                        <p class="description"><input type="checkbox" name="urledit" value="urledit"/> <?php _e('Use different URL.', 'badgeos'); ?></p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<th scope="row">
 					<label for="api_key"><?php _e( 'API Key: ', 'badgeos' ); ?></label>
 				</th>
 				<td>
-					<input id="api_key" type="text" name="obf_settings[api_key]" class="widefat" value="<?php echo esc_attr( $obf_settings[ 'api_key' ] ); ?>" style="max-width: 1000px;" />
+					<textarea id="api_key" type="text" name="obf_settings[api_key]" class="widefat" value="<?php echo esc_attr( $obf_settings[ 'api_key' ] ); ?>" style="max-width: 1000px;" ></textarea>
                                         <p class="description"><?php _e('Find your API Key by logging in to Open Badge Factory. It is located under Admin Tools > API key.', 'badgeos'); ?></p>
 				</td>
 			</tr>
@@ -309,9 +427,18 @@ function badgeos_obf_options_yes_api( $obf_settings = array() ) {
 		<h3><?php _e( 'Open Badge Factory API Key', 'badgeos' ); ?></h3>
 		<table class="form-table">
 			<tr valign="top">
+				<th scope="row">
+					<label for="api_url"><?php _e( 'URL: ', 'badgeos' ); ?></label>
+				</th>
+				<td>
+					<input id="api_url" type="text" name="obf_settings[obf_api_url]" class="widefat" value="<?php echo esc_attr( $obf_settings['obf_api_url'] ) ?>" readOnly="true" />
+                                        <p class="description"><input type="checkbox" name="urledit" value="urledit"/> <?php _e('Use different URL.', 'badgeos'); ?></p>
+				</td>
+			</tr>
+			<tr valign="top">
 				<th scope="row"><label for="api_key"><?php _e( 'API Key: ', 'badgeos' ); ?></label></th>
 				<td>
-					<input id="api_key" type="text" name="obf_settings[api_key]" class="widefat" value="<?php echo esc_attr( $obf_settings[ 'api_key' ] ); ?>" />
+					<textarea id="api_key" type="text" name="obf_settings[api_key]" class="widefat" value="<?php echo esc_attr( $obf_settings[ 'api_key' ] ); ?>" ></textarea>
                                         <input id="obf_client_id" type="hidden" name="obf_settings[obf_client_id]" class="widefat" value="<?php echo esc_attr( $obf_settings[ 'obf_client_id' ] ); ?>" />
                                         <p class="description"><?php _e('Find your API Key by logging in to Open Badge Factory. It is located under Admin Tools > API key.', 'badgeos'); ?></p>
 				</td>
@@ -320,7 +447,7 @@ function badgeos_obf_options_yes_api( $obf_settings = array() ) {
                 <?php
                 if (false !== $cert_expiry_date) {
                     ?>
-                    <p class="notice"><?php echo sprintf(__('Open Badge Factory API certificate expires on %s', 'badgeos'), date_i18n( get_option( 'date_format' ), $cert_expiry_date) ) ?></p>
+                    <p class="notice notice-success"><?php echo sprintf(__('Open Badge Factory API certificate expires on %s', 'badgeos'), date_i18n( get_option( 'date_format' ), $cert_expiry_date) ) ?></p>
                     <?php
                 }
                 
@@ -597,6 +724,7 @@ function badgeos_obf_post_import_button() {
     ?>
     <script type="text/javascript">
         jQuery(document).ready(function($) {
+
             $('<a href="admin.php?page=badgeos_sub_obf_import&single_select=true" id="import_obf_badges" class="page-title-action obf-import"><?php _e('Pick a badge', 'badgeos'); ?></a>').appendTo(".wrap h1");
             $('<option>').val('import_obf_badges').text('Import from Open Badge Factory').appendTo('select[name="action"]');
         });
