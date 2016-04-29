@@ -39,12 +39,15 @@ function badgeos_obf_settings_validate( $options = array() ) {
                 $certDir = realpath($options['obf_cert_dir']);
                 $correcturl = true;
                 // Certificate directory not writable.
+                if (empty($certDir) && !empty($options['obf_cert_dir'])) {
+                    add_settings_error('obf_settings_bad_certdir', esc_attr( 'settings_updated' ),  sprintf( __( 'API certificate dir (%s) is defined incorrectly. Please use an absolute path of an existing directory.', 'badgeos' ), $options['obf_cert_dir']), 'error');
+                }
                 if (!is_writable($certDir)) {
                     //clear obf_api_url input if error
                     unset( $options['obf_api_url'] );
                     $correcturl = false;
 
-                    add_settings_error('myUnigiqe', esc_attr( 'settings_updated' ),  sprintf( __( 'API certificate dir (%s) is not writeable.', 'badgeos' )), 'error');
+                    add_settings_error('obf_settings_not_writeable_certdir', esc_attr( 'settings_updated' ),  sprintf( __( 'API certificate dir (%s) is not writeable.', 'badgeos' ), $certDir), 'error');
                 } else {
                     if (!empty($apikey) && !empty($url)) {
                     	$apiurl = badgeos_obf_url_checker($url);
@@ -60,7 +63,7 @@ function badgeos_obf_settings_validate( $options = array() ) {
                         }
                     }
                     else{
-                    	add_settings_error('myUnigiqe', esc_attr( 'settings_updated' ),  sprintf( __( 'API key or URL is missing', 'badgeos' )), 'error');
+                    	add_settings_error('obf_settings_bad_apikey', esc_attr( 'settings_updated' ),  __( 'API key or URL is missing', 'badgeos' ), 'error');
                     	//clear obf_api_url input if error
                     	unset( $options['obf_api_url'] );
                     	$correcturl = false;
