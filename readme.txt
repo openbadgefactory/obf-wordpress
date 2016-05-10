@@ -1,6 +1,6 @@
 === Open Badge Factory ===
 
-Contributors: openbadgefactory, jounisuo, leovainio, badgeos, learningtimes, credly, webdevstudios, williamsba1, rzen, jtsternberg, ryanduff, Messenlehner, LisaSabinWilson, tw2113
+Contributors: openbadgefactory, jounisuo, piros121, leovainio, badgeos, learningtimes, credly, webdevstudios, williamsba1, rzen, jtsternberg, ryanduff, Messenlehner, LisaSabinWilson, tw2113
 Tags: badge, badges, openbadges, open badge factory, OBI, mozilla, open badges, achievement, award, reward, engagement, submission, nomination, API
 Donate link: https://github.com/discendum
 Requires at least: 3.6
