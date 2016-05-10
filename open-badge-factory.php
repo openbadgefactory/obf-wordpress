@@ -35,10 +35,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>;.
  */
 function badgeos_obf_install_errors() {
         $has_notice = get_option( 'obf_install_error' );
-	// If we have an error message, we'll display it
-	echo '<div id="message" class="error"><p>'. $has_notice .'</p></div>';
-	// and then delete it
-	delete_option( 'obf_install_error' );
+        if (!empty($has_notice)) {
+            // If we have an error message, we'll display it
+            echo '<div id="message" class="error"><p>'. $has_notice .'</p></div>';
+            // and then delete it
+            delete_option( 'obf_install_error' );
+        }
 }
 /**
  * Check if BadgeOS is already activated, 
@@ -129,7 +131,24 @@ class BadgeOS {
 		require_once( $this->directory_path . 'includes/obf_svg_support.php' );
 		require_once( $this->directory_path . 'includes/credly-badge-builder.php' );
 		require_once( $this->directory_path . 'includes/widgets.php' );
+                $this->submodule_includes();
 	}
+        
+        function submodule_includes() {
+            if (!isset($GLOBALS['badgeos_community'])) {
+                require_once( $this->directory_path . 'includes/community/community.php' );
+            } else if (isset($GLOBALS['badgeos_community']) && !method_exists($GLOBALS['badgeos_community'], 'is_obf') ) {
+                    update_option('obf_install_error', _('Open Badge Factory -plugin cannot co-exist with BadgeOS Community Add-On -plugin. Please disable the BadgeOS Community Add-On -plugin, if you wish to continue using the Open Badge Factory -plugin.') );
+                    add_action( 'all_admin_notices', 'badgeos_obf_install_errors' );
+            }
+            
+            if (!isset($GLOBALS['badgeos_learndash'])) {
+                require_once( $this->directory_path . 'includes/learndash/learndash.php' );
+            } else if (isset($GLOBALS['badgeos_learndash']) && !method_exists($GLOBALS['badgeos_learndash'], 'is_obf') ) {
+                update_option('obf_install_error', _('Open Badge Factory -plugin cannot co-exist with BadgeOS LearnDash Add-On -plugin. Please disable the BadgeOS LearnDash Add-On -plugin, if you wish to continue using the Open Badge Factory -plugin.') );
+                add_action( 'all_admin_notices', 'badgeos_obf_install_errors' );
+            }
+        }
 
 	/**
 	 * Register all core scripts and styles
@@ -234,9 +253,6 @@ class BadgeOS {
 	 * Activation hook for the plugin.
 	 */
 	function activate() {
-            
-            
-
 		// Include our important bits
 		$this->includes();
                 $register_capabilities = false;
@@ -308,7 +324,20 @@ class BadgeOS {
 
 		// Register our post types and flush rewrite rules
 		badgeos_flush_rewrite_rules();
+                $this->sub_module_activations();
 	}
+        
+        /**
+	 * Activation hook for the plugin sub modules.
+	 */
+	function sub_module_activations() {
+            $sub_modules = array('badgeos_community');
+            foreach($sub_modules as $sub_module) {
+                if (isset($GLOBALS[$sub_module]) && is_object($GLOBALS[$sub_module]) && method_exists($GLOBALS[$sub_module], 'activate')) {
+                    $GLOBALS[$sub_module]->activate();
+                }
+            }
+        }
 
 	/**
 	 * Create BadgeOS Settings menus
