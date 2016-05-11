@@ -326,15 +326,18 @@ function badgeos_achievement_points_markup( $achievement_id = 0 ) {
  * @param  array $classes Post classes
  * @return array          Updated post classes
  */
-function badgeos_add_earned_class_single( $classes = array() ) {
+function badgeos_add_earned_class_single( $classes = array(), $post_id = 0 ) {
 	global $user_ID;
 
-	// check if current user has earned the achievement they're viewing
-	$classes[] = badgeos_get_user_achievements( array( 'user_id' => $user_ID, 'achievement_id' => get_the_ID() ) ) ? 'user-has-earned' : 'user-has-not-earned';
+	if (badgeos_is_achievement(  $post_id )){
+
+		// check if current user has earned the achievement they're viewing
+		$classes[] = badgeos_get_user_achievements( array( 'user_id' => $user_ID, 'achievement_id' => get_the_ID() ) ) ? 'user-has-earned' : 'user-has-not-earned';
+	}
 
 	return $classes;
 }
-add_filter( 'post_class', 'badgeos_add_earned_class_single' );
+add_filter( 'post_class', 'badgeos_add_earned_class_single', 10, 2 );
 // Set title of the badge img dependent on earned status
 function badgeos_thumbnail($html, $post_id, $post_image_id ){
 	global $user_ID;
