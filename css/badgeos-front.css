@@ -53,6 +53,17 @@
 	/*margin: 0 10px 10px 0;*/
 	opacity: .4;
 }
+/*Greyscale badges not earned */
+.badgeos-achievements-list-item .badgeos-item-image img, .achievement-wrap .badgeos-item-image img,  .user-has-not-earned .post-thumbnail img{
+    -webkit-filter: grayscale(100%); /* Chrome, Safari, Opera */
+    filter: grayscale(100%);
+    opacity: .4;
+}
+.badgeos-achievements-list-item.user-has-earned .badgeos-item-image img, .achievement-wrap.earned .badgeos-item-image img, .user-has-earned .post-thumbnail img  {
+    -webkit-filter: none;
+    filter: none;
+    opacity: 1;
+}
 .badgeos-achievements-list-item .badgeos-item-image img {
 	width: 100%;
 	height: auto;

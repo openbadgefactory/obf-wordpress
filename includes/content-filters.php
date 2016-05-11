@@ -335,6 +335,20 @@ function badgeos_add_earned_class_single( $classes = array() ) {
 	return $classes;
 }
 add_filter( 'post_class', 'badgeos_add_earned_class_single' );
+// Set title of the badge img dependent on earned status
+function badgeos_thumbnail($html, $post_id, $post_image_id ){
+	global $user_ID;
+
+	if (badgeos_is_achievement(  $post_id )){
+		$earned_status = badgeos_get_user_achievements( array( 'user_id' => $user_ID, 'achievement_id' => absint(  $post_id ) ) ) ? __( 'You have earned this achievement!', 'badgeos' ) : __( 'You have not earned this achievement yet!', 'badgeos' );
+
+		$replace = ' title="'.$earned_status.'" />';
+		$html = str_replace( '/>', $replace, $html);
+	}
+	return $html;
+
+}
+add_filter('post_thumbnail_html', 'badgeos_thumbnail', 10, 3);
 
 /**
  * Returns a message if user has earned the achievement.
