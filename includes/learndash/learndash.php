@@ -1,0 +1,235 @@
+<?php
+/**
+ * Plugin Name: Open Badge Factory LearnDash Add-On
+ * Plugin URI: http://www.learndash.com/
+ * Description: This Open Badge Factory add-on integrates Open Badge Factory features with LearnDash
+ * Tags: learndash
+ * Author: Discendum Oy
+ * Version: 1.0.1
+ * Author URI: https://credly.com/
+ * License: GNU AGPLv3
+ * License URI: http://www.gnu.org/licenses/agpl-3.0.html
+ */
+
+/*
+ * Copyright © 2016 Discendum Oy
+ * Copyright © 2013 Credly, LLC
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>;.
+*/
+
+class BadgeOS_LearnDash extends Obf_SubmoduleBase {
+
+	/**
+	 * Plugin Basename
+	 *
+	 * @var string
+	 */
+	public $basename = '';
+
+	/**
+	 * Plugin Directory Path
+	 *
+	 * @var string
+	 */
+	public $directory_path = '';
+
+	/**
+	 * Plugin Directory URL
+	 *
+	 * @var string
+	 */
+	public $directory_url = '';
+
+	/**
+	 * Open Badge Factory LearnDash Triggers
+	 *
+	 * @var array
+	 */
+	public $triggers = array();
+
+	/**
+	 * Actions to forward for splitting an action up
+	 *
+	 * @var array
+	 */
+	public $actions = array();
+
+	/**
+	 *
+	 */
+	function __construct() {
+
+		// Define plugin constants
+		$this->basename = plugin_basename( __FILE__ );
+		$this->directory_path = plugin_dir_path( __FILE__ );
+		$this->directory_url  = plugin_dir_url( __FILE__ );
+
+		// LearnDash Action Hooks
+		$this->triggers = array(
+			'learndash_quiz_completed' => __( 'Passed Quiz', 'badgeos-learndash' ),
+			'badgeos_learndash_quiz_completed_specific' => __( 'Minimum % Grade on a Quiz', 'badgeos-learndash' ),
+			'badgeos_learndash_quiz_completed_fail' => __( 'Fails Quiz', 'badgeos-learndash' ),
+			'learndash_lesson_completed' => __( 'Completed Lesson', 'badgeos-learndash' ),
+			'learndash_course_completed' => __( 'Completed Course', 'badgeos-learndash' ),
+			'badgeos_learndash_course_completed_tag' => __( 'Completed Course from a Tag', 'badgeos-learndash' )
+		);
+
+		// Actions that we need split up
+		$this->actions = array(
+			'learndash_course_completed' => 'badgeos_learndash_course_completed_tag',
+			'learndash_quiz_completed' => array(
+				'actions' => array(
+					'badgeos_learndash_quiz_completed_specific',
+					'badgeos_learndash_quiz_completed_fail'
+				)
+			)
+
+			/*
+			 * Default action split will be badgeos_learndash_{$action}, can set multiple actions with 'actions'
+			 *
+			 * 'original_action' => array(
+			 * 	'priority' => 12,
+			 * 	'accepted_args' => 5,
+			 * 	'actions' => array(
+			 * 		'another_action1'
+			 * 		'another_action2'
+			 * 		'another_action3'
+			 * 	)
+			 * )
+			 *
+			 *
+			 * shorthand forwarding to a single action
+			 *
+			 * 'original_action' => 'another_action'
+			 */
+		);
+
+        add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ), 11 );
+
+	}
+
+	/**
+	 * Check if Open Badge Factory is available
+	 *
+	 * @since  1.0.0
+	 * @return bool True if Open Badge Factory is available, false otherwise
+	 */
+	public static function meets_requirements() {
+
+		if ( !class_exists( 'BadgeOS' ) || !function_exists( 'badgeos_get_user_earned_achievement_types' ) ) {
+			return false;
+		}
+		elseif ( !class_exists( 'SFWD_LMS' ) ) {
+			return false;
+		}
+
+		return true;
+
+	}
+
+	/**
+	 * Load the plugin textdomain and include files if plugin meets requirements
+	 *
+	 * @since 1.0.0
+	 */
+	public function plugins_loaded() {
+		// Load translations
+		load_plugin_textdomain( 'badgeos-learndash', false, dirname( $this->basename ) . '/languages/' );
+
+		if ( $this->meets_requirements() ) {
+			require_once( $this->directory_path . '/includes/rules-engine.php' );
+			require_once( $this->directory_path . '/includes/steps-ui.php' );
+
+			$this->action_forwarding();
+		}
+	}
+
+	/**
+	 * Forward WP actions into a new set of actions
+	 *
+	 * @since 1.0.0
+	 */
+	public function action_forwarding() {
+		foreach ( $this->actions as $action => $args ) {
+			$priority = 10;
+			$accepted_args = 20;
+
+			if ( is_array( $args ) ) {
+				if ( isset( $args[ 'priority' ] ) ) {
+					$priority = $args[ 'priority' ];
+				}
+
+				if ( isset( $args[ 'accepted_args' ] ) ) {
+					$accepted_args = $args[ 'accepted_args' ];
+				}
+			}
+
+			add_action( $action, array( $this, 'action_forward' ), $priority, $accepted_args );
+		}
+	}
+
+	/**
+	 * Forward a specific WP action into a new set of actions
+	 *
+	 * @return mixed Action return
+	 *
+	 * @since 1.0.0
+	 */
+	public function action_forward() {
+		$action = current_filter();
+		$args = func_get_args();
+
+		if ( isset( $this->actions[ $action ] ) ) {
+			if ( is_array( $this->actions[ $action ] )
+				 && isset( $this->actions[ $action ][ 'actions' ] ) && is_array( $this->actions[ $action ][ 'actions' ] )
+				 && !empty( $this->actions[ $action ][ 'actions' ] ) ) {
+				foreach ( $this->actions[ $action ][ 'actions' ] as $new_action ) {
+					if ( 0 !== strpos( $new_action, strtolower( __CLASS__ ) . '_' ) ) {
+						$new_action = strtolower( __CLASS__ ) . '_' . $new_action;
+					}
+
+					$action_args = $args;
+
+					array_unshift( $action_args, $new_action );
+
+					call_user_func_array( 'do_action', $action_args );
+				}
+
+				return null;
+			}
+			elseif ( is_string( $this->actions[ $action ] ) ) {
+				$action =  $this->actions[ $action ];
+			}
+		}
+
+		if ( 0 !== strpos( $action, strtolower( __CLASS__ ) . '_' ) ) {
+			$action = strtolower( __CLASS__ ) . '_' . $action;
+		}
+
+		array_unshift( $args, $action );
+
+		return call_user_func_array( 'do_action', $args );
+	}
+        /**
+         * Check if running the Open Badge Factory version.
+         * 
+         * @return boolean true
+         */
+        public static function is_obf() {
+            return true;
+        }
+
+}
+
+$GLOBALS[ 'badgeos_learndash' ] = new BadgeOS_LearnDash();
