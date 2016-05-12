@@ -77,22 +77,28 @@ add_action( 'bp_init', 'badgeos_community_loader', 1 );
 
 
 /**
- * Adds Credly option to profile settings general page
+ * Adds Open Badge Factory  option to profile settings general page
  *
  * @since 1.0.0
  */
 function badgeos_bp_core_general_settings_before_submit() {
-	global $badgeos_credly;
+	global $badgeos_credly, $badgeos_obf;
 	$credly_settings = $badgeos_credly->credly_settings;
+        $obf_settings = $badgeos_obf->obf_settings;
 
-	if ( 'false' == $credly_settings['credly_enable'] ) {
-		return;
-	}
-
-	$credly_user_enable = get_user_meta( bp_displayed_user_id(), 'credly_user_enable', true );?>
-	<label for="credly"><?php _e( 'Badge Sharing', 'badgeos-community' ); ?></label>
-	<input id="credly" type="checkbox" value="true" <?php checked( $credly_user_enable, 'true' ); ?> name="credly_user_enable">
-	<?php _e( 'Send eligible earned badges to Credly', 'badgeos-community' );
+	if ('false' != $credly_settings['credly_enable']) {
+            $credly_user_enable = get_user_meta( bp_displayed_user_id(), 'credly_user_enable', true );?>
+            <label for="credly"><?php _e( 'Badge Sharing', 'badgeos-community' ); ?></label>
+            <input id="credly" type="checkbox" value="true" <?php checked( $credly_user_enable, 'true' ); ?> name="credly_user_enable">
+            <?php _e( 'Send eligible earned badges to Credly', 'badgeos-community' );
+        }
+        if ('false' != $obf_settings['obf_enable']) {
+            $obf_user_enable = get_user_meta( bp_displayed_user_id(), 'obf_user_enable', true );?>
+            <label for="obf"><?php _e( 'Badge Sharing', 'badgeos-community' ); ?></label>
+            <input id="obf" type="checkbox" value="true" <?php checked( $obf_user_enable, 'true' ); ?> name="obf_user_enable">
+            <?php _e( 'Send eligible earned badges to Open Badge Factory', 'badgeos-community' );
+        }
+	
 }
 add_action( 'bp_core_general_settings_before_submit', 'badgeos_bp_core_general_settings_before_submit' );
 
@@ -107,6 +113,12 @@ function badgeos_bp_core_general_settings_after_save() {
 	if ( $credly_enable != $credly_enable2 ) {
 		bp_core_add_message( __( 'Your settings have been saved.', 'buddypress' ), 'success' );
 		update_user_meta( bp_displayed_user_id(), 'credly_user_enable', $credly_enable2 );
+	}
+        $obf_enable = get_user_meta( bp_displayed_user_id(), 'obf_user_enable', true );
+	$obf_enable2 = ( ! empty( $_POST['obf_user_enable'] ) && $_POST['obf_user_enable'] == 'true' ? 'true' : 'false' );
+	if ( $obf_enable != $obf_enable2 ) {
+		bp_core_add_message( __( 'Your settings have been saved.', 'buddypress' ), 'success' );
+		update_user_meta( bp_displayed_user_id(), 'obf_user_enable', $obf_enable2 );
 	}
 }
 add_action( 'bp_core_general_settings_after_save', 'badgeos_bp_core_general_settings_after_save' );
