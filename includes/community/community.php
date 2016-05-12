@@ -28,7 +28,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>;.
 */
 
-class BadgeOS_Community {
+class BadgeOS_Community extends Obf_SubmoduleBase {
         /**
 	 * Plugin Basename
 	 *

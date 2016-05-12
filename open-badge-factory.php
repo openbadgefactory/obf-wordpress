@@ -95,6 +95,7 @@ class BadgeOS {
 		add_action( 'init', array( $this, 'obf_init' ) );
                 add_action( 'init', array( $this, 'check_plugin_update_init' ) );
                 add_action( 'init', array( $this, 'svg_support_maybe_init' ) );
+                add_action( 'init', array( $this, 'submodule_init' ) );
 	}
 
 	/**
@@ -131,9 +132,12 @@ class BadgeOS {
 		require_once( $this->directory_path . 'includes/obf_svg_support.php' );
 		require_once( $this->directory_path . 'includes/credly-badge-builder.php' );
 		require_once( $this->directory_path . 'includes/widgets.php' );
+                require_once( $this->directory_path . 'includes/submodule-base.php' );
                 $this->submodule_includes();
 	}
-        
+        function submodule_init() {
+            $this->submodule_activations(true);
+        }
         function submodule_includes() {
             if (!isset($GLOBALS['badgeos_community'])) {
                 require_once( $this->directory_path . 'includes/community/community.php' );
@@ -324,16 +328,19 @@ class BadgeOS {
 
 		// Register our post types and flush rewrite rules
 		badgeos_flush_rewrite_rules();
-                $this->sub_module_activations();
+                $this->submodule_activations();
 	}
         
         /**
 	 * Activation hook for the plugin sub modules.
 	 */
-	function sub_module_activations() {
+	function submodule_activations($maybe = false) {
             $sub_modules = array('badgeos_community');
             foreach($sub_modules as $sub_module) {
                 if (isset($GLOBALS[$sub_module]) && is_object($GLOBALS[$sub_module]) && method_exists($GLOBALS[$sub_module], 'activate')) {
+                    if ($maybe && method_exists($GLOBALS[$sub_module], 'maybe_activate') ) {
+                        $GLOBALS[$sub_module]->maybe_activate();
+                    }
                     $GLOBALS[$sub_module]->activate();
                 }
             }

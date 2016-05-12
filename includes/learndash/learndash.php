@@ -28,7 +28,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>;.
 */
 
-class BadgeOS_LearnDash {
+class BadgeOS_LearnDash extends Obf_SubmoduleBase {
 
 	/**
 	 * Plugin Basename
