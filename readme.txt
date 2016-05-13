@@ -5,7 +5,7 @@ Tags: badge, badges, openbadges, open badge factory, OBI, mozilla, open badges, 
 Donate link: https://github.com/discendum
 Requires at least: 3.6
 Tested up to: 4.5.2
-Stable tag: 1.4.7.4
+Stable tag: 1.4.7.5
 License: GNU AGPLv3
 License URI: http://www.gnu.org/licenses/agpl-3.0.html
 
@@ -170,6 +170,11 @@ Take a look at [https://openbadgefactory.com/faq](https://openbadgefactory.com/f
 
 == Changelog ==
 
+= 1.4.7.5 =
+* Added LearnDash support
+* Added BuddyPress support
+* Changed the look of non-earned badges
+
 = 1.4.7.4 =
 * Added an error message when certificate dir is not defined properly
 * Fixed error message when certificate dir is not writeable
@@ -190,6 +195,11 @@ Take a look at [https://openbadgefactory.com/faq](https://openbadgefactory.com/f
 * Support for Open Badge Factory integration added
 
 == Upgrade Notice ==
+
+= 1.4.7.5 =
+* Added LearnDash support
+* Added BuddyPress support
+* Changed the look of non-earned badges
 
 = 1.4.7.4 =
 * Added an error message when certificate dir is not defined properly
