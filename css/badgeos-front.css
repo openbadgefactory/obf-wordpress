@@ -51,7 +51,7 @@
 	display: block;
 	float: left;
 	/*margin: 0 10px 10px 0;*/
-	opacity: .4;
+	/*opacity: .4;*/
 }
 /*Greyscale badges not earned */
 .badgeos-achievements-list-item .badgeos-item-image img, .achievement-wrap .badgeos-item-image img,  .user-has-not-earned .post-thumbnail img{
