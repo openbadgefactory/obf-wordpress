@@ -4,7 +4,7 @@
 * Plugin URI: http://www.openbadgefactory.com/
 * Description: Open Badge Factory -plugin lets your site’s users complete tasks and earn badges that recognize their achievement.  Define achievements and choose from a range of options that determine when they're complete.  Badges are Mozilla Open Badges (OBI) compatible.
 * Author: Discendum Oy
-* Version: 1.4.7.4
+* Version: 1.4.7.5
 * Author URI: http://www.discendum.com/
 * License: GNU AGPL
 * Text Domain: badgeos
@@ -35,10 +35,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>;.
  */
 function badgeos_obf_install_errors() {
         $has_notice = get_option( 'obf_install_error' );
-	// If we have an error message, we'll display it
-	echo '<div id="message" class="error"><p>'. $has_notice .'</p></div>';
-	// and then delete it
-	delete_option( 'obf_install_error' );
+        if (!empty($has_notice)) {
+            // If we have an error message, we'll display it
+            echo '<div id="message" class="error"><p>'. $has_notice .'</p></div>';
+            // and then delete it
+            delete_option( 'obf_install_error' );
+        }
 }
 /**
  * Check if BadgeOS is already activated, 
@@ -60,7 +62,7 @@ class BadgeOS {
 	 *
 	 * @var string
 	 */
-	public static $version = '1.4.7.4';
+	public static $version = '1.4.7.5';
         public static $db_version = 6;
         
         private $settings;
@@ -93,6 +95,7 @@ class BadgeOS {
 		add_action( 'init', array( $this, 'obf_init' ) );
                 add_action( 'init', array( $this, 'check_plugin_update_init' ) );
                 add_action( 'init', array( $this, 'svg_support_maybe_init' ) );
+                add_action( 'init', array( $this, 'submodule_init' ) );
 	}
 
 	/**
@@ -129,7 +132,27 @@ class BadgeOS {
 		require_once( $this->directory_path . 'includes/obf_svg_support.php' );
 		require_once( $this->directory_path . 'includes/credly-badge-builder.php' );
 		require_once( $this->directory_path . 'includes/widgets.php' );
+                require_once( $this->directory_path . 'includes/submodule-base.php' );
+                $this->submodule_includes();
 	}
+        function submodule_init() {
+            $this->submodule_activations(true);
+        }
+        function submodule_includes() {
+            if (!isset($GLOBALS['badgeos_community'])) {
+                require_once( $this->directory_path . 'includes/community/community.php' );
+            } else if (isset($GLOBALS['badgeos_community']) && !method_exists($GLOBALS['badgeos_community'], 'is_obf') ) {
+                    update_option('obf_install_error', _('Open Badge Factory -plugin cannot co-exist with BadgeOS Community Add-On -plugin. Please disable the BadgeOS Community Add-On -plugin, if you wish to continue using the Open Badge Factory -plugin.') );
+                    add_action( 'all_admin_notices', 'badgeos_obf_install_errors' );
+            }
+            
+            if (!isset($GLOBALS['badgeos_learndash'])) {
+                require_once( $this->directory_path . 'includes/learndash/learndash.php' );
+            } else if (isset($GLOBALS['badgeos_learndash']) && !method_exists($GLOBALS['badgeos_learndash'], 'is_obf') ) {
+                update_option('obf_install_error', _('Open Badge Factory -plugin cannot co-exist with BadgeOS LearnDash Add-On -plugin. Please disable the BadgeOS LearnDash Add-On -plugin, if you wish to continue using the Open Badge Factory -plugin.') );
+                add_action( 'all_admin_notices', 'badgeos_obf_install_errors' );
+            }
+        }
 
 	/**
 	 * Register all core scripts and styles
@@ -234,9 +257,6 @@ class BadgeOS {
 	 * Activation hook for the plugin.
 	 */
 	function activate() {
-            
-            
-
 		// Include our important bits
 		$this->includes();
                 $register_capabilities = false;
@@ -308,7 +328,23 @@ class BadgeOS {
 
 		// Register our post types and flush rewrite rules
 		badgeos_flush_rewrite_rules();
+                $this->submodule_activations();
 	}
+        
+        /**
+	 * Activation hook for the plugin sub modules.
+	 */
+	function submodule_activations($maybe = false) {
+            $sub_modules = array('badgeos_community');
+            foreach($sub_modules as $sub_module) {
+                if (isset($GLOBALS[$sub_module]) && is_object($GLOBALS[$sub_module]) && method_exists($GLOBALS[$sub_module], 'activate')) {
+                    if ($maybe && method_exists($GLOBALS[$sub_module], 'maybe_activate') ) {
+                        $GLOBALS[$sub_module]->maybe_activate();
+                    }
+                    $GLOBALS[$sub_module]->activate();
+                }
+            }
+        }
 
 	/**
 	 * Create BadgeOS Settings menus
