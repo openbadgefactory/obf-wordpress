@@ -343,7 +343,7 @@ function badgeos_thumbnail($html, $post_id, $post_image_id ){
 	global $user_ID;
 
 	if (badgeos_is_achievement(  $post_id )){
-		$earned_status = badgeos_get_user_achievements( array( 'user_id' => $user_ID, 'achievement_id' => absint(  $post_id ) ) ) ? __( 'You have earned this achievement!', 'badgeos' ) : __( 'You have not earned this achievement yet!', 'badgeos' );
+		$earned_status = badgeos_get_user_achievements( array( 'user_id' => $user_ID, 'achievement_id' => absint(  $post_id ), 'site_id' => 'all') ) ? __( 'You have earned this achievement!', 'badgeos' ) : __( 'You have not earned this achievement yet!', 'badgeos' );
 
 		$replace = ' title="'.$earned_status.'" />';
 		$html = str_replace( '/>', $replace, $html);

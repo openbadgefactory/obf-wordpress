@@ -220,6 +220,12 @@ function badgeos_settings_page() {
 			$ms_show_all_achievements = ( isset( $badgeos_settings['ms_show_all_achievements'] ) ) ? $badgeos_settings['ms_show_all_achievements'] : 'disabled';
                         $svg_support = ( isset( $badgeos_settings['svg_support'] ) ) ? $badgeos_settings['svg_support'] : 'disabled';
 
+			/*email templates */
+			//$blogid = $site["blog_id"];
+			$email_subject = isset($badgeos_settings["email_subject"]) ? $badgeos_settings["email_subject"] : '';
+			$email_body = isset($badgeos_settings["email_body"]) ? $badgeos_settings["email_body"] : '';
+			$email_link_text = isset($badgeos_settings["email_link_text"]) ? $badgeos_settings["email_link_text"] : '';
+			$email_footer = isset($badgeos_settings["email_footer"]) ? $badgeos_settings["email_footer"] : '';
 			wp_nonce_field( 'badgeos_settings_nonce', 'badgeos_settings_nonce' );
 			?>
 			<table class="form-table">
@@ -292,6 +298,39 @@ function badgeos_settings_page() {
 							<option value="disabled" <?php selected( $debug_mode, 'disabled' ); ?>><?php _e( 'Disabled', 'badgeos' ) ?></option>
 							<option value="enabled" <?php selected( $debug_mode, 'enabled' ); ?>><?php _e( 'Enabled', 'badgeos' ) ?></option>
 						</select>
+					</td>
+				</tr>
+				<?php
+				/* Email template*/
+				?>
+				<tr >
+					<tr valign="top"><th scope="row"><label for="debug_mode"><?php _e( 'Email template:', 'badgeos' ); ?></label></th>
+					<td>
+						<div class="form-group">
+						    <label for="email-subject"><b><?php _e('Email subject', 'badgeos'); ?> <span class="red">*</span></b></label>
+						    <div >
+						      <input type="subject" name="badgeos_settings[email_subject]" class="form-control regular-text" id="email-subject" required pattern="^[^\r\n]+$" maxlength="255" value="<?php echo esc_attr( $email_subject ); ?>" >
+						    </div>
+						</div>
+						<div class="form-group">
+						    <label for="email-body" ><b><?php _e('Message body', 'badgeos'); ?></b></label>
+						    <div >
+						      <textarea name="badgeos_settings[email_body]" id="email-body" rows="10" cols="40" maxlength="65535" class="form-control" value="<?php echo esc_textarea( $email_body ); ?>"><?php echo esc_textarea( $email_body ); ?></textarea>
+						    </div>
+						</div>
+						<div class="form-group">
+						  <label for="email-link-text"><b><?php _e('Button link text', 'badgeos'); ?></b></label>
+						  <div >
+						    <input type="text" name="badgeos_settings[email_link_text]" class="form-control regular-text" id="email-link-text" pattern="[a-zA-Z0-9]+[a-zA-Z0-9 ]+" maxlength="255" value="<?php echo esc_attr( $email_link_text ); ?>">
+						    <p class="description"><?php _e('Text used in receive badge link button.', 'badgeos'); ?></p>
+						  </div>
+						</div>
+					  <div class="form-group">
+					    <label for="email-footer"><b><?php _e('Message footer', 'badgeos'); ?></b></label>
+					    <div >
+					      <textarea name="badgeos_settings[email_footer]" id="email-footer" rows="5" cols="40" maxlength="65535" class="form-control" value="<?php echo esc_textarea( $email_footer ); ?>"><?php echo esc_textarea( $email_footer ); ?></textarea>
+					    </div>
+					  </div>
 					</td>
 				</tr>
 				<?php

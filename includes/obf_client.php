@@ -561,10 +561,12 @@ class ObfClient
         if (!empty($logEntry)) {
             $params['log_entry'] = $logEntry;
         }
-        if (!empty($emailTemplate) && method_exists($emailTemplate, 'getSubject')) {
-            $params['email_subject'] = $emailTemplate->getSubject();
-            $params['email_body'] = $emailTemplate->getBody();
-            $params['email_footer'] = $emailTemplate->getFooter();
+
+        if (!empty($emailTemplate) && (isset($emailTemplate->email_subject) && !empty($emailTemplate->email_subject))) {
+            $params['email_subject'] = $emailTemplate->email_subject;
+            $params['email_body'] = $emailTemplate->email_body;
+            $params['email_link_text'] = $emailTemplate->email_link_text;
+            $params['email_footer'] = $emailTemplate->email_footer;
         }
 
         $badgeId = null;

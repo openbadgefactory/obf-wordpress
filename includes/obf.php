@@ -739,6 +739,24 @@ class BadgeOS_Obf {
 
 	}
 
+	/**
+	 * returns email template for obf badge issuing what has been saved to settings
+	 *
+	 * @since  1.4.7.6
+	 * @return $emailTemplate object
+	 */
+	private function obf_get_email_template() {
+		$badgeos_settings = badgeos_obf_get_settings();
+
+		$emailTemplate = new stdClass();
+		$emailTemplate->email_subject = isset($badgeos_settings["email_subject"]) ? $badgeos_settings["email_subject"] : '';
+		$emailTemplate->email_body = isset($badgeos_settings["email_body"]) ? $badgeos_settings["email_body"] : '';
+		$emailTemplate->email_link_text = isset($badgeos_settings["email_link_text"]) ? $badgeos_settings["email_link_text"] : '';
+		$emailTemplate->email_footer = isset($badgeos_settings["email_footer"]) ? $badgeos_settings["email_footer"] : '';
+
+		return $emailTemplate;
+	}
+
 
 	/**
 	 * Post a users earned badge to Obf, when user has automatically earned the badge.
@@ -765,7 +783,9 @@ class BadgeOS_Obf {
 
 		// POST our data to the Obf API and get our response (which should be event id on success)
                 try {
-                    $results = $this->obf_client->issue_badge( $body, $body['recipient'] );
+		    $emailTemplate = $this->obf_get_email_template();
+
+                    $results = $this->obf_client->issue_badge( $body, $body['recipient'], null, $emailTemplate );
                 } catch (Exception $ex) {
                     return new WP_Error($ex->getCode(), $ex->getMessage());
                 }
@@ -869,7 +889,9 @@ class BadgeOS_Obf {
 		$body = $this->post_user_badges_args( $emails, $badge_id );
 
 		// POST our data to the Obf API and get our response (which should be event id on success)
-		$results = $this->obf_client->issue_badge( $body, $body['recipient'] );
+		$emailTemplate = $this->obf_get_email_template();
+
+		$results = $this->obf_client->issue_badge( $body, $body['recipient'], null, $emailTemplate );
 
 		// If post was successful, trigger other actions
 		if ( $results && !is_wp_error($results)) {
