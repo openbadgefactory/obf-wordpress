@@ -41,6 +41,8 @@ class BadgeOS_Obf {
         
         private $achievement_types_plural = array();
         private $achievement_types_singular = array();
+        
+        private static $badge_cache = array();
 
 	function __construct() {
 
@@ -711,6 +713,13 @@ class BadgeOS_Obf {
 		return $obf_id;
 
 	}
+        
+        public function get_badge_from_cache($badge_id) {
+            if (!array_key_exists($badge_id, self::$badge_cache)) {
+                self::$badge_cache[$badge_id] = $this->obf_client->get_badge($badge_id);
+            }
+            return self::$badge_cache[$badge_id];
+        }
 
 
 	/**
@@ -745,14 +754,26 @@ class BadgeOS_Obf {
 	 * @since  1.4.7.6
 	 * @return $emailTemplate object
 	 */
-	private function obf_get_email_template() {
+	private function obf_get_email_template($badge_id) {
 		$badgeos_settings = badgeos_obf_get_settings();
-
-		$emailTemplate = new stdClass();
+                
+                $emailTemplate = new stdClass();
 		$emailTemplate->email_subject = isset($badgeos_settings["email_subject"]) ? $badgeos_settings["email_subject"] : '';
 		$emailTemplate->email_body = isset($badgeos_settings["email_body"]) ? $badgeos_settings["email_body"] : '';
 		$emailTemplate->email_link_text = isset($badgeos_settings["email_link_text"]) ? $badgeos_settings["email_link_text"] : '';
 		$emailTemplate->email_footer = isset($badgeos_settings["email_footer"]) ? $badgeos_settings["email_footer"] : '';
+                try {
+                    $badge = $this->get_badge_from_cache($badge_id);
+                    if (is_array($badge) && !empty($badge['email_subject'])) {
+                        $emailTemplate->email_subject   = $badge['email_subject'];
+                        $emailTemplate->email_body      = $badge['email_body'];
+                        $emailTemplate->email_link_text = $badge['email_link_text'];
+                        $emailTemplate->email_footer    = $badge['email_footer'];
+                    }
+                } catch (Exception $ex) {
+                    
+                }
+		
 
 		return $emailTemplate;
 	}
@@ -783,7 +804,7 @@ class BadgeOS_Obf {
 
 		// POST our data to the Obf API and get our response (which should be event id on success)
                 try {
-		    $emailTemplate = $this->obf_get_email_template();
+		    $emailTemplate = $this->obf_get_email_template($body['badge_id']);
 
                     $results = $this->obf_client->issue_badge( $body, $body['recipient'], null, $emailTemplate );
                 } catch (Exception $ex) {
@@ -889,7 +910,7 @@ class BadgeOS_Obf {
 		$body = $this->post_user_badges_args( $emails, $badge_id );
 
 		// POST our data to the Obf API and get our response (which should be event id on success)
-		$emailTemplate = $this->obf_get_email_template();
+		$emailTemplate = $this->obf_get_email_template($body['badge_id']);
 
 		$results = $this->obf_client->issue_badge( $body, $body['recipient'], null, $emailTemplate );
 
