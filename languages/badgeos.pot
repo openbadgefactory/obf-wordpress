@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Open Badge Factory 1.4.7.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/open-badge-"
 "factory\n"
-"POT-Creation-Date: 2016-05-31 07:52:26+00:00\n"
+"POT-Creation-Date: 2016-06-06 07:27:22+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -81,18 +81,18 @@ msgid "Enable Badge Sharing via Open Badge Factory: "
 msgstr ""
 
 #: includes/admin-settings-obf.php:299 includes/admin-settings-obf.php:545
-#: includes/admin-settings.php:572 includes/admin-settings.php:760
+#: includes/admin-settings.php:611 includes/admin-settings.php:799
 #: includes/credly.php:870 includes/credly.php:882 includes/credly.php:890
-#: includes/credly.php:903 includes/obf.php:1075 includes/obf.php:1088
-#: includes/obf.php:1096 includes/obf.php:1104 includes/obf.php:1118
+#: includes/credly.php:903 includes/obf.php:1123 includes/obf.php:1136
+#: includes/obf.php:1144 includes/obf.php:1152 includes/obf.php:1166
 msgid "No"
 msgstr ""
 
 #: includes/admin-settings-obf.php:300 includes/admin-settings-obf.php:546
-#: includes/admin-settings.php:573 includes/admin-settings.php:761
+#: includes/admin-settings.php:612 includes/admin-settings.php:800
 #: includes/credly.php:869 includes/credly.php:881 includes/credly.php:889
-#: includes/credly.php:902 includes/obf.php:1074 includes/obf.php:1087
-#: includes/obf.php:1095 includes/obf.php:1103 includes/obf.php:1117
+#: includes/credly.php:902 includes/obf.php:1122 includes/obf.php:1135
+#: includes/obf.php:1143 includes/obf.php:1151 includes/obf.php:1165
 msgid "Yes"
 msgstr ""
 
@@ -100,8 +100,8 @@ msgstr ""
 msgid "API certificate dir: "
 msgstr ""
 
-#: includes/admin-settings-obf.php:325 includes/admin-settings.php:316
-#: includes/admin-settings.php:589
+#: includes/admin-settings-obf.php:325 includes/admin-settings.php:355
+#: includes/admin-settings.php:628
 msgid "Save Settings"
 msgstr ""
 
@@ -115,7 +115,7 @@ msgid ""
 "API key."
 msgstr ""
 
-#: includes/admin-settings-obf.php:373 includes/admin-settings.php:623
+#: includes/admin-settings-obf.php:373 includes/admin-settings.php:662
 msgid "Enter your %s to access your API key."
 msgstr ""
 
@@ -123,11 +123,11 @@ msgstr ""
 msgid "Open Badge Factory account username and password"
 msgstr ""
 
-#: includes/admin-settings-obf.php:378 includes/admin-settings.php:628
+#: includes/admin-settings-obf.php:378 includes/admin-settings.php:667
 msgid "Username: "
 msgstr ""
 
-#: includes/admin-settings-obf.php:386 includes/admin-settings.php:636
+#: includes/admin-settings-obf.php:386 includes/admin-settings.php:675
 msgid "Password: "
 msgstr ""
 
@@ -140,7 +140,7 @@ msgid "Use different URL."
 msgstr ""
 
 #: includes/admin-settings-obf.php:403 includes/admin-settings-obf.php:442
-#: includes/admin-settings.php:644 includes/admin-settings.php:671
+#: includes/admin-settings.php:683 includes/admin-settings.php:710
 msgid "API Key: "
 msgstr ""
 
@@ -150,11 +150,11 @@ msgid ""
 "Admin Tools > API key."
 msgstr ""
 
-#: includes/admin-settings-obf.php:412 includes/admin-settings.php:652
+#: includes/admin-settings-obf.php:412 includes/admin-settings.php:691
 msgid "Already have your API key? %s"
 msgstr ""
 
-#: includes/admin-settings-obf.php:412 includes/admin-settings.php:652
+#: includes/admin-settings-obf.php:412 includes/admin-settings.php:691
 msgid "Click here"
 msgstr ""
 
@@ -183,31 +183,31 @@ msgid ""
 "global mapping found here."
 msgstr ""
 
-#: includes/admin-settings-obf.php:468 includes/admin-settings.php:685
+#: includes/admin-settings-obf.php:468 includes/admin-settings.php:724
 msgid "Badge Title: "
 msgstr ""
 
-#: includes/admin-settings-obf.php:477 includes/admin-settings.php:694
+#: includes/admin-settings-obf.php:477 includes/admin-settings.php:733
 msgid "Short Description: "
 msgstr ""
 
-#: includes/admin-settings-obf.php:487 includes/admin-settings.php:704
+#: includes/admin-settings-obf.php:487 includes/admin-settings.php:743
 msgid "Description: "
 msgstr ""
 
-#: includes/admin-settings-obf.php:495 includes/admin-settings.php:712
+#: includes/admin-settings-obf.php:495 includes/admin-settings.php:751
 msgid "Criteria: "
 msgstr ""
 
-#: includes/admin-settings-obf.php:505 includes/admin-settings.php:722
+#: includes/admin-settings-obf.php:505 includes/admin-settings.php:761
 msgid "Image: "
 msgstr ""
 
-#: includes/admin-settings-obf.php:515 includes/admin-settings.php:732
+#: includes/admin-settings-obf.php:515 includes/admin-settings.php:771
 msgid "Testimonial: "
 msgstr ""
 
-#: includes/admin-settings-obf.php:523 includes/admin-settings.php:740
+#: includes/admin-settings-obf.php:523 includes/admin-settings.php:779
 msgid "Evidence: "
 msgstr ""
 
@@ -221,11 +221,11 @@ msgid ""
 "enabled achievement."
 msgstr ""
 
-#: includes/admin-settings-obf.php:541 includes/admin-settings.php:756
+#: includes/admin-settings-obf.php:541 includes/admin-settings.php:795
 msgid "Add a global custom message to each notification: "
 msgstr ""
 
-#: includes/admin-settings-obf.php:553 includes/admin-settings.php:768
+#: includes/admin-settings-obf.php:553 includes/admin-settings.php:807
 msgid "Custom notification message: "
 msgstr ""
 
@@ -411,72 +411,72 @@ msgstr ""
 msgid "Open Badge Factory Settings"
 msgstr ""
 
-#: includes/admin-settings.php:227
+#: includes/admin-settings.php:233
 msgid "Minimum Role to Administer Open Badge Factory plugin: "
 msgstr ""
 
-#: includes/admin-settings.php:230 includes/admin-settings.php:239
-#: includes/admin-settings.php:248
+#: includes/admin-settings.php:236 includes/admin-settings.php:245
+#: includes/admin-settings.php:254
 msgid "Administrator"
 msgstr ""
 
-#: includes/admin-settings.php:231 includes/admin-settings.php:240
-#: includes/admin-settings.php:249
+#: includes/admin-settings.php:237 includes/admin-settings.php:246
+#: includes/admin-settings.php:255
 msgid "Editor"
 msgstr ""
 
-#: includes/admin-settings.php:232 includes/admin-settings.php:241
-#: includes/admin-settings.php:250
+#: includes/admin-settings.php:238 includes/admin-settings.php:247
+#: includes/admin-settings.php:256
 msgid "Author"
 msgstr ""
 
-#: includes/admin-settings.php:236
+#: includes/admin-settings.php:242
 msgid "Minimum Role to Administer Submissions/Nominations: "
 msgstr ""
 
-#: includes/admin-settings.php:245
+#: includes/admin-settings.php:251
 msgid "Minimum Role to create Badges/Achievements: "
 msgstr ""
 
-#: includes/admin-settings.php:251
+#: includes/admin-settings.php:257
 msgid "Contributor"
 msgstr ""
 
-#: includes/admin-settings.php:256
+#: includes/admin-settings.php:262
 msgid "Send email when submissions/nominations are received:"
 msgstr ""
 
-#: includes/admin-settings.php:259 includes/admin-settings.php:268
-#: includes/admin-settings.php:284 includes/admin-settings.php:293
-#: includes/admin-settings.php:306
+#: includes/admin-settings.php:265 includes/admin-settings.php:274
+#: includes/admin-settings.php:290 includes/admin-settings.php:299
+#: includes/admin-settings.php:345
 msgid "Enabled"
 msgstr ""
 
-#: includes/admin-settings.php:260 includes/admin-settings.php:269
-#: includes/admin-settings.php:283 includes/admin-settings.php:292
-#: includes/admin-settings.php:305
+#: includes/admin-settings.php:266 includes/admin-settings.php:275
+#: includes/admin-settings.php:289 includes/admin-settings.php:298
+#: includes/admin-settings.php:344
 msgid "Disabled"
 msgstr ""
 
-#: includes/admin-settings.php:265
+#: includes/admin-settings.php:271
 msgid "Show advanced features:"
 msgstr ""
 
-#: includes/admin-settings.php:274
+#: includes/admin-settings.php:280
 msgid "Notification email addresses:"
 msgstr ""
 
-#: includes/admin-settings.php:277
+#: includes/admin-settings.php:283
 msgid ""
 "Comma-separated list of email addresses to send submission/nomination "
 "notifications, in addition to the Site Admin email."
 msgstr ""
 
-#: includes/admin-settings.php:280
+#: includes/admin-settings.php:286
 msgid "SVG Support:"
 msgstr ""
 
-#: includes/admin-settings.php:286
+#: includes/admin-settings.php:292
 msgid ""
 "SVG-image support is required for Badges with images designed inside Open "
 "Badge Factory. If you are not already using another plugin that provides SVG-"
@@ -484,46 +484,70 @@ msgid ""
 "upload SVG-images, it only affects badges imported from Open Badge Factory."
 msgstr ""
 
-#: includes/admin-settings.php:289
+#: includes/admin-settings.php:295
 msgid "Debug Mode:"
 msgstr ""
 
-#: includes/admin-settings.php:302
+#: includes/admin-settings.php:307
+msgid "Email template:"
+msgstr ""
+
+#: includes/admin-settings.php:310
+msgid "Email subject"
+msgstr ""
+
+#: includes/admin-settings.php:316
+msgid "Message body"
+msgstr ""
+
+#: includes/admin-settings.php:322
+msgid "Button link text"
+msgstr ""
+
+#: includes/admin-settings.php:325
+msgid "Text used in receive badge link button."
+msgstr ""
+
+#: includes/admin-settings.php:329
+msgid "Message footer"
+msgstr ""
+
+#: includes/admin-settings.php:341
 msgid "Show achievements earned across all sites on the network:"
 msgstr ""
 
-#: includes/admin-settings.php:340
+#: includes/admin-settings.php:379
 msgid "Open Badge Factory Add-on Licenses"
 msgstr ""
 
-#: includes/admin-settings.php:353
+#: includes/admin-settings.php:392
 msgid "License Status: %s"
 msgstr ""
 
-#: includes/admin-settings.php:373 open-badge-factory.php:369
+#: includes/admin-settings.php:412 open-badge-factory.php:369
 msgid "Add-Ons"
 msgstr ""
 
-#: includes/admin-settings.php:374
+#: includes/admin-settings.php:413
 msgid ""
 "These add-ons extend the functionality of the Open Badge Factory -plugin."
 msgstr ""
 
-#: includes/admin-settings.php:412
+#: includes/admin-settings.php:451
 msgid ""
 "There was an error retrieving the add-ons list from the server. Please try "
 "again later."
 msgstr ""
 
-#: includes/admin-settings.php:428
+#: includes/admin-settings.php:467
 msgid "Open Badge Factory Help and Support"
 msgstr ""
 
-#: includes/admin-settings.php:430
+#: includes/admin-settings.php:469
 msgid "About Open Badge Factory"
 msgstr ""
 
-#: includes/admin-settings.php:432
+#: includes/admin-settings.php:471
 msgid ""
 "Open Badge Factory&trade; -plugin, is a plugin to WordPress that allows your "
 "site's users to complete tasks, demonstrate achievements, and earn badges. "
@@ -533,7 +557,7 @@ msgid ""
 "are Mozilla OBI compatible."
 msgstr ""
 
-#: includes/admin-settings.php:436
+#: includes/admin-settings.php:475
 msgid ""
 "Open Badge Factory -plugin is extremely extensible. Check out examples of "
 "what we've built with it, and stay connected to the project site for "
@@ -541,57 +565,57 @@ msgid ""
 "we can keep making Open Badge Factory better for everyone."
 msgstr ""
 
-#: includes/admin-settings.php:446
+#: includes/admin-settings.php:485
 msgid "First steps after installing the plugin"
 msgstr ""
 
-#: includes/admin-settings.php:447
+#: includes/admin-settings.php:486
 msgid "I. Setting up the plugin"
 msgstr ""
 
-#: includes/admin-settings.php:450
+#: includes/admin-settings.php:489
 msgid ""
 "Get the Open Badge Factory API certificate from Open Badge Factory "
 "(<strong>Admin tools > Api Key > Generate certificate signing request token"
 msgstr ""
 
-#: includes/admin-settings.php:451
+#: includes/admin-settings.php:490
 msgid ""
 "Enter the generated Open Badge Factory API key in your wordpress' "
 "<strong>Open Badge Factory > OBF Integration</strong> -page to enable badge "
 "sharing."
 msgstr ""
 
-#: includes/admin-settings.php:452
+#: includes/admin-settings.php:491
 msgid ""
 "Set up awarding rules for your badges in your wordpress' <strong>Open Badge "
 "Factory > Badges</strong> -page."
 msgstr ""
 
-#: includes/admin-settings.php:468
+#: includes/admin-settings.php:507
 msgid "II. Creating awarding rules"
 msgstr ""
 
-#: includes/admin-settings.php:469
+#: includes/admin-settings.php:508
 msgid ""
 "To create badge awarding rules you should have a badge or badges created at "
 "<a href=\"%s\">Open Badge Factory</a>."
 msgstr ""
 
-#: includes/admin-settings.php:470
+#: includes/admin-settings.php:509
 msgid ""
 "If everything is set up, you should have a <strong>Open Badge Factory > "
 "Badges</strong> -menu item in your wordpress admin dashboard."
 msgstr ""
 
-#: includes/admin-settings.php:471
+#: includes/admin-settings.php:510
 msgid ""
 "Badges -page contains all the ready to be issued badges you've created in "
 "Open Badge Factory. If a badge you have created isn't visible, make sure it "
 "is not set as a draft."
 msgstr ""
 
-#: includes/admin-settings.php:472
+#: includes/admin-settings.php:511
 msgid ""
 "If you open a badge for editing, you can choose from multiple earning "
 "options. The most flexible earning option is using required steps. You can "
@@ -599,59 +623,59 @@ msgid ""
 "badge."
 msgstr ""
 
-#: includes/admin-settings.php:478
+#: includes/admin-settings.php:517
 msgid ""
 "After you save a with awarding rules, the badge associated with the awarding "
 "rule will be automatically awarded to users who complete the required steps."
 msgstr ""
 
-#: includes/admin-settings.php:479
+#: includes/admin-settings.php:518
 msgid ""
 "You can monitor user step unlocking process and achivements via the "
 "<strong>Log Entries</strong> menu."
 msgstr ""
 
-#: includes/admin-settings.php:480
+#: includes/admin-settings.php:519
 msgid ""
 "You can also define meta-achivements by adding badges as required steps. "
 "Choose <strong>Specific Achievement of Type &gt; Badges &gt; your badge</"
 "strong> at Required Steps."
 msgstr ""
 
-#: includes/admin-settings.php:482
+#: includes/admin-settings.php:521
 msgid "III. Advanced features"
 msgstr ""
 
-#: includes/admin-settings.php:483
+#: includes/admin-settings.php:522
 msgid ""
 "When you are confident with setting up and creating awarding rules, you may "
 "choose to enable advanced features."
 msgstr ""
 
-#: includes/admin-settings.php:484
+#: includes/admin-settings.php:523
 msgid ""
 "Advanced features can be enabled on the <strong>Open Badge Factory &gt; "
 "Settings</strong> -page, by changing <strong>Show advanced features</strong> "
 "to <strong>Enabled</strong>."
 msgstr ""
 
-#: includes/admin-settings.php:485
+#: includes/admin-settings.php:524
 msgid ""
 "After enabling advanced features, you can rename achievement types, access "
 "submissions and nominations from the menu, and map badge fields to wordpress "
 "fields."
 msgstr ""
 
-#: includes/admin-settings.php:496
+#: includes/admin-settings.php:535
 msgid "Using the advanced features"
 msgstr ""
 
-#: includes/admin-settings.php:498 includes/post-types.php:89
+#: includes/admin-settings.php:537 includes/post-types.php:89
 #: includes/post-types.php:95 includes/post-types.php:101
 msgid "Submissions"
 msgstr ""
 
-#: includes/admin-settings.php:499
+#: includes/admin-settings.php:538
 msgid ""
 "You can award badges through approved submissions. Create a page or post, "
 "insert Open Badge Factory shortcode Submission Form and the Achievement ID "
@@ -659,24 +683,24 @@ msgid ""
 "submissions to earn the badge."
 msgstr ""
 
-#: includes/admin-settings.php:500
+#: includes/admin-settings.php:539
 msgid ""
 "You can see all your users submissions at <strong>Open Badge Factory &gt; "
 "Submissions</strong> -page. Review and comment the submissions to award the "
 "badge."
 msgstr ""
 
-#: includes/admin-settings.php:501
+#: includes/admin-settings.php:540
 msgid ""
 "You can specify the role who can approve submissions/nominations at "
 "<strong>Open Badge Factory &gt; Setting</strong> -page."
 msgstr ""
 
-#: includes/admin-settings.php:509 open-badge-factory.php:370
+#: includes/admin-settings.php:548 open-badge-factory.php:370
 msgid "Help / Support"
 msgstr ""
 
-#: includes/admin-settings.php:511
+#: includes/admin-settings.php:550
 msgid ""
 "For support on using Open Badge Factory -plugin or to suggest feature "
 "enhancements, visit the %1$s. The Open Badge Factory team does perform "
@@ -684,38 +708,38 @@ msgid ""
 "incredibly powerful ways. %2$s with inquiries. Also take a look at %3$s."
 msgstr ""
 
-#: includes/admin-settings.php:514
+#: includes/admin-settings.php:553
 msgid "Open Badge Factory site"
 msgstr ""
 
-#: includes/admin-settings.php:518
+#: includes/admin-settings.php:557
 msgid "Contact us"
 msgstr ""
 
-#: includes/admin-settings.php:522
+#: includes/admin-settings.php:561
 msgid "Open Badge Passport"
 msgstr ""
 
-#: includes/admin-settings.php:525
+#: includes/admin-settings.php:564
 msgid "Please submit bugs or issues to %s for the Open Badge Factory Project."
 msgstr ""
 
-#: includes/admin-settings.php:530
+#: includes/admin-settings.php:569
 msgid "Shortcodes"
 msgstr ""
 
-#: includes/admin-settings.php:531
+#: includes/admin-settings.php:570
 msgid ""
 "With Open Badge Factory activated, the following shortcodes can be placed on "
 "any page or post within WordPress to expose a variety of Open Badge Factory "
 "functions."
 msgstr ""
 
-#: includes/admin-settings.php:556
+#: includes/admin-settings.php:595
 msgid "Credly Integration Settings"
 msgstr ""
 
-#: includes/admin-settings.php:563
+#: includes/admin-settings.php:602
 msgid ""
 "<a href=\"%1$s\" target=\"_blank\">Credly</a> is a universal way for people "
 "to earn and showcase their achievements and badges. With Credly Integration "
@@ -729,38 +753,38 @@ msgid ""
 "account, <a href=\"%1$s\" target=\"_blank\">create one now</a>. It's free."
 msgstr ""
 
-#: includes/admin-settings.php:568
+#: includes/admin-settings.php:607
 msgid "Enable Badge Sharing via Credly: "
 msgstr ""
 
-#: includes/admin-settings.php:619
+#: includes/admin-settings.php:658
 msgid "Get Credly API Key"
 msgstr ""
 
-#: includes/admin-settings.php:621
+#: includes/admin-settings.php:660
 msgid "Enter your Credly account username and password to access your API key."
 msgstr ""
 
-#: includes/admin-settings.php:623
+#: includes/admin-settings.php:662
 msgid "Credly account username and password"
 msgstr ""
 
-#: includes/admin-settings.php:668
+#: includes/admin-settings.php:707
 msgid "Credly API Key"
 msgstr ""
 
-#: includes/admin-settings.php:678
+#: includes/admin-settings.php:717
 msgid "Credly Field Mapping"
 msgstr ""
 
-#: includes/admin-settings.php:680
+#: includes/admin-settings.php:719
 msgid ""
 "Customize which Credly fields for badge creation and issuing (listed on the "
 "left) match which WordPress and Open Badge Factory -plugin fields (listed to "
 "the right)."
 msgstr ""
 
-#: includes/admin-settings.php:681
+#: includes/admin-settings.php:720
 msgid ""
 "When badges are created and issued, the info sent to Credly will rely on the "
 "global mapping found here. (Note: Visit the edit screen for each achievement "
@@ -768,45 +792,45 @@ msgid ""
 "awarding settings for that achievement.)"
 msgstr ""
 
-#: includes/admin-settings.php:750
+#: includes/admin-settings.php:789
 msgid "Credly Notification Settings"
 msgstr ""
 
-#: includes/admin-settings.php:751
+#: includes/admin-settings.php:790
 msgid ""
 "Send custom notifications to users when they earn a Credly-enabled "
 "achievement."
 msgstr ""
 
-#: includes/admin-settings.php:802
+#: includes/admin-settings.php:841
 msgid "Achievement Image"
 msgstr ""
 
-#: includes/admin-settings.php:809
+#: includes/admin-settings.php:848
 msgid "Default Achievement Image"
 msgstr ""
 
-#: includes/admin-settings.php:826
+#: includes/admin-settings.php:865
 msgid "achievement image"
 msgstr ""
 
-#: includes/admin-settings.php:828
+#: includes/admin-settings.php:867
 msgid "default achievement image"
 msgstr ""
 
-#: includes/admin-settings.php:847
+#: includes/admin-settings.php:886
 msgid "Set Achievement Image"
 msgstr ""
 
-#: includes/admin-settings.php:848
+#: includes/admin-settings.php:887
 msgid "Set achievement image"
 msgstr ""
 
-#: includes/admin-settings.php:850
+#: includes/admin-settings.php:889
 msgid "Set Default Achievement Image"
 msgstr ""
 
-#: includes/admin-settings.php:851
+#: includes/admin-settings.php:890
 msgid "Set default achievement image"
 msgstr ""
 
@@ -1302,7 +1326,7 @@ msgstr ""
 
 #: includes/community/includes/bp-members.php:91
 #: includes/community/includes/bp-members.php:97 includes/credly.php:487
-#: includes/obf.php:586
+#: includes/obf.php:588
 msgid "Badge Sharing"
 msgstr ""
 
@@ -1310,7 +1334,7 @@ msgstr ""
 msgid "Send eligible earned badges to Credly"
 msgstr ""
 
-#: includes/community/includes/bp-members.php:99 includes/obf.php:587
+#: includes/community/includes/bp-members.php:99 includes/obf.php:589
 msgid "Send eligible earned badges to Open Badge Factory"
 msgstr ""
 
@@ -1477,7 +1501,7 @@ msgid ""
 "this notice).</p></div>"
 msgstr ""
 
-#: includes/credly.php:834 includes/obf.php:1035
+#: includes/credly.php:834 includes/obf.php:1083
 msgid "Badge Sharing Options"
 msgstr ""
 
@@ -1496,11 +1520,11 @@ msgstr ""
 msgid "Send to Credly when earned"
 msgstr ""
 
-#: includes/credly.php:878 includes/obf.php:1092
+#: includes/credly.php:878 includes/obf.php:1140
 msgid "Include Evidence"
 msgstr ""
 
-#: includes/credly.php:886 includes/obf.php:1100
+#: includes/credly.php:886 includes/obf.php:1148
 msgid "Include Testimonial"
 msgstr ""
 
@@ -1508,7 +1532,7 @@ msgstr ""
 msgid "Expiration ( In days; 0 = never )"
 msgstr ""
 
-#: includes/credly.php:899 includes/obf.php:1114
+#: includes/credly.php:899 includes/obf.php:1162
 msgid "Allow Badge to be Given by Others"
 msgstr ""
 
@@ -1516,7 +1540,7 @@ msgstr ""
 msgid "Credly Category Search"
 msgstr ""
 
-#: includes/credly.php:910 includes/obf.php:1126
+#: includes/credly.php:910 includes/obf.php:1174
 msgid "Search Categories"
 msgstr ""
 
@@ -1528,7 +1552,7 @@ msgstr ""
 msgid "Credly Badge ID"
 msgstr ""
 
-#: includes/credly.php:1088 includes/obf.php:1342
+#: includes/credly.php:1088 includes/obf.php:1390
 msgid "&mdash; Select Field &mdash;"
 msgstr ""
 
@@ -1800,7 +1824,7 @@ msgstr ""
 msgid "No attachments on this submission"
 msgstr ""
 
-#: includes/obf.php:69
+#: includes/obf.php:71
 msgid ""
 "NOTE: To claim this official badge and share it on social networks click on "
 "the \"Save & Share\" button above. If you already have an Open Badge "
@@ -1809,7 +1833,7 @@ msgid ""
 "then \"Accept\" your badge."
 msgstr ""
 
-#: includes/obf.php:425
+#: includes/obf.php:427
 msgid ""
 "<div class=\"updated\"><p>Note: Open Badge Factory Integration is turned on, "
 "but you must first <a href=\"%s\">enter your Open Badge Factory -"
@@ -1817,68 +1841,72 @@ msgid ""
 "Disable Open Badge Factory Integration to hide this notice).</p></div>"
 msgstr ""
 
-#: includes/obf.php:850
+#: includes/obf.php:778
+msgid "You earned a badge"
+msgstr ""
+
+#: includes/obf.php:896
 msgid "User %1$s email is invalid (\"%2$s\")!"
 msgstr ""
 
-#: includes/obf.php:862
+#: includes/obf.php:908
 msgid "Detected %1$d invalid emails (%2$s)."
 msgstr ""
 
-#: includes/obf.php:1037
+#: includes/obf.php:1085
 msgid "Badge Image"
 msgstr ""
 
-#: includes/obf.php:1069
+#: includes/obf.php:1117
 msgid ""
 "This setting makes the earned badge for this achievement sharable via Open "
 "Badge Factory and Open Badge Passport on social networks, such as Facebook, "
 "Twitter, LinkedIn, Mozilla Backpack, or the badge earner's own blog or site."
 msgstr ""
 
-#: includes/obf.php:1069
+#: includes/obf.php:1117
 msgid ""
 "<a href=\"%s\">Configure global settings</a> for Open Badge Factory "
 "integration."
 msgstr ""
 
-#: includes/obf.php:1071
+#: includes/obf.php:1119
 msgid "Send to Open Badge Factory when earned"
 msgstr ""
 
-#: includes/obf.php:1077
+#: includes/obf.php:1125
 msgid "Open Badge Factory will automatically email the badge to the user."
 msgstr ""
 
-#: includes/obf.php:1084
+#: includes/obf.php:1132
 msgid "Editing Disabled"
 msgstr ""
 
-#: includes/obf.php:1108
+#: includes/obf.php:1156
 msgid "Expiration"
 msgstr ""
 
-#: includes/obf.php:1111
+#: includes/obf.php:1159
 msgid "Enter number of days, and 0 if badge never expires."
 msgstr ""
 
-#: includes/obf.php:1120
+#: includes/obf.php:1168
 msgid "Is the badge issuable (Yes), or a draft (No)."
 msgstr ""
 
-#: includes/obf.php:1123
+#: includes/obf.php:1171
 msgid "Open Badge Factory Category Search"
 msgstr ""
 
-#: includes/obf.php:1129
+#: includes/obf.php:1177
 msgid "Open Badge Factory Badge Category"
 msgstr ""
 
-#: includes/obf.php:1136
+#: includes/obf.php:1184
 msgid "Open Badge Factory Badge ID"
 msgstr ""
 
-#: includes/obf.php:1598
+#: includes/obf.php:1646
 msgid "%1$s sent %2$s to Open Badge Factory"
 msgstr ""
 

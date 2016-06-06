@@ -762,17 +762,22 @@ class BadgeOS_Obf {
 		$emailTemplate->email_body = isset($badgeos_settings["email_body"]) ? $badgeos_settings["email_body"] : '';
 		$emailTemplate->email_link_text = isset($badgeos_settings["email_link_text"]) ? $badgeos_settings["email_link_text"] : '';
 		$emailTemplate->email_footer = isset($badgeos_settings["email_footer"]) ? $badgeos_settings["email_footer"] : '';
-                try {
-                    $badge = $this->get_badge_from_cache($badge_id);
-                    if (is_array($badge) && !empty($badge['email_subject'])) {
-                        $emailTemplate->email_subject   = $badge['email_subject'];
-                        $emailTemplate->email_body      = $badge['email_body'];
-                        $emailTemplate->email_link_text = $badge['email_link_text'];
-                        $emailTemplate->email_footer    = $badge['email_footer'];
+                if (empty($emailTemplate->email_subject)) {
+                    try {
+                        $badge = $this->get_badge_from_cache($badge_id);
+                        if (is_array($badge) && !empty($badge['email_subject'])) {
+                            $emailTemplate->email_subject   = $badge['email_subject'];
+                            $emailTemplate->email_body      = $badge['email_body'];
+                            $emailTemplate->email_link_text = $badge['email_link_text'];
+                            $emailTemplate->email_footer    = $badge['email_footer'];
+                        }
+                    } catch (Exception $ex) {
                     }
-                } catch (Exception $ex) {
-                    
                 }
+                if (empty($emailTemplate->email_subject)) {
+                    $emailTemplate->email_subject = __('You earned a badge', 'badgeos');
+                }
+                
 		
 
 		return $emailTemplate;
