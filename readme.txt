@@ -173,6 +173,7 @@ Take a look at [https://openbadgefactory.com/faq](https://openbadgefactory.com/f
 = 1.4.7.5 =
 * Added LearnDash support
 * Added BuddyPress support
+* Added an email template override
 * Changed the look of non-earned badges
 
 = 1.4.7.4 =
@@ -199,6 +200,7 @@ Take a look at [https://openbadgefactory.com/faq](https://openbadgefactory.com/f
 = 1.4.7.5 =
 * Added LearnDash support
 * Added BuddyPress support
+* Added an email template override
 * Changed the look of non-earned badges
 
 = 1.4.7.4 =
