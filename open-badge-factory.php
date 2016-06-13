@@ -88,7 +88,6 @@ class BadgeOS {
 		add_action( 'init', array( $this, 'include_cmb' ), 999 );
 		add_action( 'init', array( $this, 'register_achievement_relationships' ) );
 		add_action( 'init', array( $this, 'register_image_sizes' ) );
-		add_action( 'admin_menu', array( $this, 'plugin_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ) );
 		add_action( 'init', array( $this, 'credly_init' ) );
@@ -96,6 +95,9 @@ class BadgeOS {
                 add_action( 'init', array( $this, 'check_plugin_update_init' ) );
                 add_action( 'init', array( $this, 'svg_support_maybe_init' ) );
                 add_action( 'init', array( $this, 'submodule_init' ) );
+		add_action( 'admin_menu', array( $this, 'plugin_menu' ));
+		add_action( 'admin_menu', array( $this, 'my_badges_menu' ));
+		add_action( 'admin_bar_menu', array($this, 'plugin_bar_menu'), 999);
 	}
 
 	/**
@@ -368,10 +370,39 @@ class BadgeOS {
 		add_submenu_page( 'badgeos_badgeos', __( 'OBF Integration', 'badgeos' ), __( 'OBF Integration', 'badgeos' ), $manager_role, 'badgeos_sub_obf_integration', 'badgeos_obf_options_page' );
 		add_submenu_page( 'options.php', __( 'Add-Ons', 'badgeos' ), __( 'Add-Ons', 'badgeos' ), $minimum_role, 'badgeos_sub_add_ons', 'badgeos_add_ons_page' );
 		add_submenu_page( 'badgeos_badgeos', __( 'Help / Support', 'badgeos' ), __( 'Help / Support', 'badgeos' ), $minimum_role, 'badgeos_sub_help_support', 'badgeos_help_support_page' );
-                
+
                 // Import badges
                 add_submenu_page( 'options.php', __( 'OBF Import', 'badgeos' ), __( 'OBF Import', 'badgeos' ), $creator_role, 'badgeos_sub_obf_import', 'badgeos_obf_import_page' );
 
+	}
+
+	function my_badges_menu() {
+		//Profile badges page
+		add_users_page(__('My badges', 'badgeos'), __('My badges', 'badgeos'), 'read', 'badgeos_mybadges', 'badgeos_mybadges_page');
+	}
+
+	function plugin_bar_menu($wp_admin_bar) {
+		$user_id      = get_current_user_id();
+		$current_user = wp_get_current_user();
+
+		if ( ! $user_id )
+			return;
+
+		if ( current_user_can( 'read' ) ) {
+			$profile_url = get_edit_profile_url( $user_id );
+		} elseif ( is_multisite() ) {
+			$profile_url = get_edit_profile_url( $user_id );
+		} else {
+			$profile_url = false;
+		}
+		if ( false !== $profile_url ) {
+			$wp_admin_bar->add_node( array(
+				'parent' => 'user-actions',
+				'id'     => 'user-badges',
+				'title'  => __('My badges', 'badgeos'),
+				'href'   => get_site_url().'/wp-admin/profile.php?page=badgeos_mybadges',
+			) );
+		}
 	}
 
 	/**

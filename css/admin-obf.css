@@ -88,3 +88,20 @@ ul#obf-badges li .badge-desc {
 #badgeos_steps_ui #steps_list .step-row .spinner { margin-bottom: -20px; }
 #badgeos_steps_ui #steps_list .step-row { clear: right; }
 #badgeos_steps_ui #steps_list .step-row .select-achievement-post { display: inline-block; }
+.myAchievements .myachi {
+    width: 150px;
+    height: 150px;
+    float:left;
+    text-align: center;
+    margin:10px;
+    overflow: hidden;
+}
+.myAchievements .myachi a:focus, .myAchievements .myachi a:active {
+    outline: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+.myAchievements .myachi img {
+    max-width: 50px;
+    max-height: 50px;
+}

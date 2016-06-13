@@ -360,6 +360,63 @@ function badgeos_settings_page() {
 	</div>
 	<?php
 }
+function sortByDateEarned($a, $b){
+	if ($a->date_earned == $b->date_earned) return 0;
+	return ($a->date_earned > $b->date_earned) ? -1 : 1;
+}
+/**
+ * BadgeOS my badges page output
+ * @since  1.0.0
+ * @return void
+ */
+function badgeos_mybadges_page() {
+	echo  '<div class="wrap" >';
+	echo	'<h1>';
+	_e( 'My badges', 'badgeos' );
+	echo '</h1>';
+	$type = $GLOBALS['badgeos_obf']->obf_badge_achievement_types(false);
+	$achievements = badgeos_get_user_achievements( array( 'user_id' => absint( $user->ID ), achievement_type => $type));
+
+	usort($achievements, 'sortByDateEarned');
+
+	echo '<h2>' . __( 'Earned Achievements', 'badgeos' ) . '</h2>';
+	echo '<table class="form-table">';
+	echo '<tr>';
+		echo '<th><label for="user_points">' . __( 'Earned Points', 'badgeos' ) . '</label></th>';
+		echo '<td>';
+			echo badgeos_get_users_points( $user->ID ) .'<br />';
+		echo '</td>';
+	echo '</tr>';
+
+	echo '<tr><td colspan="2">';
+	// List all of a user's earned achievements
+	$unique_achi = array();
+	foreach ($achievements as $achi ){
+		$id = (string)$achi->ID;
+		if (!isset($unique_achi[$id])){
+			$unique_achi[$id] = $achi;
+		}
+	}
+
+	if ($unique_achi) {
+		echo '<div class="myAchievements">';
+		foreach ( $unique_achi as $achievement ) {
+			if ($link = get_permalink($achievement->ID)){
+				echo '<div class="myachi">';
+					echo '<a href="'.$link.'" >'. badgeos_get_achievement_post_thumbnail( $achievement->ID, array( 50, 50 ) ) .'</br>'. get_the_title( $achievement->ID ).'</a>'.'</br>'.date('d.m.Y', $achievement->date_earned);
+				echo '</div>';
+			}
+			$achievement_ids[] = $achievement->ID;
+		}
+	}
+	else {
+		echo _e('You have no achievements yet');
+	}
+
+	echo '</td></tr>';
+	echo '</table>';
+	echo '</div>';
+}
 
 
 /**
