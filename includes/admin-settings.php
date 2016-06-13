@@ -307,9 +307,9 @@ function badgeos_settings_page() {
 					<tr valign="top"><th scope="row"><label for="debug_mode"><?php _e( 'Email template:', 'badgeos' ); ?></label></th>
 					<td>
 						<div class="form-group">
-						    <label for="email-subject"><b><?php _e('Email subject', 'badgeos'); ?> <span class="red">*</span></b></label>
+						    <label for="email-subject"><b><?php _e('Email subject', 'badgeos'); ?></b></label>
 						    <div >
-						      <input type="subject" name="badgeos_settings[email_subject]" class="form-control regular-text" id="email-subject" required pattern="^[^\r\n]+$" maxlength="255" value="<?php echo esc_attr( $email_subject ); ?>" >
+						      <input type="subject" name="badgeos_settings[email_subject]" class="form-control regular-text" id="email-subject" pattern="^[^\r\n]+$" maxlength="255" value="<?php echo esc_attr( $email_subject ); ?>" >
 						    </div>
 						</div>
 						<div class="form-group">
