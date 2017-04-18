@@ -276,6 +276,8 @@ function badgeos_obf_options_page() {
 	global $badgeos_obf;
 
 	$obf_settings = $badgeos_obf->obf_settings;
+  $existing_pages = array();
+  $existing_pages['earnable_page'] = isset($obf_settings["earnable_page"]) ? $obf_settings["earnable_page"] : '';
         
 ?>
 	<div class="wrap" >
@@ -301,7 +303,22 @@ function badgeos_obf_options_page() {
 						</select>
 					</td>
 				</tr>
-                                <tr valign="top">
+        <tr>
+          <th scope="row">
+            <label for="obf_settings_earnable_page">
+              <?php _e( 'Associate Earnable Badge page with', 'badgeos' ); ?>
+            </label>
+          </th>
+          <td>
+            <?php echo wp_dropdown_pages( array(
+'name'             => 'obf_settings[earnable_page]',
+'echo'             => false,
+'show_option_none' => __( 'None', 'badgeps' ),
+'selected'         => !empty( $existing_pages['earnable_page'] ) ? $existing_pages['earnable_page'] : false
+) ); ?>
+          </td>
+        </tr>
+        <tr valign="top">
 					<th scope="row">
 						<label for="obf_enable"><?php _e( 'API certificate dir: ', 'badgeos' ); ?></label>
 					</th>
@@ -714,6 +731,94 @@ function badgeos_obf_import_page() {
             </form>
         </div>
 <?php
+}
+
+
+
+function badgeos_obf_earnable_badge_apply_callback($options = array()) {
+
+}
+
+/**
+ * BadgeOS Open Badge Factory earnable badge apply page.
+ * @since  1.4.6
+ * @return void
+ */
+function badgeos_obf_earnable_badge_apply_page($encrypteddata = null, $formposturl = '') {
+  //http://doppelganger.discendum.com/wp/wp-admin/admin.php?page=badgeos_sub_obf_earnable_badge_apply
+	/**
+	 * @var $badgeos_obf BadgeOS_Obf
+	 */
+	global $badgeos_obf;
+
+  if (is_null($encrypteddata)) {
+    $encrypteddata = $_REQUEST['encrypteddata'];
+  }
+  
+  $data = badgeos_obf_simple_crypt($encrypteddata, 'd');
+  if (!$data) {
+    return;
+  }
+  $data = json_decode($data);
+  $earnableid = $data->earnable_id;
+  if ($data->user_id !== get_current_user_id() ) {
+    return new WP_Error('error', __('Access denied!', 'badgeos'));
+  }
+
+  $earnableurl = $badgeos_obf->obf_client->get_site_url() . '/c/earnablebadge/'.$earnableid.'/apply?nostash=1';
+  if (!empty($_POST)) {
+      $application = wp_remote_retrieve_body( wp_remote_post($earnableurl, 
+      array('body' => $_POST)
+    )
+      );
+  } else {
+    $application = wp_remote_retrieve_body( wp_remote_get($earnableurl) );
+  }
+  
+
+  $dom = new DomDocument();
+  $success = $dom->loadHTML($application);
+  $output = '';
+  $body = $dom->getElementsByTagName('body')->item(0);
+  $head = $dom->getElementsByTagName('head')->item(0);
+
+  // TODO: Filter something out?
+
+  if (!empty($formposturl)) {
+    $form = $body->getElementsByTagName('form')->item(0);
+    $form->setAttribute('action', $formposturl);
+  }
+  
+
+  foreach($head->getElementsByTagName('link') as $link) {
+    $curoutput = $dom->saveHTML($link);
+    $output .= $curoutput;
+  }
+  foreach($head->getElementsByTagName('script') as $script) {
+    $curoutput = $dom->saveHTML($script);
+    $output .= $curoutput;
+  }
+
+  $customscript = '';
+
+  foreach($body->childNodes as $node) {
+    $curoutput = $dom->saveHTML($node);
+    $output .= $curoutput;
+  }
+
+  $current_user = wp_get_current_user();
+  if (property_exists($data, 'prefill') && $data->prefill == 'true' && $current_user) {
+    $customscript .= 'jQuery("input[name=\'applicant\'").val("'.$current_user->display_name.'");';
+    $customscript .= 'jQuery("input[name=\'email\'").val("'.$current_user->user_email.'");';
+  }
+  
+
+  $output .= '<script type="text/javascript">' . $customscript . '</script>';
+  if (!empty($_POST)) {
+    $output .= '<p class="text-center"><a href="'.get_permalink($data->id).'">'.__('Back', 'badgeos').'</a>';
+  }
+
+  echo $output;
 }
 
 

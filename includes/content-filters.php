@@ -462,6 +462,50 @@ function badgeos_render_achievement( $achievement = 0 ) {
 }
 
 /**
+ * Render an earnable badge
+ *
+ * @since  1.4.7.6
+ * @param  array $earnable
+ * @return string               Concatenated markup
+ */
+function badgeos_render_earnable_badge( $earnable, $atts = array() ) {
+	global $user_ID, $badgeos_obf;
+
+	// make sure our JS and CSS is enqueued
+	wp_enqueue_script( 'badgeos-earnable' );
+	wp_enqueue_style( 'badgeos-widget' );
+
+  error_log(var_export($atts, true));
+	// Each Earnable
+	$output = '';
+	// Return our filterable markup
+  $id = is_array($earnable) && array_key_exists($earnable, 'id') ? $earnable['id'] : $earnable;
+  $data = badgeos_obf_simple_crypt(
+      json_encode(
+        array(
+          'earnable_id' => $earnable, 
+          'id' => $atts['id'],
+          'user_id' => get_current_user_id(),
+          'prefill' => $atts['prefill'],
+          'iframe' => $atts['iframe']
+          ))
+    );
+
+  // TODO: Non applications
+  // TODO: Page template selection
+  $embedurl = 'http://doppelganger.discendum.com/wp/earnable-badge/?encrypteddata=' . $data;
+  if ($atts['iframe'] == "true") {
+    $output .= '<iframe width="100%" height="600" src="'.$embedurl.'" frameborder="0" scrolling="yes" marginheight="0" marginwidth="0"></iframe>';
+	
+  } else {
+    $output .= badgeos_obf_earnable_badge_apply_page($data, $embedurl);
+  }
+  
+  return apply_filters( 'badgeos_render_earnable_badge', $output, $id );
+
+}
+
+/**
  * Render a filterable list of feedback
  *
  * @since  1.1.0
@@ -766,6 +810,8 @@ function badgeos_render_feedback_buttons( $feedback_id = 0 ) {
 	$atts['user_id']  = $user_ID;
 	wp_enqueue_script( 'badgeos-achievements' );
 	wp_localize_script( 'badgeos-achievements', 'badgeos_feedback_buttons', $atts );
+  wp_enqueue_script( 'badgeos-earnable' );
+  wp_localize_script( 'badgeos-earnable', 'badgeos_feedback', $atts );
 
 	// Return our filterable output
 	return apply_filters( 'badgeos_render_feedback_buttons', $output, $feedback_id );

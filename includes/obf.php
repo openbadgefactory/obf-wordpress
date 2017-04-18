@@ -713,6 +713,15 @@ class BadgeOS_Obf {
 		return $obf_id;
 
 	}
+
+  public function get_earnable_badge_page_id() {
+    $badgeos_settings = badgeos_obf_get_settings();
+    $obf_settings = $badgeos_obf->obf_settings;
+    if ( !empty($obf_settings['earnable_page']) ) {
+      return $obf_settings['earnable_page'];
+    }
+    return false;
+  }
         
         public function get_badge_from_cache($badge_id) {
             if (!array_key_exists($badge_id, self::$badge_cache)) {

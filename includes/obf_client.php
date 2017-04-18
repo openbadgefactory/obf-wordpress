@@ -78,6 +78,10 @@ class ObfClient
         return $this->get_config('obf_api_url');
     }
 
+    public function get_site_url() {
+      return substr($this->get_config('obf_api_url'),0,-3);
+    }
+
     /**
      * Returns the client instance.
      *
@@ -353,6 +357,65 @@ class ObfClient
             return $pkidir.'/';
         }
         return $pkidir;
+    }
+    
+    /**
+     * Get earnable badges.
+     * 
+     * @param string $badgeId
+     * @param string $approvalMethod ""|review|instant|secret|peer
+     * @param type $visible null|1|0
+     * @return array
+     */
+    public function get_earnable_badges($badgeId = "", $approvalMethod = "", $visible = null) {
+        $this->require_client_id();
+        $params = array_filter(array(
+            'badge_id' => $badgeId,
+            'approval_method' => $approvalMethod,
+            ));
+        if (!is_null($visible)) {
+            $params['visible'] = $visible;
+        }
+        return $this->api_request('/earnablebadge/' . $this->get_client_id() . '/', 'get', $params,
+                function ($output) {
+                    return '[' . implode(',', array_filter(explode("\n", $output))). ']';
+                }
+                );
+    }
+    /**
+     * Get earnable badge.
+     * 
+     * @param string $earnableId
+     * @return array
+     */
+    public function get_earnable_badge($earnableId) {
+        $this->require_client_id();
+        $return = $this->api_request('/earnablebadge/' . $this->get_client_id() . '/' . $earnableId, 'get');
+        return $return;
+    }
+
+    /**
+     * Get a list of applications.
+     * 
+     * @param string $earnableId 
+     * @param string $status ""|approved|pending|rejected
+     * @return type
+     */
+    public function get_earnable_badge_applications($earnableId, $status = "") {
+        $this->require_client_id();
+        $params = array_filter(array('status' => $status));
+        return $this->api_request('/earnablebadge/' . $this->get_client_id() . '/' . $earnableId . '/application', 'get', $params);
+    }
+    
+    /**
+     * Get an application.
+     * 
+     * @param string $earnableId
+     * @param string $applicationId
+     */
+    public function get_earnable_badge_application($earnableId, $applicationId) {
+        $this->require_client_id();
+        return $this->api_request('/earnablebadge/' . $this->get_client_id() . '/' . $earnableId . '/application/' . $applicationId, 'get');
     }
 
     /**

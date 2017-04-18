@@ -14,6 +14,7 @@ $badgeos_ajax_actions = array(
 	'get-achievements',
 	'get-feedback',
 	'get-achievements-select2',
+  'get-earnables-select2',
         'get-posts-select2',
 	'get-achievement-types',
 	'get-users',
@@ -300,6 +301,21 @@ function badgeos_ajax_get_achievements_select2() {
 
 	// Return our results
 	wp_send_json_success( $results );
+}
+
+function badgeos_ajax_get_earnables_select2() {
+  global $badgeos_obf;
+  $earnables = $badgeos_obf->obf_client->get_earnable_badges('', '', 1);
+  $result = array();
+  foreach($earnables as $earnable) {
+    $result[] = array(
+      'ID' => $earnable['id'], 
+      'name' => $earnable['name'], 
+      'description' => $earnable['description'],
+      'intent' => $earnable['intent']
+      );
+  }
+  wp_send_json_success( $result );
 }
 
 /**

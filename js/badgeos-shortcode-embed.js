@@ -143,6 +143,37 @@
 		multiple: true
 	});
 
+
+  $( '#obf_earnable_badge_earnable_id' ).select2({
+		ajax: {
+			url: ajaxurl,
+			type: 'POST',
+			data: function ( term ) {
+				return {
+					q: term,
+					action: 'get-earnables-select2'
+				};
+			},
+			results: function ( results, page ) {
+				return {
+					results: results.data
+				};
+			}
+		},
+		id: function ( item ) {
+			return item.ID;
+		},
+		formatResult: function ( item ) {
+			return item.name;
+		},
+		formatSelection: function ( item ) {
+			return item.name + (item.intent == '' ? '' : ' (' + item.intent + ')');
+		},
+		placeholder: badgeos_shortcode_embed_messages.id_placeholder,
+		allowClear: true,
+		multiple: false
+	});
+
 	$( '#obf_achievements_list_user_id' ).select2({
 		ajax: {
 			url: ajaxurl,

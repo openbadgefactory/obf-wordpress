@@ -15,6 +15,7 @@ include( plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shortcodes/badgeos_n
 include( plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shortcodes/badgeos_nominations.php' );
 include( plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shortcodes/badgeos_submission.php' );
 include( plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shortcodes/badgeos_submissions.php' );
+include( plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shortcodes/badgeos_earnablebadge.php' );
 //include( plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shortcodes/credly_assertion_page.php' );
 
 /**
@@ -179,7 +180,9 @@ function badgeos_shortcode_submissions_handler( $atts = array(), $shortcode = ''
 
 	// Enqueue and localize our JS
 	wp_enqueue_script( 'badgeos-achievements' );
+  wp_enqueue_script( 'badgeos-earnable' );
 	wp_localize_script( 'badgeos-achievements', 'badgeos_feedback', $atts );
+  wp_localize_script( 'badgeos-earnable', 'badgeos_feedback', $atts );
 
 	// Return initial feedback HTML
 	return $feedback_html;
