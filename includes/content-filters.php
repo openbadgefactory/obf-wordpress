@@ -483,25 +483,44 @@ function badgeos_render_earnable_badge( $earnable, $atts = array() ) {
   $data = badgeos_obf_simple_crypt(
       json_encode(
         array(
-          'earnable_id' => $earnable, 
+          'earnable_id' => $id, 
           'id' => $atts['id'],
           'user_id' => get_current_user_id(),
           'prefill' => $atts['prefill'],
-          'iframe' => $atts['iframe']
+          'iframe' => $atts['iframe'],
+          'continueurl' => $atts['continueurl'],
+          '_ebnonce' => wp_create_nonce('earnable_badge-'.$id),
+          '_ebpnonce' => wp_create_nonce('earnable_badge-apply-'.$id)
           ))
     );
 
-  // TODO: Non applications
-  // TODO: Page template selection
-  $embedurl = 'http://doppelganger.discendum.com/wp/earnable-badge/?encrypteddata=' . $data;
-  if ($atts['iframe'] == "true") {
-    $output .= '<iframe width="100%" height="600" src="'.$embedurl.'" frameborder="0" scrolling="yes" marginheight="0" marginwidth="0"></iframe>';
-	
+  // TODO: iframe size options?
+  // TODO: apply_page prefill selector
+  $obf_settings = $badgeos_obf->obf_settings;
+  if ( empty($obf_settings['earnable_page']) ) {
+    $output .= printf(__('Earnable Badge page not <a href="%s">configured!</a>', 'badgeos'), admin_url( 'admin.php?page=badgeos_sub_obf_integration' ));
   } else {
-    $output .= badgeos_obf_earnable_badge_apply_page($data, $embedurl);
+    $earnable_page_id = $obf_settings['earnable_page'];
+    $permalink = get_permalink($earnable_page_id);
+    $embedurl = $permalink . '?encrypteddata=' . $data;
+
+    if ($atts['iframe'] == "true") {
+      $output .= '<iframe width="100%" height="600" src="'.$embedurl.'" frameborder="0" scrolling="yes" marginheight="0" marginwidth="0"></iframe>';
+    
+    } else {
+      $ret = badgeos_obf_earnable_badge_apply_page($data, $embedurl);
+      if (is_wp_error($ret)) {
+        $output .= $ret->get_error_message();
+      } else {
+        $output .= $ret;
+      }
+      
+    }
   }
   
-  return apply_filters( 'badgeos_render_earnable_badge', $output, $id );
+  
+  
+  return apply_filters( 'badgeos_render_earnable_badge', $output, $earnable, $atts );
 
 }
 

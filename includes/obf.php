@@ -44,6 +44,15 @@ class BadgeOS_Obf {
         
         private static $badge_cache = array();
 
+  private static $instance = null;
+
+  public static function get_instance() {
+    if ( is_null(self::$instance) ) {
+      self::$instance = new BadgeOS_Obf();
+    }
+    return self::$instance;
+  }
+
 	function __construct() {
 
 		// Set our options based on our Obf settings

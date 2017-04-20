@@ -388,9 +388,13 @@ class ObfClient
      * @param string $earnableId
      * @return array
      */
-    public function get_earnable_badge($earnableId) {
+    public function get_earnable_badge($earnableId, $form_html = null) {
         $this->require_client_id();
-        $return = $this->api_request('/earnablebadge/' . $this->get_client_id() . '/' . $earnableId, 'get');
+        $params = array();
+        if (!is_null($form_html)) {
+          $params['form_html'] = $form_html;
+        }
+        $return = $this->api_request('/earnablebadge/' . $this->get_client_id() . '/' . $earnableId, 'get', $params);
         return $return;
     }
 

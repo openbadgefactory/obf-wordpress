@@ -262,7 +262,7 @@ class BadgeOS {
 	function activate() {
 		// Include our important bits
 		$this->includes();
-                $register_capabilities = false;
+    $register_capabilities = false;
 
 		// Create Badge achievement type
 		if ( !get_page_by_title( 'Badge', 'OBJECT', 'achievement-type' ) ) {
@@ -331,7 +331,8 @@ class BadgeOS {
 
 		// Register our post types and flush rewrite rules
 		badgeos_flush_rewrite_rules();
-                $this->submodule_activations();
+    $this->submodule_activations();
+    badgeos_insert_earnable_badge_page();
 	}
         
         /**
@@ -437,7 +438,7 @@ class BadgeOS {
 	 * Initialize Open Badge Factory API
 	 */
 	function obf_init() {
-		$GLOBALS['badgeos_obf'] = new BadgeOS_Obf();
+		$GLOBALS['badgeos_obf'] = BadgeOS_Obf::get_instance();
 	}
         
         /**
@@ -494,6 +495,9 @@ class BadgeOS {
                 }
                 if ($from < 6) {
                     $this->update_setting('obf_api_url',"https:openbadgefactory.com/v1");
+                }
+                if ($from < 7) {
+                  badgeos_insert_earnable_badge_page();
                 }
                 
                 $this->update_setting('db_version', self::$db_version);
