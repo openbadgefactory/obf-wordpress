@@ -164,10 +164,10 @@
 			return item.ID;
 		},
 		formatResult: function ( item ) {
-			return item.name;
+			return item.name + ' (' + item.approval_method + ')';
 		},
 		formatSelection: function ( item ) {
-			return item.name + (item.intent == '' ? '' : ' (' + item.intent + ')');
+			return item.name + (' (' + item.approval_method + (item.intent == '' ? '' : " / ") + item.intent + ')');
 		},
 		placeholder: badgeos_shortcode_embed_messages.id_placeholder,
 		allowClear: true,

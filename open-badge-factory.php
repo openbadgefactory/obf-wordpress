@@ -85,27 +85,30 @@ class BadgeOS {
 
 		// Hook in all our important pieces
 		add_action( 'plugins_loaded', array( $this, 'includes' ) );
-    add_action( 'plugins_loaded', array( $this, 'check_plugin_update' ) );
+                add_action( 'plugins_loaded', array( $this, 'check_plugin_update' ) );
 		add_action( 'init', array( $this, 'register_scripts_and_styles' ) );
 		add_action( 'init', array( $this, 'include_cmb' ), 999 );
 		add_action( 'init', array( $this, 'register_achievement_relationships' ) );
 		add_action( 'init', array( $this, 'register_image_sizes' ) );
-		add_action( 'admin_menu', array( $this, 'plugin_menu' ) );
+
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ) );
 		add_action( 'init', array( $this, 'credly_init' ) );
 		add_action( 'init', array( $this, 'obf_init' ) );
-    add_action( 'init', array( $this, 'check_plugin_update_init' ) );
-    add_action( 'init', array( $this, 'svg_support_maybe_init' ) );
-    add_action( 'init', array( $this, 'submodule_init' ) );
+                add_action( 'init', array( $this, 'check_plugin_update_init' ) );
+                add_action( 'init', array( $this, 'svg_support_maybe_init' ) );
+                add_action( 'init', array( $this, 'submodule_init' ) );
+		add_action( 'admin_menu', array( $this, 'plugin_menu' ));
+		add_action( 'admin_menu', array( $this, 'my_badges_menu' ));
+		add_action( 'admin_bar_menu', array($this, 'plugin_bar_menu'), 999);
 	}
 
 	/**
 	 * Include all our important files.
 	 */
 	function includes() {
-    require_once( $this->directory_path . 'vendor/autoload.php' );
-    require_once( $this->directory_path . 'includes/badgeos_global_functions.php' );
+                require_once( $this->directory_path . 'vendor/autoload.php' );
+                require_once( $this->directory_path . 'includes/badgeos_global_functions.php' );
 		require_once( $this->directory_path . 'includes/obf_client.php' );
 		require_once( $this->directory_path . 'includes/p2p/load.php' );
 		require_once( $this->directory_path . 'includes/class.BadgeOS_Editor_Shortcodes.php' );
@@ -113,10 +116,10 @@ class BadgeOS {
 		require_once( $this->directory_path . 'includes/class.BadgeOS_Shortcode.php' );
 		require_once( $this->directory_path . 'includes/class.Credly_Badge_Builder.php' );
 		require_once( $this->directory_path . 'includes/post-types.php' );
-    require_once( $this->directory_path . 'includes/admin-settings-obf.php' );
+                require_once( $this->directory_path . 'includes/admin-settings-obf.php' );
 		require_once( $this->directory_path . 'includes/admin-settings.php' );
 		require_once( $this->directory_path . 'includes/achievement-functions-obf.php' );
-    require_once( $this->directory_path . 'includes/achievement-functions.php' );
+                require_once( $this->directory_path . 'includes/achievement-functions.php' );
 		require_once( $this->directory_path . 'includes/activity-functions.php' );
 		require_once( $this->directory_path . 'includes/ajax-functions.php' );
 		require_once( $this->directory_path . 'includes/logging-functions.php' );
@@ -134,8 +137,8 @@ class BadgeOS {
 		require_once( $this->directory_path . 'includes/obf_svg_support.php' );
 		require_once( $this->directory_path . 'includes/credly-badge-builder.php' );
 		require_once( $this->directory_path . 'includes/widgets.php' );
-    require_once( $this->directory_path . 'includes/submodule-base.php' );
-    $this->submodule_includes();
+                require_once( $this->directory_path . 'includes/submodule-base.php' );
+                $this->submodule_includes();
 	}
         function submodule_init() {
             $this->submodule_activations(true);
@@ -170,7 +173,6 @@ class BadgeOS {
                 wp_register_script( 'badgeos-obf-shuffle', $this->directory_url . 'js/jquery.shuffle.js', array( 'jquery' ) );
                 wp_register_script( 'badgeos-obf-shuffle-impl', $this->directory_url . 'js/gridfilters.js' );
 		wp_register_script( 'badgeos-achievements', $this->directory_url . 'js/badgeos-achievements.js', array( 'jquery' ), '1.1.0', true );
-    wp_register_script( 'badgeos-earnable', $this->directory_url . 'js/obf-earnable.js', array( 'jquery' ), '1.4.7.6', true );
 		wp_register_script( 'credly-badge-builder', $this->directory_url . 'js/credly-badge-builder.js', array( 'jquery' ), '1.3.0', true );
                 wp_register_script( 'badgeos-obf-fastfilterlive', $this->directory_url . 'js/customfastfilterlive.js' );
                 
@@ -262,7 +264,7 @@ class BadgeOS {
 	function activate() {
 		// Include our important bits
 		$this->includes();
-    $register_capabilities = false;
+                $register_capabilities = false;
 
 		// Create Badge achievement type
 		if ( !get_page_by_title( 'Badge', 'OBJECT', 'achievement-type' ) ) {
@@ -357,11 +359,11 @@ class BadgeOS {
 
 		// Set minimum role setting for menus
 		$manager_role = badgeos_get_manager_capability();
-    $minimum_role = badgeos_get_minimum_capability();
-    
-    $creator_role = badgeos_get_achievement_creator_capability();
-    
-    $advanced_feature_parent = badgeos_obf_show_advanced_features() ? 'badgeos_badgeos' : 'options.php';
+                $minimum_role = badgeos_get_minimum_capability();
+                
+                $creator_role = badgeos_get_achievement_creator_capability();
+                
+                $advanced_feature_parent = badgeos_obf_show_advanced_features() ? 'badgeos_badgeos' : 'options.php';
                 
 		// Create main menu
 		add_menu_page( 'Open Badge Factory', 'Open Badge Factory', $minimum_role, 'badgeos_badgeos', 'badgeos_settings', $this->directory_url . 'images/obf_icon.png', 110 );
@@ -373,8 +375,9 @@ class BadgeOS {
 		add_submenu_page( 'options.php', __( 'Add-Ons', 'badgeos' ), __( 'Add-Ons', 'badgeos' ), $minimum_role, 'badgeos_sub_add_ons', 'badgeos_add_ons_page' );
 		add_submenu_page( 'badgeos_badgeos', __( 'Help / Support', 'badgeos' ), __( 'Help / Support', 'badgeos' ), $minimum_role, 'badgeos_sub_help_support', 'badgeos_help_support_page' );
                 
-    // Import badges
-    add_submenu_page( 'options.php', __( 'OBF Import', 'badgeos' ), __( 'OBF Import', 'badgeos' ), $creator_role, 'badgeos_sub_obf_import', 'badgeos_obf_import_page' );
+                // Import badges
+                add_submenu_page( 'options.php', __( 'OBF Import', 'badgeos' ), __( 'OBF Import', 'badgeos' ), $creator_role, 'badgeos_sub_obf_import', 'badgeos_obf_import_page' );
+
 	}
 
 	/**
@@ -385,15 +388,15 @@ class BadgeOS {
 		// Load scripts
 		wp_enqueue_script( 'badgeos-admin-js' );
 		wp_enqueue_script( 'badgeos-credly' );
-    wp_enqueue_script( 'badgeos-obf' );
-    wp_enqueue_script( 'badgeos-obf-modernizr' );
-    wp_enqueue_script( 'badgeos-obf-shuffle' );
-    wp_enqueue_script( 'badgeos-obf-shuffle-impl' );
-    wp_enqueue_script( 'badgeos-obf-fastfilterlive' );
+                wp_enqueue_script( 'badgeos-obf' );
+                wp_enqueue_script( 'badgeos-obf-modernizr' );
+                wp_enqueue_script( 'badgeos-obf-shuffle' );
+                wp_enqueue_script( 'badgeos-obf-shuffle-impl' );
+                wp_enqueue_script( 'badgeos-obf-fastfilterlive' );
 
 		// Load styles
 		wp_enqueue_style( 'badgeos-admin-styles' );
-    wp_enqueue_style( 'badgeos-obf-admin-styles' );
+                wp_enqueue_style( 'badgeos-obf-admin-styles' );
                 
 
 	}
@@ -413,7 +416,6 @@ class BadgeOS {
 			'errormessage'    => __( 'Error: Timed out', 'badgeos' )
 		);
 		wp_localize_script( 'badgeos-achievements', 'BadgeosCredlyData', $data );
-    wp_localize_script( 'badgeos-earnable', 'BadgeosCredlyData', $data );
 	}
 
 	/**
@@ -619,34 +621,4 @@ function badgeos_obf_update_settings($settings) {
  */
 function badgeos_obf_clear_settings_cache() {
     return $GLOBALS['badgeos']->clear_settings_cache();
-}
-
-
-/**
- * Encrypt and decrypt
- * 
- * @author Nazmul Ahsan <n.mukto@gmail.com>
- * @link http://nazmulahsan.me/simple-two-way-function-encrypt-decrypt-string/
- *
- * @param string $string string to be encrypted/decrypted
- * @param string $action what to do with this? e for encrypt, d for decrypt
- */
-function badgeos_obf_simple_crypt( $string, $action = 'e' ) {
-    // you may change these values to your own
-    $secret_key = SECURE_AUTH_KEY;
-    $secret_iv = SECURE_AUTH_SALT;
-
-    $output = false;
-    $encrypt_method = "AES-256-CBC";
-    $key = hash( 'sha256', $secret_key );
-    $iv = substr( hash( 'sha256', $secret_iv ), 0, 16 );
-
-    if( $action == 'e' ) {
-        $output = base64_encode( openssl_encrypt( $string, $encrypt_method, $key, 0, $iv ) );
-    }
-    else if( $action == 'd' ){
-        $output = openssl_decrypt( base64_decode( $string ), $encrypt_method, $key, 0, $iv );
-    }
-
-    return $output;
 }

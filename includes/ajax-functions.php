@@ -312,7 +312,8 @@ function badgeos_ajax_get_earnables_select2() {
       'ID' => $earnable['id'], 
       'name' => $earnable['name'], 
       'description' => $earnable['description'],
-      'intent' => $earnable['intent']
+      'intent' => $earnable['intent'],
+      'approval_method' => $earnable['approval_method']
       );
   }
   wp_send_json_success( $result );

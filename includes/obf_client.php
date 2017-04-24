@@ -399,6 +399,22 @@ class ObfClient
     }
 
     /**
+     * Post earnable badge application.
+     * 
+     * @param string $earnableId
+     * @return array
+     */
+    public function earnable_badge_apply($earnableId, $form_data = null) {
+        $this->require_client_id();
+        $params = array();
+        if (!is_null($form_data)) {
+          $params = $form_data;
+        }
+        $return = $this->api_request('/earnablebadge/' . $this->get_client_id() . '/' . $earnableId . '/apply', 'post', $params);
+        return $return;
+    }
+
+    /**
      * Get a list of applications.
      * 
      * @param string $earnableId 

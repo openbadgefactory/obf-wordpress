@@ -132,6 +132,7 @@ function badgeos_obf_earnable_badge_apply_page($encrypteddata = null, $formpostu
 	 */
 	global $badgeos_obf;
 
+  $output = '';
   if (is_null($encrypteddata)) {
     $encrypteddata = $_REQUEST['encrypteddata'];
   }
@@ -152,91 +153,116 @@ function badgeos_obf_earnable_badge_apply_page($encrypteddata = null, $formpostu
     return new WP_Error('error', __('Nonce failed!', 'badgeos'));
   }
 
-  $earnableurl = $badgeos_obf->obf_client->get_site_url() . '/c/earnablebadge/'.$earnableid.'/apply?nostash=1';
+  $earnable = $badgeos_obf->obf_client->get_earnable_badge($earnableid, 1);
+  error_log('Displaying ' . $earnableid);
+  $applyurl = $earnable['apply_url'];
+  $continueurl = !empty($data->continueurl) ? 
+      $data->continueurl : 
+      (
+        !empty($earnable['redirect_url']) ?
+        $earnable['redirect_url'] : 
+        get_permalink($data->id)
+      );
   if (!empty($_POST)) {
-    $response = wp_remote_post($earnableurl, 
-      array('body' => $_POST)
-    );
-    if (array_key_exists('http_response', $response)) {
-      $respobj = $response['http_response']->get_response_object();
-
-      // Check if we have more than 1 redirect (OBF internally redirects to /completed)
-      if (
-        isset($respobj->redirects) && 
-        ($respobj->redirects > 1 || !empty($data->continueurl) && $respobj->redirects > 0)
-      ) { // Redirect to url defined on the earnable badge in OBF
-        $continueurl = !empty($data->continueurl) ? $data->continueurl : $respobj->url;
-        if ( wp_redirect($continueurl) ) {
-          exit();
-        }
-        
+    try {
+      $response = $badgeos_obf->obf_client->earnable_badge_apply($earnableid, $_POST);
+    } catch(\Exception $ex) {
+      $output .= $ex->getMessage();
+      if (method_exists($ex,'getResponse')) {
+        $output = $ex->getResponse()->getBody(true);
       }
+      
+      $response = null;
     }
-    //error_log(var_export($response, true));
-    $application = wp_remote_retrieve_body( $response );
+    
+
+    $output .= var_export($response, true);
   } else {
-    $application = wp_remote_retrieve_body( wp_remote_get($earnableurl) );
-  }
-  
-
-  if (empty($application)) {
-    return new WP_Error('error', __('ERROR: Empty response!', 'badgeos'));
-  }
-  $dom = new DomDocument();
-  $success = $dom->loadHTML($application);
-  $output = '';
-  $body = $dom->getElementsByTagName('body')->item(0);
-  $head = $dom->getElementsByTagName('head')->item(0);
-
-  if (is_null($body)) {
-    return new WP_Error('error', __('ERROR: Not found!', 'badgeos'));
-  }
-  
-
-  // TODO: Filter something out?
-
-  if (!empty($formposturl)) {
-    $form = $body->getElementsByTagName('form')->item(0);
-    if (is_null($form)) {
-      return new WP_Error('error', __('Form not found!', 'badgeos'));
+    if (empty($earnable['form_html'])) {
+      return new WP_Error('error', __('Failed retrieving form', 'badgeos'));
     }
-    $form->setAttribute('action', $formposturl);
-  }
-  
-
-  if (is_null($head)) {
-    //return new WP_Error('error', __('Not found! (head)', 'badgeos'));
-  } else {
-    foreach($head->getElementsByTagName('link') as $link) {
-      $curoutput = $dom->saveHTML($link);
-      $output .= $curoutput;
+    // Print form
+    $output .= '<form action="'.$formposturl.'" method="post" enctype="multipart/form-data" id="earnable-form" accept-charset="utf-8" class="form-horizontal">';
+    $secret_token_fields = '';
+    if ($earnable['approval_method'] == 'secret') {
+      $secret_token_fields = '<div class="form-group">
+              <label class="control-label col-md-4">Claim code <span class="red">*</span></label>
+              <div class="col-md-4">
+                <input name="secret_token" class="form-control" required="" maxlength="255" type="text"><p class="help-block">Input your badge claim code here.</p>
+              </div>
+            </div>';
     }
-    foreach($head->getElementsByTagName('script') as $script) {
-      $curoutput = $dom->saveHTML($script);
-      $output .= $curoutput;
+    if ($earnable['attach_evidence'] == 'optional') {
+      $attach_evidence_field = '<div class="form-group">
+            <div class="col-md-8 col-md-offset-4">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="attach_evidence" value="1" checked>
+                       ' . __('Attach application form as evidence in the badge', 'badgeos') . '
+                    </label>
+                </div>
+            </div>
+        </div>';
+    } else {
+        $attach_evidence_field = '<input type="hidden" name="attach_evidence" value="' . ($earnable['attach_evidence'] == 'yes' ? 1 : 0) . '">';
+    }
+
+    $output .= '<fieldset>
+    <div class="form-group">
+          <div class="col-md-6 col-md-offset-4">
+            
+
+
+          </div>
+        </div>
+
+        <hr>
+    '.$secret_token_fields.$attach_evidence_field.'
+        
+
+        <div class="form-group">
+          <label class="control-label col-md-4">Your name <span class="red">*</span></label>
+          <div class="col-md-4">
+            <input name="applicant" class="form-control" required="" pattern="^[^\r\n]+$" maxlength="255" type="text">
+    </div>
+        </div>
+
+        <div class="form-group">
+          <label class="control-label col-md-4">Your email address <span class="red">*</span></label>
+          <div class="col-md-4">
+            <input name="email" class="form-control" required="" maxlength="255" type="email">
+    </div>
+        </div>
+
+        
+    </fieldset>';
+    $output .= '<hr>';
+
+
+
+    $output .= $earnable['form_html'];
+    $output .= '';
+    $output .= '<input class="btn btn-primary" name="replace" value="Submit your application now" type="submit">';
+    $output .= '</form>';
+    error_log($output);
+    $customscript = '';
+    
+    $current_user = wp_get_current_user();
+    if (property_exists($data, 'prefill') && $data->prefill == 'true' && $current_user) {
+      $customscript .= 'jQuery("input[name=\'applicant\'").val("'.$current_user->display_name.'");';
+      $customscript .= 'jQuery("input[name=\'email\'").val("'.$current_user->user_email.'");';
+    }
+    
+
+    $output .= '<script type="text/javascript">' . $customscript . '</script>';
+    if (!empty($_POST)) {
+      $continueurl = !empty($data->continueurl) ? $data->continueurl : get_permalink($data->id);
+      $output .= '<p class="text-center"><a class="btn btn-primary" href="' . $continueurl . '">'.__('Back', 'badgeos').'</a>';
     }
   }
   
 
-  $customscript = '';
-
-  foreach($body->childNodes as $node) {
-    $curoutput = $dom->saveHTML($node);
-    $output .= $curoutput;
-  }
-
-  $current_user = wp_get_current_user();
-  if (property_exists($data, 'prefill') && $data->prefill == 'true' && $current_user) {
-    $customscript .= 'jQuery("input[name=\'applicant\'").val("'.$current_user->display_name.'");';
-    $customscript .= 'jQuery("input[name=\'email\'").val("'.$current_user->user_email.'");';
-  }
   
-
-  $output .= '<script type="text/javascript">' . $customscript . '</script>';
-  if (!empty($_POST)) {
-    $continueurl = !empty($data->continueurl) ? $data->continueurl : get_permalink($data->id);
-    $output .= '<p class="text-center"><a class="btn btn-primary" href="' . $continueurl . '">'.__('Back', 'badgeos').'</a>';
-  }
 
   echo $output;
 }
