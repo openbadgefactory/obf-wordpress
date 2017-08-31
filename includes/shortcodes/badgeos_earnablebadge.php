@@ -126,74 +126,89 @@ function badgeos_insert_earnable_badge_page() {
  * @return void
  */
 function badgeos_obf_earnable_badge_apply_page($encrypteddata = null, $formposturl = '') {
-  //http://doppelganger.discendum.com/wp/wp-admin/admin.php?page=badgeos_sub_obf_earnable_badge_apply
-	/**
-	 * @var $badgeos_obf BadgeOS_Obf
-	 */
-	global $badgeos_obf;
+    //http://doppelganger.discendum.com/wp/wp-admin/admin.php?page=badgeos_sub_obf_earnable_badge_apply
+    /**
+     * @var $badgeos_obf BadgeOS_Obf
+     */
+    global $badgeos_obf;
+    $redirectparams = array();
 
-  $output = '';
-  if (is_null($encrypteddata)) {
-    $encrypteddata = $_REQUEST['encrypteddata'];
-  }
-  
-  $data = badgeos_obf_simple_crypt($encrypteddata, 'd');
-  if (!$data) {
-    return;
-  }
-  $data = json_decode($data);
-  $earnableid = $data->earnable_id;
-  if ($data->user_id !== get_current_user_id() ) {
-    return new WP_Error('error', __('Access denied!', 'badgeos'));
-  }
-  if ($_SERVER['REQUEST_METHOD'] == 'GET' && ! wp_verify_nonce( $data->_ebnonce, 'earnable_badge-'.$earnableid )) {
-    return new WP_Error('error', __('Nonce failed!', 'badgeos'));
-  }
-  if ($_SERVER['REQUEST_METHOD'] == 'POST' && ! wp_verify_nonce( $data->_ebpnonce, 'earnable_badge-apply-'.$earnableid )) {
-    return new WP_Error('error', __('Nonce failed!', 'badgeos'));
-  }
-
-  $earnable = $badgeos_obf->obf_client->get_earnable_badge($earnableid, 1);
-  error_log('Displaying ' . $earnableid);
-  $applyurl = $earnable['apply_url'];
-  $continueurl = !empty($data->continueurl) ? 
-      $data->continueurl : 
-      (
-        !empty($earnable['redirect_url']) ?
-        $earnable['redirect_url'] : 
-        get_permalink($data->id)
-      );
-  if (!empty($_POST)) {
-    try {
-      $response = $badgeos_obf->obf_client->earnable_badge_apply($earnableid, $_POST);
-    } catch(\Exception $ex) {
-      $output .= $ex->getMessage();
-      if (method_exists($ex,'getResponse')) {
-        $output = $ex->getResponse()->getBody(true);
-      }
-      
-      $response = null;
+    $output = '';
+    if (is_null($encrypteddata)) {
+        $encrypteddata = array_key_exists('encrypteddata', $_REQUEST) ? $_REQUEST['encrypteddata'] : '';
+        $redirectparams['encrypteddata'] = $encrypteddata;
     }
-    
 
-    $output .= var_export($response, true);
-  } else {
-    if (empty($earnable['form_html'])) {
-      return new WP_Error('error', __('Failed retrieving form', 'badgeos'));
+    $data = badgeos_obf_simple_crypt($encrypteddata, 'd');
+    if (!$data) {
+        return;
     }
-    // Print form
-    $output .= '<form action="'.$formposturl.'" method="post" enctype="multipart/form-data" id="earnable-form" accept-charset="utf-8" class="form-horizontal">';
-    $secret_token_fields = '';
-    if ($earnable['approval_method'] == 'secret') {
-      $secret_token_fields = '<div class="form-group">
+    $data = json_decode($data);
+    $earnableid = $data->earnable_id;
+    if ((!empty($data->user_id) && get_current_user_id() != 0) && $data->user_id !== get_current_user_id()) {
+        return new WP_Error('error', __('Access denied!', 'badgeos'));
+    }
+    $noncecontinuemsg = sprintf(__('Return to <a href="%s" target="_top">%s</a>'), get_permalink($data->id), get_the_title($data->id));
+    if ($_SERVER['REQUEST_METHOD'] == 'GET' && !wp_verify_nonce($data->_ebnonce, 'earnable_badge-' . $earnableid)) {
+        return new WP_Error('error', __('Nonce failed! ', 'badgeos') . $noncecontinuemsg);
+    }
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && !wp_verify_nonce($data->_ebpnonce, 'earnable_badge-apply-' . $earnableid)) {
+        return new WP_Error('error', __('Nonce failed! ', 'badgeos') . $noncecontinuemsg);
+    }
+
+    $earnable = $badgeos_obf->obf_client->get_earnable_badge($earnableid, 1);
+    error_log('Displaying ' . $earnableid);
+    $applyurl = $earnable['apply_url'];
+    $continueurl = !empty($data->continueurl) ?
+            $data->continueurl :
+            (
+            !empty($earnable['redirect_url']) ?
+            $earnable['redirect_url'] :
+            get_permalink($data->id)
+            );
+    if (isset($_GET['success']) && $_GET['success'] == 'true') {
+        $output .= sprintf(__('Application received. <a target="_top" href="%s">Continue</a>', 'badgeos'), $continueurl);
+    }
+    else if (!empty($_POST)) {
+        try {
+            error_log(var_export($_FILES, true));
+            $response = $badgeos_obf->obf_client->earnable_badge_apply($earnableid, $_POST, $_FILES);
+        } catch (\Exception $ex) {
+            $output .= $ex->getMessage();
+            $errorbody = '';
+            if (method_exists($ex, 'getResponse')) {
+                $errorbody = $ex->getResponse()->getBody(true);
+            }
+
+            $response = null;
+            if (!empty($errorbody)) {
+                $output .= $errorbody;
+            }
+        }
+        if (!is_null($response)) {
+            $output .= sprintf(__('Application received. <a href="%s">Continue</a>', 'badgeos'), $continueurl);
+            $redirectparams['continueurl'] = $continueurl;
+            $redirectparams['success'] = 'true';
+            wp_redirect(add_query_arg( $redirectparams, get_permalink() ), 303 );
+            exit();
+        }
+    } else {
+        if (empty($earnable['form_html'])) {
+            return new WP_Error('error', __('Failed retrieving form', 'badgeos'));
+        }
+        // Print form
+        $output .= '<form action="' . $formposturl . '" method="post" enctype="multipart/form-data" id="earnable-form" accept-charset="utf-8" class="form-horizontal">';
+        $secret_token_fields = '';
+        if ($earnable['approval_method'] == 'secret') {
+            $secret_token_fields = '<div class="form-group">
               <label class="control-label col-md-4">Claim code <span class="red">*</span></label>
               <div class="col-md-4">
                 <input name="secret_token" class="form-control" required="" maxlength="255" type="text"><p class="help-block">Input your badge claim code here.</p>
               </div>
             </div>';
-    }
-    if ($earnable['attach_evidence'] == 'optional') {
-      $attach_evidence_field = '<div class="form-group">
+        }
+        if ($earnable['attach_evidence'] == 'optional') {
+            $attach_evidence_field = '<div class="form-group">
             <div class="col-md-8 col-md-offset-4">
                 <div class="checkbox">
                     <label>
@@ -203,11 +218,11 @@ function badgeos_obf_earnable_badge_apply_page($encrypteddata = null, $formpostu
                 </div>
             </div>
         </div>';
-    } else {
-        $attach_evidence_field = '<input type="hidden" name="attach_evidence" value="' . ($earnable['attach_evidence'] == 'yes' ? 1 : 0) . '">';
-    }
+        } else {
+            $attach_evidence_field = '<input type="hidden" name="attach_evidence" value="' . ($earnable['attach_evidence'] == 'yes' ? 1 : 0) . '">';
+        }
 
-    $output .= '<fieldset>
+        $output .= '<fieldset>
     <div class="form-group">
           <div class="col-md-6 col-md-offset-4">
             
@@ -217,7 +232,7 @@ function badgeos_obf_earnable_badge_apply_page($encrypteddata = null, $formpostu
         </div>
 
         <hr>
-    '.$secret_token_fields.$attach_evidence_field.'
+    ' . $secret_token_fields . $attach_evidence_field . '
         
 
         <div class="form-group">
@@ -236,33 +251,80 @@ function badgeos_obf_earnable_badge_apply_page($encrypteddata = null, $formpostu
 
         
     </fieldset>';
-    $output .= '<hr>';
+        $output .= '<hr>';
 
 
 
-    $output .= $earnable['form_html'];
-    $output .= '';
-    $output .= '<input class="btn btn-primary" name="replace" value="Submit your application now" type="submit">';
-    $output .= '</form>';
-    error_log($output);
-    $customscript = '';
-    
-    $current_user = wp_get_current_user();
-    if (property_exists($data, 'prefill') && $data->prefill == 'true' && $current_user) {
-      $customscript .= 'jQuery("input[name=\'applicant\'").val("'.$current_user->display_name.'");';
-      $customscript .= 'jQuery("input[name=\'email\'").val("'.$current_user->user_email.'");';
+        $output .= $earnable['form_html'];
+        $output .= '';
+        $output .= '<input class="btn btn-primary" name="replace" value="Submit your application now" type="submit">';
+        $output .= '</form>';
+        error_log($output);
+        $customscript = '';
+
+        $current_user = wp_get_current_user();
+        if (property_exists($data, 'prefill') && $data->prefill == 'true' && $current_user) {
+            $customscript .= 'jQuery("input[name=\'applicant\'").val("' . $current_user->display_name . '");';
+            $customscript .= 'jQuery("input[name=\'email\'").val("' . $current_user->user_email . '");';
+        }
+
+
+        $output .= '<script type="text/javascript">' . $customscript . '</script>';
+        if (!empty($_POST)) {
+            $continueurl = !empty($data->continueurl) ? $data->continueurl : get_permalink($data->id);
+            $output .= '<p class="text-center"><a class="btn btn-primary" href="' . $continueurl . '">' . __('Back', 'badgeos') . '</a>';
+        }
     }
-    
 
-    $output .= '<script type="text/javascript">' . $customscript . '</script>';
-    if (!empty($_POST)) {
-      $continueurl = !empty($data->continueurl) ? $data->continueurl : get_permalink($data->id);
-      $output .= '<p class="text-center"><a class="btn btn-primary" href="' . $continueurl . '">'.__('Back', 'badgeos').'</a>';
-    }
+
+
+
+    return $output;
+}
+/**
+ * BadgeOS Open Badge Factory earnable badge apply page.
+ * @since  1.4.6
+ * @return void
+ */
+function badgeos_obf_earnable_badge_template_is_iframe($encrypteddata = null) {
+  if (is_null($encrypteddata)) {
+    $encrypteddata = array_key_exists('encrypteddata', $_REQUEST) ? $_REQUEST['encrypteddata'] : '';
   }
   
+  $data = badgeos_obf_simple_crypt($encrypteddata, 'd');
+  if (!$data) {
+    return false;
+  }
+  $data = json_decode($data);
+  if ($data->iframe != 'true') {
+      return false;
+  }
+  return true;
+}
 
-  
 
-  echo $output;
+
+
+
+function badgeos_obf_is_earnable_badge_page() {
+    global $badgeos_obf, $post;
+    $obf_settings = $badgeos_obf->obf_settings;
+    if ( !empty($obf_settings['earnable_page']) && isset($post->ID)) {
+        return $obf_settings['earnable_page'] == $post->ID;
+    }
+    return false;
+}
+add_filter('the_content', 'badgeos_obf_earnable_badge_page_replace_content');  
+
+function badgeos_obf_earnable_badge_page_replace_content( $content ) {
+    if ( badgeos_obf_is_earnable_badge_page() ) {
+        $ret = badgeos_obf_earnable_badge_apply_page();
+        if (is_wp_error($ret)) {
+            return $ret->get_error_message();
+        }
+        return $ret;
+    }
+    else {
+        return $content;
+    }
 }

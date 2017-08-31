@@ -404,13 +404,13 @@ class ObfClient
      * @param string $earnableId
      * @return array
      */
-    public function earnable_badge_apply($earnableId, $form_data = null) {
+    public function earnable_badge_apply($earnableId, $form_data = null, $files = null) {
         $this->require_client_id();
         $params = array();
         if (!is_null($form_data)) {
           $params = $form_data;
         }
-        $return = $this->api_request('/earnablebadge/' . $this->get_client_id() . '/' . $earnableId . '/apply', 'post', $params);
+        $return = $this->api_request('/earnablebadge/' . $this->get_client_id() . '/' . $earnableId . '/apply', 'post', $params, null, $files, true);
         return $return;
     }
 
@@ -712,9 +712,23 @@ class ObfClient
      * @return mixed Response from request.
      * @see self::request
      */
-    protected function api_request($path, $method = 'get', array $params = array(), \Closure $preformatter = null)
+    protected function api_request($path, $method = 'get', array $params = array(), \Closure $preformatter = null, $files = null, $force_multipart = false)
     {
-        return $this->request($this->get_api_url() . $path, $method, $params, $preformatter);
+        $json_post = self::files_array_is_empty($files) && !$force_multipart;
+        return $this->request($this->get_api_url() . $path, $method, $params, $preformatter, $files, $json_post);
+    }
+    
+    public static function files_array_is_empty($files) {
+        if (!is_array($files)) {
+            return false;
+        }
+        $files =  array_filter ( $files, function($val) {
+            if (empty($val['name']) && empty($val['tmp_name'])) {
+                return false;
+            }
+            return true;
+        } );
+        return empty($files);
     }
 
     /**
@@ -733,18 +747,18 @@ class ObfClient
      * @return array The json-decoded response.
      * @throws \Exception In case something goes wrong.
      */
-    public function request($url, $method = 'get', array $params = array(), \Closure $preformatter = null)
+    public function request($url, $method = 'get', array $params = array(), \Closure $preformatter = null, $files = null, $json_post = true)
     {
         $client = $this->get_transport();
         if (!$this->is_guzzle_transport()) {
             $options = $this->get_curl_options();
 
             if ($method == 'get') {
-                $output = $client->get($url, $params, $options);
+                $output = $client->get($url, $this->get_request_params($method, $params, $files, $json_post), $options);
             } elseif ($method == 'delete') {
-                $output = $client->delete($url, $params, $options);
+                $output = $client->delete($url, $this->get_request_params($method, $params, $files, $json_post), $options);
             } else {
-                $output = $client->post($url, json_encode($params), $options);
+                $output = $client->post($url, $this->get_request_params($method, $params, $files, $json_post), $options);
             }
 
             $info = $client->get_info();
@@ -755,24 +769,20 @@ class ObfClient
             $this->httpCode = $info['http_code'];
             $this->error = '';
         } else {
-            $guzzle_options = $this->get_guzzle_options();
+            
             if ($method == 'get') {
-                $request = $client->get($url, array_merge($guzzle_options, array('query' => $params)));
+                $request = $client->get($url, $this->get_request_params($method, $params, $files, $json_post));
             } elseif ($method == 'delete') {
-                $request = $client->delete($url, array_merge($guzzle_options, array('query' => $params)));
+                $request = $client->delete($url, $this->get_request_params($method, $params, $files, $json_post));
             } elseif ($method == 'put') {
                 $request = $client->put(
                     $url,
-                    array_merge($guzzle_options, array(
-                        'body' => json_encode($params)
-                    ))
+                    $this->get_request_params($method, $params, $files, $json_post)
                 );
             } else {
                 $request = $client->post(
                     $url,
-                    array_merge($guzzle_options, array(
-                        'body' => json_encode($params)
-                    ))
+                    $this->get_request_params($method, $params, $files, $json_post)
                 );
             }
             $output = $request->getBody()->getContents();
@@ -797,6 +807,75 @@ class ObfClient
         }
 
         return $response;
+    }
+
+
+    /**
+     * Get request params
+     * @param string $method get|post|put|delete
+     * @param array $param body parameters
+     * @param array $files Files (optional). As supplied on $_FILES.$_COOKIE
+     * @param boolean $json_post Format body as json
+     * @return array An array of parameters suitable for the request type.
+     */
+    private function get_request_params($method, $params, $files = null, $json_post = true) {
+      if (!$this->is_guzzle_transport()) {
+        if (!empty($files)) {
+          foreach($files as $key => $filearr) {
+            $params[$key] = '@'.$filearr['tmp_name'] .
+                ';filename=' . $filearr['name'] .
+                ';type=' . $filearr['type'];
+          }
+        }
+        if ($json_post && ($method == 'post' || $method == 'put')) {
+          $params = json_encode($params);
+        }
+      } else {
+        if (!empty($files)) {
+          // We have files. Let's create multipart query
+          
+          /*if (false) { // Guzzle 6
+            $multipart = array();
+            foreach($params as $key => $value) {
+              $multipart[] = array('name' => $key, 'contents' => $value);
+            }
+            foreach($files as $key => $filearr) {
+              $tmparr = array();
+              $tmparr['contents'] = fopen($filearr['tmp_name'], 'r');
+              $tmparr['filename'] = $filearr['name'];
+              $tmparr['headers'] = array('Content-Type' => $filearr['type']);
+              $multipart[] = $tmparr;
+            }
+            $params = array('multipart' => $multipart);
+          } else {
+            if (!empty($files)) {
+              foreach($files as $key => $filearr) {
+                $params[$key] = '@'.$filearr['tmp_name'] .
+                    ';filename=' . $filearr['name'] .
+                    ';type=' . $filearr['type'];
+              }
+            }
+            $params = array('body' => $json_post ? json_encode($params) : $params);
+          }*/
+          $postbody = new \GuzzleHttp\Post\PostBody();
+          $postbody->replaceFields($params);
+          foreach($files as $postkey => $filearr) {
+              if (!$filearr['tmp_name']) {
+                  continue;
+              }
+            $file = new \GuzzleHttp\Post\PostFile($postkey, fopen($filearr['tmp_name'], 'r'), $filearr['name']);
+            $postbody->addFile($file);
+          }
+          $params = array('body' => $postbody);
+        } else if ($method == 'post' || $method == 'put') { // Non-multipart post
+          $params = array('body' => $json_post ? json_encode($params) : $params);
+        } else {
+          $params = array('query' => $params);
+        }
+        $guzzle_options = $this->get_guzzle_options();
+        $params = array_merge($guzzle_options, $params);
+      }
+      return $params;
     }
     /**
      * Get HTTP error code of the last request.

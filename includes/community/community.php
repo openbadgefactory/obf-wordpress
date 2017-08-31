@@ -201,3 +201,4 @@ class BadgeOS_Community extends Obf_SubmoduleBase {
         }
 }
 $GLOBALS['badgeos_community'] = new BadgeOS_Community();
+

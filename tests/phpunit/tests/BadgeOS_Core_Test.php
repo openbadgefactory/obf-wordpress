@@ -47,25 +47,21 @@ class BadgeOS_Core_Test extends WP_UnitTestCase {
 		// JS
 		$this->assertFileExists( BOS_DIRECTORY_PATH . 'js/admin.js' );
 		$this->assertFileExists( BOS_DIRECTORY_PATH . 'js/badgeos-achievements.js' );
-		$this->assertFileExists( BOS_DIRECTORY_PATH . 'js/credly-badge-builder.js' );
-		$this->assertFileExists( BOS_DIRECTORY_PATH . 'js/credly.js' );
 		$this->assertFileExists( BOS_DIRECTORY_PATH . 'js/steps-ui.js' );
 
 		// Images
 		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/arrows.png' );
-		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/badge-builder-teaser.png' );
 		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/obf_icon.png' );
 		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/obf_screen_icon.png' );
-		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/credly-credit-issuer.png' );
 		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/spinner.gif' );
 		$this->assertFileExists( BOS_DIRECTORY_PATH . 'images/ui_handle.png' );
 	}
 
-	/**
-	 * @covers BadgeOS::credly_init
+        /**
+	 * @covers BadgeOS::obf_init
 	 */
 	public function test_badgeos_initialized_credly() {
-		$this->assertInstanceOf( 'BadgeOS_Credly', $GLOBALS['badgeos_credly'] );
+		$this->assertInstanceOf( 'BadgeOS_Obf', $GLOBALS['badgeos_obf'] );
 	}
 
 	/**

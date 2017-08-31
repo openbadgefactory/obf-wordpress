@@ -475,7 +475,8 @@ function badgeos_mybadges_page() {
 	_e( 'My badges', 'badgeos' );
 	echo '</h1>';
 	$type = $GLOBALS['badgeos_obf']->obf_badge_achievement_types(false);
-	$achievements = badgeos_get_user_achievements( array( 'user_id' => absint( $user->ID ), achievement_type => $type));
+  $user = wp_get_current_user();
+	$achievements = badgeos_get_user_achievements( array( 'user_id' => absint( $user->ID ), 'achievement_type' => $type));
 
 	usort($achievements, 'sortByDateEarned');
 

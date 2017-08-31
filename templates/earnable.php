@@ -3,8 +3,9 @@
  * Template Name: Earnable Badge
  */
 //get_header();
-$fullpage = true;
-if ($fullpage) {
+ob_start();
+$iniframe = badgeos_obf_earnable_badge_template_is_iframe();
+if ($iniframe) {
 ?><!DOCTYPE html>
 <!--[if IE 7]>
 <html class="ie ie7" <?php language_attributes(); ?>>
@@ -24,24 +25,48 @@ if ($fullpage) {
 	<!--[if lt IE 9]>
 	<script src="<?php echo get_template_directory_uri(); ?>/js/html5.js"></script>
 	<![endif]-->
+        <?php wp_head(); ?> 
+        <style>
+            html,body,div,iframe {height:100%;}
+            html {margin-top: 0px !important; }
+            p {position:relative;overflow:hidden;}
+            iframe {border:none;width:100%;}
+            body {margin:0;padding:0;}
+        </style>
 </head>
 
-<body <?php body_class(); ?>>
+<body <?php body_class('in-iframe iframe'); ?>>
 <div id="page" class="hfeed site">
 <div id="main" class="site-main">
 <?php
+  //echo $ret;
+    while ( have_posts() ) : the_post();
+    ?><article class="hentry"><?php
+      the_content();
+    ?></article><?php
+    endwhile;
 }
-$ret = badgeos_obf_earnable_badge_apply_page();
-if (is_wp_error($ret)) {
-  echo $ret->get_error_message();
-} else {
-  echo $ret;
+else {
+  get_template_part('page');
 }
-if ($fullpage) {
+if ($iniframe) {
   ?>
   </div><!-- #main -->
   </div><!-- #page -->
+  <script type="text/javascript">
+  jQuery(document).ready(function() {
+      if(top.location != location) {
+          jQuery('a, form').each(function() {
+              if(!this.target) {
+                  this.target = '_top';
+              }
+          });
+      }
+  });
+  </script>
   </body>
   </html>
   <?php
 }
+$out = ob_get_clean(); // Use OB to make sure redirects in badgeos_obf_earnable_badge_apply_page work
+echo $out;

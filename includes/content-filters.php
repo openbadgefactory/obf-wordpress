@@ -498,14 +498,14 @@ function badgeos_render_earnable_badge( $earnable, $atts = array() ) {
   // TODO: apply_page prefill selector
   $obf_settings = $badgeos_obf->obf_settings;
   if ( empty($obf_settings['earnable_page']) ) {
-    $output .= printf(__('Earnable Badge page not <a href="%s">configured!</a>', 'badgeos'), admin_url( 'admin.php?page=badgeos_sub_obf_integration' ));
+    $output .= sprintf(__('Earnable Badge page not <a href="%s">configured!</a>', 'badgeos'), admin_url( 'admin.php?page=badgeos_sub_obf_integration' ));
   } else {
     $earnable_page_id = $obf_settings['earnable_page'];
     $permalink = get_permalink($earnable_page_id);
     $embedurl = $permalink . '?encrypteddata=' . $data;
 
     if ($atts['iframe'] == "true") {
-      $output .= '<iframe width="100%" height="600" src="'.$embedurl.'" frameborder="0" scrolling="yes" marginheight="0" marginwidth="0"></iframe>';
+      $output .= '<iframe width="100%" height="600" src="'.$embedurl.'" frameborder="0" scrolling="auto" marginheight="0" sandbox="allow-top-navigation allow-same-origin allow-scripts allow-forms" marginwidth="0"></iframe>';
     
     } else {
       $ret = badgeos_obf_earnable_badge_apply_page($data, $embedurl);
