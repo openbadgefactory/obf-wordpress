@@ -62,8 +62,9 @@ class BadgeOS {
 	 *
 	 * @var string
 	 */
-	public static $version = '1.4.7.6';
+  public static $version = '1.4.7.6';
   public static $db_version = 7;
+  public static $register_capabilities = false;
   
   private $settings;
 
@@ -101,6 +102,8 @@ class BadgeOS {
 		add_action( 'admin_menu', array( $this, 'plugin_menu' ));
 		add_action( 'admin_menu', array( $this, 'my_badges_menu' ));
 		add_action( 'admin_bar_menu', array($this, 'plugin_bar_menu'), 999);
+                
+                add_action( 'wpmu_new_blog', array( $this, 'activate_new_blog' ), 10, 6 );
 	}
 
 	/**
@@ -257,6 +260,89 @@ class BadgeOS {
 	function register_image_sizes() {
 		add_image_size( 'badgeos-achievement', 100, 100 );
 	}
+        
+        function maybe_create_default_achievement_type() {
+            // Create Badge achievement type
+            if ( !get_page_by_title( 'Badge', 'OBJECT', 'achievement-type' ) ) {
+                    $badge_post_id = wp_insert_post( array(
+                            'post_title'   => __( 'Badge', 'badgeos'),
+                            'post_content' => __( 'Badges badge type', 'badgeos' ),
+                            'post_status'  => 'publish',
+                            'post_author'  => 1,
+                            'post_type'    => 'achievement-type',
+                    ) );
+                    update_post_meta( $badge_post_id, '_badgeos_singular_name', __( 'Badge', 'badgeos' ) );
+                    update_post_meta( $badge_post_id, '_badgeos_plural_name', __( 'Badges', 'badgeos' ) );
+                    update_post_meta( $badge_post_id, '_badgeos_show_in_menu', true );
+                    update_post_meta( $badge_post_id, '_badgeos_use_obf_badges', true );
+                    $badges_page = get_page_by_title( 'Badges', 'OBJECT', 'achievement-type' );
+                    if ($badges_page) {
+                        $badges_page_uses_obf = get_post_meta($badges_page->ID, '_badgeos_use_obf_badges', true);
+                        if (empty($badges_page_uses_obf) || $badges_page_uses_obf == 'false') {
+                            update_post_meta( $badges_page->ID, '_badgeos_show_in_menu', false );
+                        }
+                    }
+                    self::$register_capabilities = true;
+            }
+        }
+        
+        function create_default_options() {
+            // Setup default BadgeOS options
+            $badgeos_settings = ( $exists = $this->get_settings() ) ? $exists : array();
+            if ( empty( $badgeos_settings ) ) {
+                    $badgeos_settings['minimum_role']     = 'manage_options';
+                    $badgeos_settings['achievement_creator_role'] = 'manage_options';
+                    $badgeos_settings['submission_manager_role'] = 'manage_options';
+                    $badgeos_settings['submission_email'] = 'enabled';
+                    $badgeos_settings['debug_mode']       = 'disabled';
+                    $badgeos_settings['db_version']       = self::$db_version;
+                    $badgeos_settings['svg_support']      = 'enabled';
+                    $this->update_settings( $badgeos_settings );
+                    self::$register_capabilities = true;
+            }
+            if (self::$register_capabilities) {
+                badgeos_register_achievement_capabilites($badgeos_settings['achievement_creator_role']);
+            }
+
+            // Setup default obf options
+            $obf_settings = (array) get_option( 'obf_settings', array() );
+
+            if ( empty( $obf_settings ) || !isset( $obf_settings[ 'obf_enable' ] ) ) {
+                    $obf_settings['obf_enable']                      = 'true';
+                    $obf_settings['obf_client_id']                   = '__EMPTY__';
+                    $obf_settings['obf_badge_title']                 = 'post_title';
+                    $obf_settings['obf_badge_description']           = 'post_body';
+                    $obf_settings['obf_badge_short_description']     = 'post_excerpt';
+                    $obf_settings['obf_badge_criteria']              = '';
+                    $obf_settings['obf_badge_image']                 = 'featured_image';
+                    $obf_settings['obf_badge_testimonial']           = 'congratulations_text';
+                    $obf_settings['obf_badge_evidence']              = 'permalink';
+                    $obf_settings['obf_badge_sendemail_add_message'] = 'false';
+                    update_option( 'obf_settings', $obf_settings );
+            }
+
+            // Disable other service on activate
+            $credly_settings = (array) get_option( 'credly_settings', array() );
+
+            if ( empty( $credly_settings ) || isset( $credly_settings[ 'credly_enable' ] ) ) {
+                    $credly_settings['credly_enable']                      = 'false';
+                    update_option( 'credly_settings', $credly_settings );
+            }
+        }
+        
+        function activate_new_blog($blog_id = null, $user_id = null, $domain = null, $path = null, $site_id = null, $meta = null) {
+          if (!empty($blog_id)) {
+            switch_to_blog($blog_id);
+            
+            $this->maybe_create_default_achievement_type();
+            $this->create_default_options();
+            // Register our post types and flush rewrite rules
+            badgeos_flush_rewrite_rules();
+            badgeos_insert_earnable_badge_page();
+            // Finished with $site, returning to defaultsite.
+            restore_current_blog();
+          }
+        }
 
 	/**
 	 * Activation hook for the plugin.
@@ -264,77 +350,36 @@ class BadgeOS {
 	function activate() {
 		// Include our important bits
 		$this->includes();
-                $register_capabilities = false;
-
-		// Create Badge achievement type
-		if ( !get_page_by_title( 'Badge', 'OBJECT', 'achievement-type' ) ) {
-			$badge_post_id = wp_insert_post( array(
-				'post_title'   => __( 'Badge', 'badgeos'),
-				'post_content' => __( 'Badges badge type', 'badgeos' ),
-				'post_status'  => 'publish',
-				'post_author'  => 1,
-				'post_type'    => 'achievement-type',
-			) );
-			update_post_meta( $badge_post_id, '_badgeos_singular_name', __( 'Badge', 'badgeos' ) );
-                        update_post_meta( $badge_post_id, '_badgeos_plural_name', __( 'Badges', 'badgeos' ) );
-			update_post_meta( $badge_post_id, '_badgeos_show_in_menu', true );
-                        update_post_meta( $badge_post_id, '_badgeos_use_obf_badges', true );
-                        $badges_page = get_page_by_title( 'Badges', 'OBJECT', 'achievement-type' );
-                        if ($badges_page) {
-                            $badges_page_uses_obf = get_post_meta($badges_page->ID, '_badgeos_use_obf_badges', true);
-                            if (empty($badges_page_uses_obf) || $badges_page_uses_obf == 'false') {
-                                update_post_meta( $badges_page->ID, '_badgeos_show_in_menu', false );
-                            }
-                        }
-                        $register_capabilities = true;
-		}
-
-		// Setup default BadgeOS options
-		$badgeos_settings = ( $exists = $this->get_settings() ) ? $exists : array();
-		if ( empty( $badgeos_settings ) ) {
-			$badgeos_settings['minimum_role']     = 'manage_options';
-                        $badgeos_settings['achievement_creator_role'] = 'manage_options';
-			$badgeos_settings['submission_manager_role'] = 'manage_options';
-			$badgeos_settings['submission_email'] = 'enabled';
-			$badgeos_settings['debug_mode']       = 'disabled';
-                        $badgeos_settings['db_version']       = self::$db_version;
-                        $badgeos_settings['svg_support']      = 'enabled';
-			$this->update_settings( $badgeos_settings );
-                        $register_capabilities = true;
-		}
-                if ($register_capabilities) {
-                    badgeos_register_achievement_capabilites($badgeos_settings['achievement_creator_role']);
-                }
-
-		// Setup default obf options
-		$obf_settings = (array) get_option( 'obf_settings', array() );
-
-		if ( empty( $obf_settings ) || !isset( $obf_settings[ 'obf_enable' ] ) ) {
-			$obf_settings['obf_enable']                      = 'true';
-                        $obf_settings['obf_client_id']                   = '__EMPTY__';
-			$obf_settings['obf_badge_title']                 = 'post_title';
-			$obf_settings['obf_badge_description']           = 'post_body';
-			$obf_settings['obf_badge_short_description']     = 'post_excerpt';
-			$obf_settings['obf_badge_criteria']              = '';
-			$obf_settings['obf_badge_image']                 = 'featured_image';
-			$obf_settings['obf_badge_testimonial']           = 'congratulations_text';
-			$obf_settings['obf_badge_evidence']              = 'permalink';
-			$obf_settings['obf_badge_sendemail_add_message'] = 'false';
-			update_option( 'obf_settings', $obf_settings );
-		}
+                self::$register_capabilities = false;
                 
-                // Disable other service on activate
-		$credly_settings = (array) get_option( 'credly_settings', array() );
-
-		if ( empty( $credly_settings ) || isset( $credly_settings[ 'credly_enable' ] ) ) {
-			$credly_settings['credly_enable']                      = 'false';
-                        update_option( 'credly_settings', $credly_settings );
+                if (function_exists('is_multisite') && is_multisite() && is_super_admin() && get_current_blog_id() == 1) {
+                  // after wordpress 4.6 use get_sites and process objects instead of array
+                  $sites = function_exists( 'get_sites' ) && class_exists( 'WP_Site_Query' ) ?
+                          get_sites() :
+                          wp_get_sites();
+                  foreach ( $sites as $site ) {
+                      switch_to_blog( 
+                              function_exists( 'get_sites' ) && class_exists( 'WP_Site_Query' ) ? $site->blog_id : $site['blog_id']
+                              );
+                      $this->maybe_create_default_achievement_type();
+                      $this->create_default_options();
+                      // Register our post types and flush rewrite rules
+                      badgeos_flush_rewrite_rules();
+                      badgeos_insert_earnable_badge_page();
+                      // Finished with $site, returning to defaultsite.
+                      restore_current_blog();
+                  }
+                  
+                } else {
+                  $this->maybe_create_default_achievement_type();
+                  $this->create_default_options();
+                  // Register our post types and flush rewrite rules
+                  badgeos_flush_rewrite_rules();
+                  badgeos_insert_earnable_badge_page();
                 }
+                
 
-		// Register our post types and flush rewrite rules
-		badgeos_flush_rewrite_rules();
-    $this->submodule_activations();
-    badgeos_insert_earnable_badge_page();
+                $this->submodule_activations();
 	}
         
         /**
@@ -379,6 +424,36 @@ class BadgeOS {
                 add_submenu_page( 'options.php', __( 'OBF Import', 'badgeos' ), __( 'OBF Import', 'badgeos' ), $creator_role, 'badgeos_sub_obf_import', 'badgeos_obf_import_page' );
 
 	}
+
+  function my_badges_menu() {
+		//Profile badges page
+		add_users_page(__('My badges', 'badgeos'), __('My badges', 'badgeos'), 'read', 'badgeos_mybadges', 'badgeos_mybadges_page');
+	}
+
+	function plugin_bar_menu($wp_admin_bar) {
+		$user_id      = get_current_user_id();
+		$current_user = wp_get_current_user();
+
+		if ( ! $user_id )
+			return;
+
+		if ( current_user_can( 'read' ) ) {
+			$profile_url = get_edit_profile_url( $user_id );
+		} elseif ( is_multisite() ) {
+			$profile_url = get_edit_profile_url( $user_id );
+		} else {
+			$profile_url = false;
+		}
+		if ( false !== $profile_url ) {
+			$wp_admin_bar->add_node( array(
+				'parent' => 'user-actions',
+				'id'     => 'user-badges',
+				'title'  => __('My badges', 'badgeos'),
+				'href'   => get_site_url().'/wp-admin/profile.php?page=badgeos_mybadges',
+			) );
+		}
+	}
+
 
 	/**
 	 * Admin scripts and styles
@@ -622,3 +697,36 @@ function badgeos_obf_update_settings($settings) {
 function badgeos_obf_clear_settings_cache() {
     return $GLOBALS['badgeos']->clear_settings_cache();
 }
+
+/**
+ * Encrypt and decrypt
+ * 
+ * @author Nazmul Ahsan <n.mukto@gmail.com>
+ * @link http://nazmulahsan.me/simple-two-way-function-encrypt-decrypt-string/
+ *
+ * @param string $string string to be encrypted/decrypted
+ * @param string $action what to do with this? e for encrypt, d for decrypt
+ */
+function badgeos_obf_simple_crypt( $string, $action = 'e' ) {
+    // you may change these values to your own
+    $secret_key = SECURE_AUTH_KEY;
+    $secret_iv = SECURE_AUTH_SALT;
+
+    $output = false;
+    $encrypt_method = "AES-256-CBC";
+    $key = hash( 'sha256', $secret_key );
+    $iv = substr( hash( 'sha256', $secret_iv ), 0, 16 );
+
+    if( $action == 'e' ) {
+        $output = base64_encode( openssl_encrypt( $string, $encrypt_method, $key, 0, $iv ) );
+    }
+    else if( $action == 'd' ){
+        $output = openssl_decrypt( base64_decode( $string ), $encrypt_method, $key, 0, $iv );
+    }
+
+    return $output;
+}
+function jouni_testaa_bp_badges($field, $user_id = 0, $multi_format = 'array' ) {
+error_log(var_export($field, true));
+}
+add_filter( 'xprofile_get_field_data',                  'jouni_testaa_bp_badges' );
